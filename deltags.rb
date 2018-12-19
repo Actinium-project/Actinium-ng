@@ -1,7 +1,7 @@
 #!/usr/bin/env ruby
 # taken from https://vaneyckt.io/posts/finding_and_deleting_old_tags_in_a_github_repo/
 # CUT_OFF_DATE needs to be of YYYY-MM-DD format
-CUT_OFF_DATE = "2018-04-24"
+CUT_OFF_DATE = "2018-12-19"
 
 def get_old_tags(cut_off_date)
   `git log --tags --simplify-by-decoration --pretty="format:%ai %d"`
