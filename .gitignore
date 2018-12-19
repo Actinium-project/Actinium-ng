@@ -121,3 +121,4 @@ contrib/devtools/split-debug.sh
 db4/
 
 .vscode
+src/tor.timestamp
