@@ -569,7 +569,7 @@ Actinium_cli_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
 Actinium_cli_LDFLAGS = $(RELDFLAGS) $(AM_LDFLAGS) $(LIBTOOL_APP_LDFLAGS)
 
 if TARGET_WINDOWS
-Actinium_cli_SOURCES += Actinium-cli-res.rc
+Actinium_cli_SOURCES += bitcoin-cli-res.rc
 endif
 
 Actinium_cli_LDADD = \
@@ -588,7 +588,7 @@ Actinium_tx_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
 Actinium_tx_LDFLAGS = $(RELDFLAGS) $(AM_LDFLAGS) $(LIBTOOL_APP_LDFLAGS)
 
 if TARGET_WINDOWS
-Actinium_tx_SOURCES += Actinium-tx-res.rc
+Actinium_tx_SOURCES += bitcoin-tx-res.rc
 endif
 
 Actinium_tx_LDADD = \
