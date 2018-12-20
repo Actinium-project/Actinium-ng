@@ -4,11 +4,7 @@ libdir=@libdir@
 includedir=@includedir@
 
 Name: @PACKAGE_NAME@ consensus library
-<<<<<<< HEAD
 Description: Library for the Actinium consensus protocol.
-=======
-Description: Library for the Bitcoin consensus protocol.
->>>>>>> 86e0a33f5c382513d5179e3fdf158baf952d7e2f
 Version: @PACKAGE_VERSION@
 Libs: -L${libdir} -lbitcoinconsensus
 Cflags: -I${includedir}
