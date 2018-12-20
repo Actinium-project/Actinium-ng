@@ -445,11 +445,7 @@ static UniValue echo(const JSONRPCRequest& request)
             RPCHelpMan{"echo|echojson ...",
                 "\nSimply echo back the input arguments. This command is for testing.\n"
                 "\nThe difference between echo and echojson is that echojson has argument conversion enabled in the client-side table in "
-<<<<<<< HEAD
                 "Actinium-cli and the GUI. There is no server-side difference.",
-=======
-                "bitcoin-cli and the GUI. There is no server-side difference.",
->>>>>>> 86e0a33f5c382513d5179e3fdf158baf952d7e2f
                 {}}
                 .ToString() +
             "");

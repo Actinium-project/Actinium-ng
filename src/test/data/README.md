@@ -1,11 +1,7 @@
 Description
 ------------
 
-<<<<<<< HEAD
 This directory contains data-driven tests for various aspects of Actinium.
-=======
-This directory contains data-driven tests for various aspects of Bitcoin.
->>>>>>> 86e0a33f5c382513d5179e3fdf158baf952d7e2f
 
 License
 --------

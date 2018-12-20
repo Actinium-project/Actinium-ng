@@ -274,11 +274,7 @@ UniValue importaddress(const JSONRPCRequest& request)
             RPCHelpMan{"importaddress",
                 "\nAdds an address or script (in hex) that can be watched as if it were in your wallet but cannot be used to spend. Requires a new wallet backup.\n",
                 {
-<<<<<<< HEAD
                     {"address", RPCArg::Type::STR, /* opt */ false, /* default_val */ "", "The Actinium address (or hex-encoded script)"},
-=======
-                    {"address", RPCArg::Type::STR, /* opt */ false, /* default_val */ "", "The Bitcoin address (or hex-encoded script)"},
->>>>>>> 86e0a33f5c382513d5179e3fdf158baf952d7e2f
                     {"label", RPCArg::Type::STR, /* opt */ true, /* default_val */ "\"\"", "An optional label"},
                     {"rescan", RPCArg::Type::BOOL, /* opt */ true, /* default_val */ "true", "Rescan the wallet for transactions"},
                     {"p2sh", RPCArg::Type::BOOL, /* opt */ true, /* default_val */ "false", "Add the P2SH version of the script as well"},
@@ -335,11 +331,7 @@ UniValue importaddress(const JSONRPCRequest& request)
             std::vector<unsigned char> data(ParseHex(request.params[0].get_str()));
             ImportScript(pwallet, CScript(data.begin(), data.end()), strLabel, fP2SH);
         } else {
-<<<<<<< HEAD
             throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid Actinium address or script");
-=======
-            throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid Bitcoin address or script");
->>>>>>> 86e0a33f5c382513d5179e3fdf158baf952d7e2f
         }
     }
     if (fRescan)
@@ -697,11 +689,7 @@ UniValue dumpprivkey(const JSONRPCRequest& request)
     std::string strAddress = request.params[0].get_str();
     CTxDestination dest = DecodeDestination(strAddress);
     if (!IsValidDestination(dest)) {
-<<<<<<< HEAD
         throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid Actinium address");
-=======
-        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid Bitcoin address");
->>>>>>> 86e0a33f5c382513d5179e3fdf158baf952d7e2f
     }
     auto keyid = GetKeyForDestination(*pwallet, dest);
     if (keyid.IsNull()) {
@@ -753,11 +741,7 @@ UniValue dumpwallet(const JSONRPCRequest& request)
 
     /* Prevent arbitrary files from being overwritten. There have been reports
      * that users have overwritten wallet files this way:
-<<<<<<< HEAD
      * https://github.com/Actinium-project/Actinium-ng/issues/9934
-=======
-     * https://github.com/bitcoin/bitcoin/issues/9934
->>>>>>> 86e0a33f5c382513d5179e3fdf158baf952d7e2f
      * It may also avoid other security issues.
      */
     if (fs::exists(filepath)) {
@@ -787,11 +771,7 @@ UniValue dumpwallet(const JSONRPCRequest& request)
     std::sort(vKeyBirth.begin(), vKeyBirth.end());
 
     // produce output
-<<<<<<< HEAD
     file << strprintf("# Wallet dump created by Actinium %s\n", CLIENT_BUILD);
-=======
-    file << strprintf("# Wallet dump created by Bitcoin %s\n", CLIENT_BUILD);
->>>>>>> 86e0a33f5c382513d5179e3fdf158baf952d7e2f
     file << strprintf("# * Created on %s\n", FormatISO8601DateTime(GetTime()));
     file << strprintf("# * Best block at time of backup was %i (%s),\n", chainActive.Height(), chainActive.Tip()->GetBlockHash().ToString());
     file << strprintf("#   mined on %s\n", FormatISO8601DateTime(chainActive.Tip()->GetBlockTime()));

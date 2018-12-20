@@ -17,11 +17,7 @@ git diff -U0 HEAD~1.. | ./contrib/devtools/clang-format-diff.py -p1 -i -v
 copyright\_header.py
 ====================
 
-<<<<<<< HEAD
 Provides utilities for managing copyright headers of `The Actinium Core
-=======
-Provides utilities for managing copyright headers of `The Bitcoin Core
->>>>>>> 86e0a33f5c382513d5179e3fdf158baf952d7e2f
 developers` in repository source files. It has three subcommands:
 
 ```

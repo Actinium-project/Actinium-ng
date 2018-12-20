@@ -7,11 +7,7 @@ export LC_ALL=C
 set -e
 
 ROOTDIR=dist
-<<<<<<< HEAD
 BUNDLE="${ROOTDIR}/Actinium-Qt.app"
-=======
-BUNDLE="${ROOTDIR}/Bitcoin-Qt.app"
->>>>>>> 86e0a33f5c382513d5179e3fdf158baf952d7e2f
 CODESIGN=codesign
 TEMPDIR=sign.temp
 TEMPLIST=${TEMPDIR}/signatures.txt

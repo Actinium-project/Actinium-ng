@@ -6,11 +6,7 @@
 """
     ZMQ example using python3's asyncio
 
-<<<<<<< HEAD
     Actinium should be started with the command line arguments:
-=======
-    Bitcoin should be started with the command line arguments:
->>>>>>> 86e0a33f5c382513d5179e3fdf158baf952d7e2f
         bitcoind -testnet -daemon \
                 -zmqpubrawtx=tcp://127.0.0.1:28332 \
                 -zmqpubrawblock=tcp://127.0.0.1:28332 \
@@ -27,11 +23,7 @@
     and `await` keywords respectively.
 
     A blocking example using python 2.7 can be obtained from the git history:
-<<<<<<< HEAD
     https://github.com/Actinium-project/Actinium-ng/blob/37a7fe9e440b83e2364d5498931253937abe9294/contrib/zmq/zmq_sub.py
-=======
-    https://github.com/bitcoin/bitcoin/blob/37a7fe9e440b83e2364d5498931253937abe9294/contrib/zmq/zmq_sub.py
->>>>>>> 86e0a33f5c382513d5179e3fdf158baf952d7e2f
 """
 
 import binascii

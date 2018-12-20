@@ -9,11 +9,7 @@ export LC_ALL=C
 IF="eth0"
 #limit of the network interface in question
 LINKCEIL="1gbit"
-<<<<<<< HEAD
 #limit outbound Actinium protocol traffic to this rate
-=======
-#limit outbound Bitcoin protocol traffic to this rate
->>>>>>> 86e0a33f5c382513d5179e3fdf158baf952d7e2f
 LIMIT="160kbit"
 #defines the IPv4 address space for which you wish to disable rate limiting
 LOCALNET_V4="192.168.0.0/16"

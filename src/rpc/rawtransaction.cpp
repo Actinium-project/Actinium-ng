@@ -430,11 +430,7 @@ CMutableTransaction ConstructTransaction(const UniValue& inputs_in, const UniVal
         } else {
             CTxDestination destination = DecodeDestination(name_);
             if (!IsValidDestination(destination)) {
-<<<<<<< HEAD
                 throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, std::string("Invalid Actinium address: ") + name_);
-=======
-                throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, std::string("Invalid Bitcoin address: ") + name_);
->>>>>>> 86e0a33f5c382513d5179e3fdf158baf952d7e2f
             }
 
             if (!destinations.insert(destination).second) {
@@ -1213,11 +1209,7 @@ UniValue decodepsbt(const JSONRPCRequest& request)
     if (request.fHelp || request.params.size() != 1)
         throw std::runtime_error(
             RPCHelpMan{"decodepsbt",
-<<<<<<< HEAD
                 "\nReturn a JSON object representing the serialized, base64-encoded partially signed Actinium transaction.\n",
-=======
-                "\nReturn a JSON object representing the serialized, base64-encoded partially signed Bitcoin transaction.\n",
->>>>>>> 86e0a33f5c382513d5179e3fdf158baf952d7e2f
                 {
                     {"psbt", RPCArg::Type::STR, /* opt */ false, /* default_val */ "", "The PSBT base64 string"},
                 }}
@@ -1242,11 +1234,7 @@ UniValue decodepsbt(const JSONRPCRequest& request)
             "          \"asm\" : \"asm\",            (string) The asm\n"
             "          \"hex\" : \"hex\",            (string) The hex\n"
             "          \"type\" : \"pubkeyhash\",    (string) The type, eg 'pubkeyhash'\n"
-<<<<<<< HEAD
             "          \"address\" : \"address\"     (string) Actinium address if there is one\n"
-=======
-            "          \"address\" : \"address\"     (string) Bitcoin address if there is one\n"
->>>>>>> 86e0a33f5c382513d5179e3fdf158baf952d7e2f
             "        }\n"
             "      },\n"
             "      \"partial_signatures\" : {             (json object, optional)\n"
@@ -1496,11 +1484,7 @@ UniValue combinepsbt(const JSONRPCRequest& request)
     if (request.fHelp || request.params.size() != 1)
         throw std::runtime_error(
             RPCHelpMan{"combinepsbt",
-<<<<<<< HEAD
                 "\nCombine multiple partially signed Actinium transactions into one transaction.\n"
-=======
-                "\nCombine multiple partially signed Bitcoin transactions into one transaction.\n"
->>>>>>> 86e0a33f5c382513d5179e3fdf158baf952d7e2f
                 "Implements the Combiner role.\n",
                 {
                     {"txs", RPCArg::Type::ARR, /* opt */ false, /* default_val */ "", "A json array of base64 strings of partially signed transactions",

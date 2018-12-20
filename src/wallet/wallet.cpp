@@ -3704,11 +3704,7 @@ void CWallet::GetKeyBirthTimes(interfaces::Chain::Lock& locked_chain, std::map<C
  *
  * For more information see CWalletTx::nTimeSmart,
  * https://bitcointalk.org/?topic=54527, or
-<<<<<<< HEAD
  * https://github.com/Actinium-project/Actinium-ng/pull/1393.
-=======
- * https://github.com/bitcoin/bitcoin/pull/1393.
->>>>>>> 86e0a33f5c382513d5179e3fdf158baf952d7e2f
  */
 unsigned int CWallet::ComputeTimeSmart(const CWalletTx& wtx) const
 {

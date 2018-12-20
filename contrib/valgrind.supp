@@ -1,8 +1,4 @@
-<<<<<<< HEAD
 # Valgrind suppressions file for Actinium.
-=======
-# Valgrind suppressions file for Bitcoin.
->>>>>>> 86e0a33f5c382513d5179e3fdf158baf952d7e2f
 #
 # Includes known Valgrind warnings in our dependencies that cannot be fixed
 # in-tree.

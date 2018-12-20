@@ -152,11 +152,7 @@ def bctest(testDir, testObj, buildenv):
         want_error = testObj["error_txt"]
         # Compare error text
         # TODO: ideally, we'd compare the strings exactly and also assert
-<<<<<<< HEAD
         # That stderr is empty if no errors are expected. However, Actinium-tx
-=======
-        # That stderr is empty if no errors are expected. However, bitcoin-tx
->>>>>>> 86e0a33f5c382513d5179e3fdf158baf952d7e2f
         # emits DISPLAY errors when running as a windows application on
         # linux through wine. Just assert that the expected error text appears
         # somewhere in stderr.

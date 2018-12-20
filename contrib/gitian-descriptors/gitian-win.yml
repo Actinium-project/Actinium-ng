@@ -23,11 +23,7 @@ packages:
 - "python"
 - "rename"
 remotes:
-<<<<<<< HEAD
 - "url": "https://github.com/Actinium-project/Actinium-ng.git"
-=======
-- "url": "https://github.com/bitcoin/bitcoin.git"
->>>>>>> 86e0a33f5c382513d5179e3fdf158baf952d7e2f
   "dir": "bitcoin"
 files: []
 script: |
@@ -78,11 +74,7 @@ script: |
 
   function create_per-host_linker_wrapper {
   # This is only needed for trusty, as the mingw linker leaks a few bytes of
-<<<<<<< HEAD
   # heap, causing non-determinism. See discussion in https://github.com/Actinium-project/Actinium-ng/pull/6900
-=======
-  # heap, causing non-determinism. See discussion in https://github.com/bitcoin/bitcoin/pull/6900
->>>>>>> 86e0a33f5c382513d5179e3fdf158baf952d7e2f
   for i in $HOSTS; do
     mkdir -p ${WRAP_DIR}/${i}
     for prog in collect2; do

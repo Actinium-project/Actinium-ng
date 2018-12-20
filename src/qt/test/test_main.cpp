@@ -68,11 +68,7 @@ int main(int argc, char *argv[])
     // Don't remove this, it's needed to access
     // QApplication:: and QCoreApplication:: in the tests
     QApplication app(argc, argv);
-<<<<<<< HEAD
     app.setApplicationName("Actinium-Qt-test");
-=======
-    app.setApplicationName("Bitcoin-Qt-test");
->>>>>>> 86e0a33f5c382513d5179e3fdf158baf952d7e2f
 
     SSL_library_init();
 

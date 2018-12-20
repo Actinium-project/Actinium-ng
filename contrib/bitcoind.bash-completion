@@ -1,8 +1,4 @@
-<<<<<<< HEAD
 # bash programmable completion for bitcoind(1) and Actinium-qt(1)
-=======
-# bash programmable completion for bitcoind(1) and bitcoin-qt(1)
->>>>>>> 86e0a33f5c382513d5179e3fdf158baf952d7e2f
 # Copyright (c) 2012-2016 The Bitcoin Core developers
 # Distributed under the MIT software license, see the accompanying
 # file COPYING or http://www.opensource.org/licenses/mit-license.php.
@@ -49,11 +45,7 @@ _bitcoind() {
             ;;
     esac
 } &&
-<<<<<<< HEAD
 complete -F _bitcoind bitcoind Actinium-qt
-=======
-complete -F _bitcoind bitcoind bitcoin-qt
->>>>>>> 86e0a33f5c382513d5179e3fdf158baf952d7e2f
 
 # Local variables:
 # mode: shell-script

@@ -340,7 +340,6 @@
 #define LT_OBJDIR ".libs/"
 
 /* Define to the address where bug reports for this package should be sent. */
-<<<<<<< HEAD
 #define PACKAGE_BUGREPORT "https://github.com/Actinium-project/Actinium-ng/issues"
 
 /* Define to the full name of this package. */
@@ -354,21 +353,6 @@
 
 /* Define to the home page for this package. */
 #define PACKAGE_URL "https://actinium.org/"
-=======
-#define PACKAGE_BUGREPORT "https://github.com/bitcoin/bitcoin/issues"
-
-/* Define to the full name of this package. */
-#define PACKAGE_NAME "Bitcoin Core"
-
-/* Define to the full name and version of this package. */
-#define PACKAGE_STRING "Bitcoin Core 0.17.99"
-
-/* Define to the one symbol short name of this package. */
-#define PACKAGE_TARNAME "bitcoin"
-
-/* Define to the home page for this package. */
-#define PACKAGE_URL "https://bitcoincore.org/"
->>>>>>> 86e0a33f5c382513d5179e3fdf158baf952d7e2f
 
 /* Define to the version of this package. */
 #define PACKAGE_VERSION "0.17.99"

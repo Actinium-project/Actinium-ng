@@ -130,11 +130,7 @@ UniValue generateBlocks(std::shared_ptr<CReserveScript> coinbaseScript, int nGen
             LOCK(cs_main);
             IncrementExtraNonce(pblock, chainActive.Tip(), nExtraNonce);
         }
-<<<<<<< HEAD
         while (nMaxTries > 0 && pblock->nNonce < nInnerLoopCount && !CheckProofOfWork(pblock->GetPoWHash(), pblock->nBits, Params().GetConsensus())) {
-=======
-        while (nMaxTries > 0 && pblock->nNonce < nInnerLoopCount && !CheckProofOfWork(pblock->GetHash(), pblock->nBits, Params().GetConsensus())) {
->>>>>>> 86e0a33f5c382513d5179e3fdf158baf952d7e2f
             ++pblock->nNonce;
             --nMaxTries;
         }
@@ -245,11 +241,7 @@ static UniValue prioritisetransaction(const JSONRPCRequest& request)
                 "Accepts the transaction into mined blocks at a higher (or lower) priority\n",
                 {
                     {"txid", RPCArg::Type::STR_HEX, /* opt */ false, /* default_val */ "", "The transaction id."},
-<<<<<<< HEAD
                     {"dummy", RPCArg::Type::NUM, /* opt */ false, /* default_val */ "", "API-Compatibility for previous API. Must be zero or null.\n"
-=======
-                    {"dummy", RPCArg::Type::NUM, /* opt */ true, /* default_val */ "null", "API-Compatibility for previous API. Must be zero or null.\n"
->>>>>>> 86e0a33f5c382513d5179e3fdf158baf952d7e2f
             "                  DEPRECATED. For forward compatibility use named arguments and omit this parameter."},
                     {"fee_delta", RPCArg::Type::NUM, /* opt */ false, /* default_val */ "", "The fee value (in satoshis) to add (or subtract, if negative).\n"
             "                  Note, that this value is not a fee rate. It is a value to modify absolute fee of the TX.\n"
@@ -457,17 +449,10 @@ static UniValue getblocktemplate(const JSONRPCRequest& request)
         throw JSONRPCError(RPC_CLIENT_P2P_DISABLED, "Error: Peer-to-peer functionality missing or disabled");
 
     if (g_connman->GetNodeCount(CConnman::CONNECTIONS_ALL) == 0)
-<<<<<<< HEAD
         throw JSONRPCError(RPC_CLIENT_NOT_CONNECTED, "Actinium is not connected!");
 
     if (IsInitialBlockDownload())
         throw JSONRPCError(RPC_CLIENT_IN_INITIAL_DOWNLOAD, "Actinium is downloading blocks...");
-=======
-        throw JSONRPCError(RPC_CLIENT_NOT_CONNECTED, "Bitcoin is not connected!");
-
-    if (IsInitialBlockDownload())
-        throw JSONRPCError(RPC_CLIENT_IN_INITIAL_DOWNLOAD, "Bitcoin is downloading blocks...");
->>>>>>> 86e0a33f5c382513d5179e3fdf158baf952d7e2f
 
     static unsigned int nTransactionsUpdatedLast;
 

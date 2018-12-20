@@ -12,15 +12,9 @@ For example:
 
     make HOST=x86_64-w64-mingw32 -j4
 
-<<<<<<< HEAD
 A prefix will be generated that's suitable for plugging into Actinium's
 configure. In the above example, a dir named x86_64-w64-mingw32 will be
 created. To use it for Actinium:
-=======
-A prefix will be generated that's suitable for plugging into Bitcoin's
-configure. In the above example, a dir named x86_64-w64-mingw32 will be
-created. To use it for Bitcoin:
->>>>>>> 86e0a33f5c382513d5179e3fdf158baf952d7e2f
 
     ./configure --prefix=`pwd`/depends/x86_64-w64-mingw32
 
@@ -64,11 +58,7 @@ For linux RISC-V 64-bit cross compilation (there are no packages for 32-bit):
 
     sudo apt-get install g++-riscv64-linux-gnu binutils-riscv64-linux-gnu
 
-<<<<<<< HEAD
 RISC-V known issue: gcc-7.3.0 and gcc-7.3.1 result in a broken `test_bitcoin` executable (see https://github.com/Actinium-project/Actinium-ng/pull/13543),
-=======
-RISC-V known issue: gcc-7.3.0 and gcc-7.3.1 result in a broken `test_bitcoin` executable (see https://github.com/bitcoin/bitcoin/pull/13543),
->>>>>>> 86e0a33f5c382513d5179e3fdf158baf952d7e2f
 this is apparently fixed in gcc-8.1.0.
 
 ### Dependency Options

@@ -32,12 +32,6 @@ Network specific options can be:
 
 ## Configuration File Path
 
-<<<<<<< HEAD
 The configuration file is not automatically created; you can create it using your favorite text editor. By default, the configuration file name is `Actinium.conf` and it is located in the Actinium data directory, but both the Actinium data directory and the configuration file path may be changed using the `-datadir` and `-conf` command-line options.
 
 The `includeconf=<file>` option in the `Actinium.conf` file can be used to include additional configuration files.
-=======
-The configuration file is not automatically created; you can create it using your favorite text editor. By default, the configuration file name is `bitcoin.conf` and it is located in the Bitcoin data directory, but both the Bitcoin data directory and the configuration file path may be changed using the `-datadir` and `-conf` command-line options.
-
-The `includeconf=<file>` option in the `bitcoin.conf` file can be used to include additional configuration files.
->>>>>>> 86e0a33f5c382513d5179e3fdf158baf952d7e2f

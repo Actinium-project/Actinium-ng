@@ -5,26 +5,15 @@
 Make sure you obtain the proper release signing key and verify the fingerprint with several independent sources.
 
 ```sh
-<<<<<<< HEAD
 $ gpg --fingerprint "Actinium Core binary release signing key"
 pub   4096R/36C2E964 2015-06-24 [expires: 2017-02-13]
       Key fingerprint = 01EA 5486 DE18 A882 D4C2  6845 90C8 019E 36C2 E964
 uid                  Wladimir J. van der Laan (Actinium Core binary release signing key) <laanwj@gmail.com>
-=======
-$ gpg --fingerprint "Bitcoin Core binary release signing key"
-pub   4096R/36C2E964 2015-06-24 [expires: 2017-02-13]
-      Key fingerprint = 01EA 5486 DE18 A882 D4C2  6845 90C8 019E 36C2 E964
-uid                  Wladimir J. van der Laan (Bitcoin Core binary release signing key) <laanwj@gmail.com>
->>>>>>> 86e0a33f5c382513d5179e3fdf158baf952d7e2f
 ```
 
 #### Usage:
 
-<<<<<<< HEAD
 This script attempts to download the signature file `SHA256SUMS.asc` from https://actinium.org.
-=======
-This script attempts to download the signature file `SHA256SUMS.asc` from https://bitcoin.org.
->>>>>>> 86e0a33f5c382513d5179e3fdf158baf952d7e2f
 
 It first checks if the signature passes, and then downloads the files specified in the file, and checks if the hashes of these files match those that are specified in the signature file.
 

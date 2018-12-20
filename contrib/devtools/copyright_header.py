@@ -84,15 +84,9 @@ EXPECTED_HOLDER_NAMES = [
     "Satoshi Nakamoto\n",
     "The Bitcoin Core developers\n",
     "The Bitcoin Core developers \n",
-<<<<<<< HEAD
     "Actinium Core Developers\n",
     "the Actinium Core developers\n",
     "The Actinium developers\n",
-=======
-    "Bitcoin Core Developers\n",
-    "the Bitcoin Core developers\n",
-    "The Bitcoin developers\n",
->>>>>>> 86e0a33f5c382513d5179e3fdf158baf952d7e2f
     "The LevelDB Authors\. All rights reserved\.\n",
     "BitPay Inc\.\n",
     "BitPay, Inc\.\n",
@@ -588,11 +582,7 @@ def insert_cmd(argv):
 ################################################################################
 
 USAGE = """
-<<<<<<< HEAD
 copyright_header.py - utilities for managing copyright headers of 'The Actinium
-=======
-copyright_header.py - utilities for managing copyright headers of 'The Bitcoin
->>>>>>> 86e0a33f5c382513d5179e3fdf158baf952d7e2f
 Core developers' in repository source files.
 
 Usage:

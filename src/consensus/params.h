@@ -79,10 +79,7 @@ struct Params {
     int64_t DifficultyAdjustmentInterval() const { return nPowTargetTimespan / nPowTargetSpacing; }
     uint256 nMinimumChainWork;
     uint256 defaultAssumeValid;
-<<<<<<< HEAD
     int64_t nZawyLwmaAveragingWindow;  // N
-=======
->>>>>>> 86e0a33f5c382513d5179e3fdf158baf952d7e2f
 };
 } // namespace Consensus
 

@@ -1,67 +1,17 @@
-<<<<<<< HEAD
 Actinium Core integration/staging tree
-=====================================
-
-https://actinium.org
-
-What is Actinium NG?
----------------------
-
-Actinium is an experimental digital currency **based on Bitcoin** that enables instant payments to
-anyone, anywhere in the world. Actinium uses peer-to-peer technology to operate
-with no central authority: managing transactions and issuing money are carried
-out collectively by the network. Actinium Core is the name of open source
-software which enables the use of this currency.
-
-For more information, as well as an immediately useable, binary version of
-the Actinium Core software, see https://actinium.org
-
-**This Actinium variant is based on latest Bitcoin master and is considered unstable.**
-
-The original variant (based on Litecoin) can be downloaded from [this repository](https://github.com/Actinium-project/Actinium)
-=======
-Bitcoin Core integration/staging tree
-=====================================
-
-[![Build Status](https://travis-ci.org/bitcoin/bitcoin.svg?branch=master)](https://travis-ci.org/bitcoin/bitcoin)
-
-https://bitcoincore.org
-
-What is Bitcoin?
-----------------
-
-Bitcoin is an experimental digital currency that enables instant payments to
-anyone, anywhere in the world. Bitcoin uses peer-to-peer technology to operate
-with no central authority: managing transactions and issuing money are carried
-out collectively by the network. Bitcoin Core is the name of open source
-software which enables the use of this currency.
-
-For more information, as well as an immediately useable, binary version of
-the Bitcoin Core software, see https://bitcoincore.org/en/download/, or read the
-[original whitepaper](https://bitcoincore.org/bitcoin.pdf).
->>>>>>> 86e0a33f5c382513d5179e3fdf158baf952d7e2f
 
 License
 -------
 
-<<<<<<< HEAD
 Actinium Core is released under the terms of the MIT license. See [COPYING](COPYING) for more
-=======
-Bitcoin Core is released under the terms of the MIT license. See [COPYING](COPYING) for more
->>>>>>> 86e0a33f5c382513d5179e3fdf158baf952d7e2f
 information or see https://opensource.org/licenses/MIT.
 
 Development Process
 -------------------
 
 The `master` branch is regularly built and tested, but is not guaranteed to be
-<<<<<<< HEAD
 completely stable. [Tags](https://github.com/Actinium-project/Actinium-ng/tags) are created
 regularly to indicate new official, stable release versions of Actinium Core.
-=======
-completely stable. [Tags](https://github.com/bitcoin/bitcoin/tags) are created
-regularly to indicate new official, stable release versions of Bitcoin Core.
->>>>>>> 86e0a33f5c382513d5179e3fdf158baf952d7e2f
 
 The contribution workflow is described in [CONTRIBUTING.md](CONTRIBUTING.md)
 and useful hints for developers can be found in [doc/developer-notes.md](doc/developer-notes.md).
@@ -94,19 +44,3 @@ code. This is especially important for large or high-risk changes. It is useful
 to add a test plan to the pull request description if testing the changes is
 not straightforward.
 
-<<<<<<< HEAD
-=======
-Translations
-------------
-
-Changes to translations as well as new translations can be submitted to
-[Bitcoin Core's Transifex page](https://www.transifex.com/projects/p/bitcoin/).
-
-Translations are periodically pulled from Transifex and merged into the git repository. See the
-[translation process](doc/translation_process.md) for details on how this works.
-
-**Important**: We do not accept translation changes as GitHub pull requests because the next
-pull from Transifex would automatically overwrite them again.
-
-Translators should also subscribe to the [mailing list](https://groups.google.com/forum/#!forum/bitcoin-translators).
->>>>>>> 86e0a33f5c382513d5179e3fdf158baf952d7e2f

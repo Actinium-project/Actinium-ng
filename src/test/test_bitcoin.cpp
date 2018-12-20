@@ -22,11 +22,6 @@
 
 const std::function<std::string(const char*)> G_TRANSLATION_FUN = nullptr;
 
-<<<<<<< HEAD
-=======
-FastRandomContext g_insecure_rand_ctx;
-
->>>>>>> 86e0a33f5c382513d5179e3fdf158baf952d7e2f
 void CConnmanTest::AddNode(CNode& node)
 {
     LOCK(g_connman->cs_vNodes);
@@ -42,11 +37,8 @@ void CConnmanTest::ClearNodes()
     g_connman->vNodes.clear();
 }
 
-<<<<<<< HEAD
 thread_local FastRandomContext g_insecure_rand_ctx;
 
-=======
->>>>>>> 86e0a33f5c382513d5179e3fdf158baf952d7e2f
 std::ostream& operator<<(std::ostream& os, const uint256& num)
 {
     os << num.ToString();
@@ -170,11 +162,7 @@ TestChain100Setup::CreateAndProcessBlock(const std::vector<CMutableTransaction>&
         IncrementExtraNonce(&block, chainActive.Tip(), extraNonce);
     }
 
-<<<<<<< HEAD
     while (!CheckProofOfWork(block.GetPoWHash(), block.nBits, chainparams.GetConsensus())) ++block.nNonce;
-=======
-    while (!CheckProofOfWork(block.GetHash(), block.nBits, chainparams.GetConsensus())) ++block.nNonce;
->>>>>>> 86e0a33f5c382513d5179e3fdf158baf952d7e2f
 
     std::shared_ptr<const CBlock> shared_pblock = std::make_shared<const CBlock>(block);
     ProcessNewBlock(chainparams, shared_pblock, true, nullptr);

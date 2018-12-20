@@ -9,19 +9,15 @@
 #include <tinyformat.h>
 #include <util/strencodings.h>
 #include <crypto/common.h>
-<<<<<<< HEAD
 #include <crypto/scrypt.h>
 #include <crypto/Lyra2Z/Lyra2Z.h>
 #include <versionbits.h>
-=======
->>>>>>> 86e0a33f5c382513d5179e3fdf158baf952d7e2f
 
 uint256 CBlockHeader::GetHash() const
 {
     return SerializeHash(*this);
 }
 
-<<<<<<< HEAD
 uint256 CBlockHeader::GetPoWScryptHash() const
 {
     uint256 thash;
@@ -44,8 +40,6 @@ uint256 CBlockHeader::GetPoWHash() const
 		return GetPoWScryptHash();
 }
 
-=======
->>>>>>> 86e0a33f5c382513d5179e3fdf158baf952d7e2f
 std::string CBlock::ToString() const
 {
     std::stringstream s;

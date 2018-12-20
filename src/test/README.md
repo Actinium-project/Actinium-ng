@@ -14,15 +14,9 @@ To add more bitcoind tests, add `BOOST_AUTO_TEST_CASE` functions to the existing
 .cpp files in the `test/` directory or add new .cpp files that
 implement new BOOST_AUTO_TEST_SUITE sections.
 
-<<<<<<< HEAD
 To run the Actinium-qt tests manually, launch `src/qt/test/test_bitcoin-qt`
 
 To add more Actinium-qt tests, add them to the `src/qt/test/` directory and
-=======
-To run the bitcoin-qt tests manually, launch `src/qt/test/test_bitcoin-qt`
-
-To add more bitcoin-qt tests, add them to the `src/qt/test/` directory and
->>>>>>> 86e0a33f5c382513d5179e3fdf158baf952d7e2f
 the `src/qt/test/test_main.cpp` file.
 
 ### Running individual tests
