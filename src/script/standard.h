@@ -163,7 +163,11 @@ bool ExtractDestination(const CScript& scriptPubKey, CTxDestination& addressRet)
 bool ExtractDestinations(const CScript& scriptPubKey, txnouttype& typeRet, std::vector<CTxDestination>& addressRet, int& nRequiredRet);
 
 /**
+<<<<<<< HEAD
  * Generate a Actinium scriptPubKey for the given CTxDestination. Returns a P2PKH
+=======
+ * Generate a Bitcoin scriptPubKey for the given CTxDestination. Returns a P2PKH
+>>>>>>> 86e0a33f5c382513d5179e3fdf158baf952d7e2f
  * script for a CKeyID destination, a P2SH script for a CScriptID, and an empty
  * script for CNoDestination.
  */

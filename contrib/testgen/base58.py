@@ -2,7 +2,11 @@
 # Distributed under the MIT software license, see the accompanying
 # file COPYING or http://www.opensource.org/licenses/mit-license.php.
 '''
+<<<<<<< HEAD
 Actinium base58 encoding and decoding.
+=======
+Bitcoin base58 encoding and decoding.
+>>>>>>> 86e0a33f5c382513d5179e3fdf158baf952d7e2f
 
 Based on https://bitcointalk.org/index.php?topic=1026.0 (public domain)
 '''
@@ -39,7 +43,11 @@ def b58encode(v):
         long_value = div
     result = __b58chars[long_value] + result
 
+<<<<<<< HEAD
     # Actinium does a little leading-zero-compression:
+=======
+    # Bitcoin does a little leading-zero-compression:
+>>>>>>> 86e0a33f5c382513d5179e3fdf158baf952d7e2f
     # leading 0-bytes in the input become leading-1s
     nPad = 0
     for c in v:

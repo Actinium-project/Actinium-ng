@@ -522,7 +522,11 @@ public:
     }
 
     /**
+<<<<<<< HEAD
      * Pre-version-0.6, Actinium always counted CHECKMULTISIGs
+=======
+     * Pre-version-0.6, Bitcoin always counted CHECKMULTISIGs
+>>>>>>> 86e0a33f5c382513d5179e3fdf158baf952d7e2f
      * as 20 sigops. With pay-to-script-hash, that changed:
      * CHECKMULTISIGs serialized in scriptSigs are
      * counted more accurately, assuming they are of the form

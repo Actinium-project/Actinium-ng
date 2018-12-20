@@ -13,7 +13,11 @@
 #include <version.h>
 
 /**
+<<<<<<< HEAD
  * JSON-RPC protocol.  Actinium speaks version 1.0 for maximum compatibility,
+=======
+ * JSON-RPC protocol.  Bitcoin speaks version 1.0 for maximum compatibility,
+>>>>>>> 86e0a33f5c382513d5179e3fdf158baf952d7e2f
  * but uses JSON-RPC 1.1/2.0 standards for parts of the 1.0 standard that were
  * unspecified (HTTP errors and contents of 'error').
  *

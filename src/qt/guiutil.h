@@ -35,7 +35,11 @@ class QUrl;
 class QWidget;
 QT_END_NAMESPACE
 
+<<<<<<< HEAD
 /** Utility functions used by the Actinium Qt UI.
+=======
+/** Utility functions used by the Bitcoin Qt UI.
+>>>>>>> 86e0a33f5c382513d5179e3fdf158baf952d7e2f
  */
 namespace GUIUtil
 {
@@ -49,7 +53,11 @@ namespace GUIUtil
     // Set up widget for address
     void setupAddressWidget(QValidatedLineEdit *widget, QWidget *parent);
 
+<<<<<<< HEAD
     // Parse "actinium:" URI into recipient object, return true on successful parsing
+=======
+    // Parse "bitcoin:" URI into recipient object, return true on successful parsing
+>>>>>>> 86e0a33f5c382513d5179e3fdf158baf952d7e2f
     bool parseBitcoinURI(const QUrl &uri, SendCoinsRecipient *out);
     bool parseBitcoinURI(QString uri, SendCoinsRecipient *out);
     QString formatBitcoinURI(const SendCoinsRecipient &info);

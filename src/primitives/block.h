@@ -62,12 +62,15 @@ public:
 
     uint256 GetHash() const;
 
+<<<<<<< HEAD
     uint256 GetPoWHash() const;
 
     uint256 GetPoWScryptHash() const;
 
 	uint256 GetPoWLyra2ZHash() const;
 
+=======
+>>>>>>> 86e0a33f5c382513d5179e3fdf158baf952d7e2f
     int64_t GetBlockTime() const
     {
         return (int64_t)nTime;

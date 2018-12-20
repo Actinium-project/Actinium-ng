@@ -30,7 +30,11 @@ SOURCE_LANG = 'bitcoin_en.ts'
 LOCALE_DIR = 'src/qt/locale'
 # Minimum number of messages for translation to be considered at all
 MIN_NUM_MESSAGES = 10
+<<<<<<< HEAD
 # Regexp to check for Actinium addresses
+=======
+# Regexp to check for Bitcoin addresses
+>>>>>>> 86e0a33f5c382513d5179e3fdf158baf952d7e2f
 ADDRESS_REGEXP = re.compile('([13]|bc1)[a-zA-Z0-9]{30,}')
 
 def check_at_repository_root():

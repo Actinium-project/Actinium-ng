@@ -24,7 +24,11 @@
 #include <unordered_map>
 
 static CCriticalSection cs_rpcWarmup;
+<<<<<<< HEAD
 static bool fRPCRunning = false;
+=======
+static std::atomic<bool> g_rpc_running{false};
+>>>>>>> 86e0a33f5c382513d5179e3fdf158baf952d7e2f
 static bool fRPCInWarmup GUARDED_BY(cs_rpcWarmup) = true;
 static std::string rpcWarmupStatus GUARDED_BY(cs_rpcWarmup) = "RPC server started";
 /* Timer-creating functions */
@@ -227,7 +231,11 @@ UniValue stop(const JSONRPCRequest& jsonRequest)
     if (jsonRequest.fHelp || jsonRequest.params.size() > 1)
         throw std::runtime_error(
             RPCHelpMan{"stop",
+<<<<<<< HEAD
                 "\nStop Actinium server.", {}}
+=======
+                "\nStop Bitcoin server.", {}}
+>>>>>>> 86e0a33f5c382513d5179e3fdf158baf952d7e2f
                 .ToString());
     // Event loop will exit after current HTTP requests have been handled, so
     // this reply will get back to the client.
@@ -235,7 +243,11 @@ UniValue stop(const JSONRPCRequest& jsonRequest)
     if (jsonRequest.params[0].isNum()) {
         MilliSleep(jsonRequest.params[0].get_int());
     }
+<<<<<<< HEAD
     return "Actinium server stopping";
+=======
+    return "Bitcoin server stopping";
+>>>>>>> 86e0a33f5c382513d5179e3fdf158baf952d7e2f
 }
 
 static UniValue uptime(const JSONRPCRequest& jsonRequest)
@@ -303,7 +315,11 @@ bool CRPCTable::appendCommand(const std::string& name, const CRPCCommand* pcmd)
 void StartRPC()
 {
     LogPrint(BCLog::RPC, "Starting RPC\n");
+<<<<<<< HEAD
     fRPCRunning = true;
+=======
+    g_rpc_running = true;
+>>>>>>> 86e0a33f5c382513d5179e3fdf158baf952d7e2f
     g_rpcSignals.Started();
 }
 
@@ -311,7 +327,11 @@ void InterruptRPC()
 {
     LogPrint(BCLog::RPC, "Interrupting RPC\n");
     // Interrupt e.g. running longpolls
+<<<<<<< HEAD
     fRPCRunning = false;
+=======
+    g_rpc_running = false;
+>>>>>>> 86e0a33f5c382513d5179e3fdf158baf952d7e2f
 }
 
 void StopRPC()
@@ -324,7 +344,11 @@ void StopRPC()
 
 bool IsRPCRunning()
 {
+<<<<<<< HEAD
     return fRPCRunning;
+=======
+    return g_rpc_running;
+>>>>>>> 86e0a33f5c382513d5179e3fdf158baf952d7e2f
 }
 
 void SetRPCWarmupStatus(const std::string& newStatus)
@@ -514,7 +538,11 @@ std::vector<std::string> CRPCTable::listCommands() const
 
 std::string HelpExampleCli(const std::string& methodname, const std::string& args)
 {
+<<<<<<< HEAD
     return "> Actinium-cli " + methodname + " " + args + "\n";
+=======
+    return "> bitcoin-cli " + methodname + " " + args + "\n";
+>>>>>>> 86e0a33f5c382513d5179e3fdf158baf952d7e2f
 }
 
 std::string HelpExampleRpc(const std::string& methodname, const std::string& args)

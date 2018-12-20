@@ -22,7 +22,11 @@
 			<integer>370</integer>
 			<integer>156</integer>
 		</array>
+<<<<<<< HEAD
 		<key>Actinium-Qt.app</key>
+=======
+		<key>Bitcoin-Qt.app</key>
+>>>>>>> 86e0a33f5c382513d5179e3fdf158baf952d7e2f
 		<array>
 			<integer>128</integer>
 			<integer>156</integer>

@@ -8,7 +8,11 @@ else
 	BITCOIND_DEFAULT_DATADIR="/var/lib/bitcoind"
 fi
 
+<<<<<<< HEAD
 BITCOIND_CONFIGFILE=${BITCOIND_CONFIGFILE:-/etc/bitcoin/Actinium.conf}
+=======
+BITCOIND_CONFIGFILE=${BITCOIND_CONFIGFILE:-/etc/bitcoin/bitcoin.conf}
+>>>>>>> 86e0a33f5c382513d5179e3fdf158baf952d7e2f
 BITCOIND_PIDDIR=${BITCOIND_PIDDIR:-/var/run/bitcoind}
 BITCOIND_PIDFILE=${BITCOIND_PIDFILE:-${BITCOIND_PIDDIR}/bitcoind.pid}
 BITCOIND_DATADIR=${BITCOIND_DATADIR:-${BITCOIND_DEFAULT_DATADIR}}
@@ -18,8 +22,13 @@ BITCOIND_BIN=${BITCOIND_BIN:-/usr/bin/bitcoind}
 BITCOIND_NICE=${BITCOIND_NICE:-${NICELEVEL:-0}}
 BITCOIND_OPTS="${BITCOIND_OPTS:-${BITCOIN_OPTS}}"
 
+<<<<<<< HEAD
 name="Actinium Core Daemon"
 description="Actinium cryptocurrency P2P network daemon"
+=======
+name="Bitcoin Core Daemon"
+description="Bitcoin cryptocurrency P2P network daemon"
+>>>>>>> 86e0a33f5c382513d5179e3fdf158baf952d7e2f
 
 command="/usr/bin/bitcoind"
 command_args="-pid=\"${BITCOIND_PIDFILE}\" \
@@ -84,7 +93,11 @@ checkconfig()
 		eerror "It is recommended that you also set alertnotify so you are "
 		eerror "notified of problems:"
 		eerror ""
+<<<<<<< HEAD
 		eerror "ie: alertnotify=echo %%s | mail -s \"Actinium Alert\"" \
+=======
+		eerror "ie: alertnotify=echo %%s | mail -s \"Bitcoin Alert\"" \
+>>>>>>> 86e0a33f5c382513d5179e3fdf158baf952d7e2f
 			"admin@foo.com"
 		eerror ""
 		return 1

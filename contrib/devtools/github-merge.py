@@ -1,5 +1,9 @@
 #!/usr/bin/env python3
+<<<<<<< HEAD
 # Copyright (c) 2016-2017 Actinium Core Developers
+=======
+# Copyright (c) 2016-2017 Bitcoin Core Developers
+>>>>>>> 86e0a33f5c382513d5179e3fdf158baf952d7e2f
 # Distributed under the MIT software license, see the accompanying
 # file COPYING or http://www.opensource.org/licenses/mit-license.php.
 

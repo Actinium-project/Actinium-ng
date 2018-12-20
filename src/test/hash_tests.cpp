@@ -20,7 +20,11 @@ BOOST_AUTO_TEST_CASE(murmurhash3)
 
     // Test MurmurHash3 with various inputs. Of course this is retested in the
     // bloom filter tests - they would fail if MurmurHash3() had any problems -
+<<<<<<< HEAD
     // but is useful for those trying to implement Actinium libraries as a
+=======
+    // but is useful for those trying to implement Bitcoin libraries as a
+>>>>>>> 86e0a33f5c382513d5179e3fdf158baf952d7e2f
     // source of test data for their MurmurHash3() primitive during
     // development.
     //

@@ -53,7 +53,11 @@ READELF_CMD = os.getenv('READELF', '/usr/bin/readelf')
 CPPFILT_CMD = os.getenv('CPPFILT', '/usr/bin/c++filt')
 # Allowed NEEDED libraries
 ALLOWED_LIBRARIES = {
+<<<<<<< HEAD
 # bitcoind and Actinium-qt
+=======
+# bitcoind and bitcoin-qt
+>>>>>>> 86e0a33f5c382513d5179e3fdf158baf952d7e2f
 'libgcc_s.so.1', # GCC base support
 'libc.so.6', # C library
 'libpthread.so.0', # threading
@@ -66,7 +70,11 @@ ALLOWED_LIBRARIES = {
 'ld-linux-aarch64.so.1', # 64-bit ARM dynamic linker
 'ld-linux-armhf.so.3', # 32-bit ARM dynamic linker
 'ld-linux-riscv64-lp64d.so.1', # 64-bit RISC-V dynamic linker
+<<<<<<< HEAD
 # Actinium-qt only
+=======
+# bitcoin-qt only
+>>>>>>> 86e0a33f5c382513d5179e3fdf158baf952d7e2f
 'libX11-xcb.so.1', # part of X11
 'libX11.so.6', # part of X11
 'libxcb.so.1', # part of X11

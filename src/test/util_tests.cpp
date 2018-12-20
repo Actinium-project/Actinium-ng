@@ -1252,7 +1252,11 @@ BOOST_AUTO_TEST_CASE(test_ToUpper)
 BOOST_AUTO_TEST_CASE(test_Capitalize)
 {
     BOOST_CHECK_EQUAL(Capitalize(""), "");
+<<<<<<< HEAD
     BOOST_CHECK_EQUAL(Capitalize("bitcoin"), "Actinium");
+=======
+    BOOST_CHECK_EQUAL(Capitalize("bitcoin"), "Bitcoin");
+>>>>>>> 86e0a33f5c382513d5179e3fdf158baf952d7e2f
     BOOST_CHECK_EQUAL(Capitalize("\x00\xfe\xff"), "\x00\xfe\xff");
 }
 

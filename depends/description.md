@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 This is a system of building and caching dependencies necessary for building Actinium. 
+=======
+This is a system of building and caching dependencies necessary for building Bitcoin. 
+>>>>>>> 86e0a33f5c382513d5179e3fdf158baf952d7e2f
 There are several features that make it different from most similar systems:
 
 ### It is designed to be builder and host agnostic

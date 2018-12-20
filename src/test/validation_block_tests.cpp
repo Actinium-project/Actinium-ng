@@ -71,7 +71,11 @@ std::shared_ptr<CBlock> FinalizeBlock(std::shared_ptr<CBlock> pblock)
 {
     pblock->hashMerkleRoot = BlockMerkleRoot(*pblock);
 
+<<<<<<< HEAD
     while (!CheckProofOfWork(pblock->GetPoWHash(), pblock->nBits, Params().GetConsensus())) {
+=======
+    while (!CheckProofOfWork(pblock->GetHash(), pblock->nBits, Params().GetConsensus())) {
+>>>>>>> 86e0a33f5c382513d5179e3fdf158baf952d7e2f
         ++(pblock->nNonce);
     }
 
@@ -152,12 +156,22 @@ BOOST_AUTO_TEST_CASE(processnewblock_signals_ordering)
     // create a bunch of threads that repeatedly process a block generated above at random
     // this will create parallelism and randomness inside validation - the ValidationInterface
     // will subscribe to events generated during block validation and assert on ordering invariance
+<<<<<<< HEAD
     boost::thread_group threads;
     for (int i = 0; i < 10; i++) {
         threads.create_thread([&blocks]() {
             bool ignored;
             for (int i = 0; i < 1000; i++) {
                 auto block = blocks[InsecureRandRange(blocks.size() - 1)];
+=======
+    std::vector<std::thread> threads;
+    for (int i = 0; i < 10; i++) {
+        threads.emplace_back([&blocks]() {
+            bool ignored;
+            FastRandomContext insecure;
+            for (int i = 0; i < 1000; i++) {
+                auto block = blocks[insecure.randrange(blocks.size() - 1)];
+>>>>>>> 86e0a33f5c382513d5179e3fdf158baf952d7e2f
                 ProcessNewBlock(Params(), block, true, &ignored);
             }
 
@@ -171,7 +185,13 @@ BOOST_AUTO_TEST_CASE(processnewblock_signals_ordering)
         });
     }
 
+<<<<<<< HEAD
     threads.join_all();
+=======
+    for (auto& t : threads) {
+        t.join();
+    }
+>>>>>>> 86e0a33f5c382513d5179e3fdf158baf952d7e2f
     while (GetMainSignals().CallbacksPending() > 0) {
         MilliSleep(100);
     }

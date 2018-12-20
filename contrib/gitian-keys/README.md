@@ -24,4 +24,8 @@ while read fingerprint keyholder_name; do gpg --keyserver hkp://subset.pool.sks-
 ```
 
 Add your key to the list if you provided Gitian signatures for two major or
+<<<<<<< HEAD
 minor releases of Actinium Core.
+=======
+minor releases of Bitcoin Core.
+>>>>>>> 86e0a33f5c382513d5179e3fdf158baf952d7e2f

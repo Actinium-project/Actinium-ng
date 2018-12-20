@@ -1,9 +1,17 @@
+<<<<<<< HEAD
 # bash programmable completion for Actinium-cli(1)
+=======
+# bash programmable completion for bitcoin-cli(1)
+>>>>>>> 86e0a33f5c382513d5179e3fdf158baf952d7e2f
 # Copyright (c) 2012-2016 The Bitcoin Core developers
 # Distributed under the MIT software license, see the accompanying
 # file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
+<<<<<<< HEAD
 # call $Actinium-cli for RPC
+=======
+# call $bitcoin-cli for RPC
+>>>>>>> 86e0a33f5c382513d5179e3fdf158baf952d7e2f
 _bitcoin_rpc() {
     # determine already specified args necessary for RPC
     local rpcargs=()
@@ -28,8 +36,13 @@ _bitcoin_cli() {
     local cur prev words=() cword
     local bitcoin_cli
 
+<<<<<<< HEAD
     # save and use original argument to invoke Actinium-cli for -help, help and RPC
     # as Actinium-cli might not be in $PATH
+=======
+    # save and use original argument to invoke bitcoin-cli for -help, help and RPC
+    # as bitcoin-cli might not be in $PATH
+>>>>>>> 86e0a33f5c382513d5179e3fdf158baf952d7e2f
     bitcoin_cli="$1"
 
     COMPREPLY=()
@@ -143,7 +156,11 @@ _bitcoin_cli() {
             ;;
     esac
 } &&
+<<<<<<< HEAD
 complete -F _bitcoin_cli Actinium-cli
+=======
+complete -F _bitcoin_cli bitcoin-cli
+>>>>>>> 86e0a33f5c382513d5179e3fdf158baf952d7e2f
 
 # Local variables:
 # mode: shell-script

@@ -2,7 +2,11 @@
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
+<<<<<<< HEAD
 #define BOOST_TEST_MODULE Actinium Test Suite
+=======
+#define BOOST_TEST_MODULE Bitcoin Test Suite
+>>>>>>> 86e0a33f5c382513d5179e3fdf158baf952d7e2f
 
 #include <net.h>
 

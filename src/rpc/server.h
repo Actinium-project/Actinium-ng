@@ -138,7 +138,11 @@ public:
 };
 
 /**
+<<<<<<< HEAD
  * Actinium RPC command dispatcher.
+=======
+ * Bitcoin RPC command dispatcher.
+>>>>>>> 86e0a33f5c382513d5179e3fdf158baf952d7e2f
  */
 class CRPCTable
 {

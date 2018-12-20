@@ -1,4 +1,5 @@
 Format: http://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+<<<<<<< HEAD
 Upstream-Name: Actinium
 Upstream-Contact: Satoshi Nakamoto <satoshin@gmx.com>
  irc://#bitcoin@freenode.net
@@ -8,6 +9,17 @@ Files: *
 Copyright: 2009-2018, Actinium Core Developers
 License: Expat
 Comment: The Actinium Core Developers encompasses the current developers listed on actinium.org,
+=======
+Upstream-Name: Bitcoin
+Upstream-Contact: Satoshi Nakamoto <satoshin@gmx.com>
+ irc://#bitcoin@freenode.net
+Source: https://github.com/bitcoin/bitcoin
+
+Files: *
+Copyright: 2009-2018, Bitcoin Core Developers
+License: Expat
+Comment: The Bitcoin Core Developers encompasses the current developers listed on bitcoin.org,
+>>>>>>> 86e0a33f5c382513d5179e3fdf158baf952d7e2f
          as well as the numerous contributors to the project.
 
 Files: debian/*
