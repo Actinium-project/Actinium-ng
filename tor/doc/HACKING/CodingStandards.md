@@ -42,6 +42,23 @@ If you have changed build system components:
    - For example, if you have changed Makefiles, autoconf files, or anything
      else that affects the build system.
 
+License issues
+==============
+
+Tor is distributed under the license terms in the LICENSE -- in
+brief, the "3-clause BSD license".  If you send us code to
+distribute with Tor, it needs to be code that we can distribute
+under those terms.  Please don't send us patches unless you agree
+to allow this.
+
+Some compatible licenses include:
+
+  - 3-clause BSD
+  - 2-clause BSD
+  - CC0 Public Domain Dedication
+
+
+
 How we use Git branches
 =======================
 
@@ -155,7 +172,6 @@ deviations from our C whitespace style.  Generally, we use:
    - Unix-style line endings
    - K&R-style indentation
    - No space before newlines
-   - A blank line at the end of each file
    - Never more than one blank line in a row
    - Always spaces, never tabs
    - No more than 79-columns per line.
@@ -167,6 +183,9 @@ deviations from our C whitespace style.  Generally, we use:
    - No space between a function name and an opening paren. `puts(x)`, not
      `puts (x)`.
    - Function declarations at the start of the line.
+
+If you use an editor that has plugins for editorconfig.org, the file
+`.editorconfig` will help you to conform this coding style.
 
 We try hard to build without warnings everywhere.  In particular, if
 you're using gcc, you should invoke the configure script with the
@@ -181,8 +200,8 @@ We have some wrapper functions like `tor_malloc`, `tor_free`, `tor_strdup`, and
 always succeed or exit.)
 
 You can get a full list of the compatibility functions that Tor provides by
-looking through `src/common/util*.h` and `src/common/compat*.h`.  You can see the
-available containers in `src/common/containers*.h`.  You should probably
+looking through `src/lib/*/*.h`.  You can see the
+available containers in `src/lib/containers/*.h`.  You should probably
 familiarize yourself with these modules before you write too much code, or
 else you'll wind up reinventing the wheel.
 
@@ -194,6 +213,24 @@ We don't call `memcmp()` directly.  Use `fast_memeq()`, `fast_memneq()`,
 
 Also see a longer list of functions to avoid in:
 https://people.torproject.org/~nickm/tor-auto/internal/this-not-that.html
+
+What code can use what other code?
+----------------------------------
+
+We're trying to simplify Tor's structure over time.  In the long run, we want
+Tor to be structured as a set of modules with *no circular dependencies*.
+
+This property is currently provided by the modules in src/lib, but not
+throughout the rest of Tor.  In general, higher-level libraries may use
+lower-level libraries, but never the reverse.
+
+To prevent new circular dependencies from landing, we have a tool that
+you can invoke with `make check-includes`, and which is run
+automatically as part of `make check`.  This tool will verify that, for
+every source directory with a `.may_include` file, no local headers are
+included except those specifically permitted by the `.may_include` file.
+When editing one of these files, please make sure that you are not
+introducing any cycles into Tor's dependency graph.
 
 Floating point math is hard
 ---------------------------
@@ -345,6 +382,46 @@ macro, as in:
 
 	if (BUG(ptr == NULL))
 		return -1;
+
+Allocator conventions
+---------------------
+
+By convention, any tor type with a name like `abc_t` should be allocated
+by a function named `abc_new()`.  This function should never return
+NULL.
+
+Also, a type named `abc_t` should be freed by a function named `abc_free_()`.
+Don't call this `abc_free_()` function directly -- instead, wrap it in a
+macro called `abc_free()`, using the `FREE_AND_NULL` macro:
+
+    void abc_free_(abc_t *obj);
+    #define abc_free(obj) FREE_AND_NULL(abc_t, abc_free_, (obj))
+
+This macro will free the underlying `abc_t` object, and will also set
+the object pointer to NULL.
+
+You should define all `abc_free_()` functions to accept NULL inputs:
+
+    void
+    abc_free_(abc_t *obj)
+    {
+      if (!obj)
+        return;
+      tor_free(obj->name);
+      thing_free(obj->thing);
+      tor_free(obj);
+    }
+
+If you need a free function that takes a `void *` argument (for example,
+to use it as a function callback), define it with a name like
+`abc_free_void()`:
+
+    static void
+    abc_free_void_(void *obj)
+    {
+      abc_free_(obj);
+    }
+
 
 Doxygen comment conventions
 ---------------------------

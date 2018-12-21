@@ -1,11 +1,18 @@
-#include "or.h"
-#include "test.h"
+/* Copyright (c) 2015-2018, The Tor Project, Inc. */
+/* See LICENSE for licensing information */
+
+#include "core/or/or.h"
+#include "test/test.h"
 
 #define DNS_PRIVATE
 
-#include "dns.h"
-#include "connection.h"
-#include "router.h"
+#include "feature/relay/dns.h"
+#include "core/mainloop/connection.h"
+#include "core/or/connection_edge.h"
+#include "feature/relay/router.h"
+
+#include "core/or/edge_connection_st.h"
+#include "core/or/or_circuit_st.h"
 
 #define NS_MODULE dns
 
@@ -121,7 +128,7 @@ static int n_connection_free = 0;
 static connection_t *last_freed_conn = NULL;
 
 static void
-NS(connection_free)(connection_t *conn)
+NS(connection_free_)(connection_t *conn)
 {
    n_connection_free++;
 
@@ -264,7 +271,7 @@ NS(test_main)(void *arg)
    */
 
   NS_MOCK(dns_cancel_pending_resolve);
-  NS_MOCK(connection_free);
+  NS_MOCK(connection_free_);
 
   exitconn->on_circuit = &(on_circuit->base_);
   exitconn->base_.purpose = EXIT_PURPOSE_RESOLVE;
@@ -291,7 +298,7 @@ NS(test_main)(void *arg)
   NS_UNMOCK(send_resolved_cell);
   NS_UNMOCK(send_resolved_hostname_cell);
   NS_UNMOCK(dns_cancel_pending_resolve);
-  NS_UNMOCK(connection_free);
+  NS_UNMOCK(connection_free_);
   tor_free(on_circuit);
   tor_free(exitconn);
   tor_free(nextconn);
@@ -742,4 +749,3 @@ struct testcase_t dns_tests[] = {
 };
 
 #undef NS_MODULE
-

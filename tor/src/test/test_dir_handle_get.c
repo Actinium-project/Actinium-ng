@@ -1,6 +1,6 @@
 /* Copyright (c) 2001-2004, Roger Dingledine.
  * Copyright (c) 2004-2006, Roger Dingledine, Nick Mathewson.
- * Copyright (c) 2007-2017, The Tor Project, Inc. */
+ * Copyright (c) 2007-2018, The Tor Project, Inc. */
 /* See LICENSE for licensing information */
 
 #define RENDCOMMON_PRIVATE
@@ -8,31 +8,43 @@
 #define CONNECTION_PRIVATE
 #define CONFIG_PRIVATE
 #define RENDCACHE_PRIVATE
+#define DIRCACHE_PRIVATE
 
-#include "or.h"
-#include "config.h"
-#include "connection.h"
-#include "consdiffmgr.h"
-#include "directory.h"
-#include "test.h"
-#include "compress.h"
-#include "connection.h"
-#include "rendcommon.h"
-#include "rendcache.h"
-#include "router.h"
-#include "routerlist.h"
-#include "rend_test_helpers.h"
-#include "microdesc.h"
-#include "test_helpers.h"
-#include "nodelist.h"
-#include "entrynodes.h"
-#include "routerparse.h"
-#include "networkstatus.h"
-#include "proto_http.h"
-#include "geoip.h"
-#include "dirserv.h"
-#include "dirvote.h"
-#include "log_test_helpers.h"
+#include "core/or/or.h"
+#include "app/config/config.h"
+#include "core/mainloop/connection.h"
+#include "feature/dircache/consdiffmgr.h"
+#include "feature/dircommon/directory.h"
+#include "feature/dircache/dircache.h"
+#include "test/test.h"
+#include "lib/compress/compress.h"
+#include "feature/rend/rendcommon.h"
+#include "feature/rend/rendcache.h"
+#include "feature/relay/router.h"
+#include "feature/nodelist/authcert.h"
+#include "feature/nodelist/dirlist.h"
+#include "feature/nodelist/routerlist.h"
+#include "test/rend_test_helpers.h"
+#include "feature/nodelist/microdesc.h"
+#include "test/test_helpers.h"
+#include "feature/nodelist/nodelist.h"
+#include "feature/client/entrynodes.h"
+#include "feature/dirparse/authcert_parse.h"
+#include "feature/nodelist/networkstatus.h"
+#include "core/proto/proto_http.h"
+#include "lib/geoip/geoip.h"
+#include "feature/stats/geoip_stats.h"
+#include "feature/dircache/dirserv.h"
+#include "feature/dirauth/dirvote.h"
+#include "test/log_test_helpers.h"
+#include "feature/dircommon/voting_schedule.h"
+
+#include "feature/dircommon/dir_connection_st.h"
+#include "feature/dirclient/dir_server_st.h"
+#include "feature/nodelist/networkstatus_st.h"
+#include "feature/rend/rend_encoded_v2_service_descriptor_st.h"
+#include "feature/nodelist/routerinfo_st.h"
+#include "feature/nodelist/routerlist_st.h"
 
 #ifdef _WIN32
 /* For mkdir() */
@@ -88,7 +100,7 @@ test_dir_handle_get_bad_request(void *data)
 
   done:
     UNMOCK(connection_write_to_buf_impl_);
-    connection_free_(TO_CONN(conn));
+    connection_free_minimal(TO_CONN(conn));
     tor_free(header);
 }
 
@@ -117,7 +129,7 @@ test_dir_handle_get_v1_command_not_found(void *data)
 
   done:
     UNMOCK(connection_write_to_buf_impl_);
-    connection_free_(TO_CONN(conn));
+    connection_free_minimal(TO_CONN(conn));
     tor_free(header);
 }
 
@@ -164,7 +176,7 @@ test_dir_handle_get_v1_command(void *data)
   done:
     UNMOCK(connection_write_to_buf_impl_);
     UNMOCK(get_dirportfrontpage);
-    connection_free_(TO_CONN(conn));
+    connection_free_minimal(TO_CONN(conn));
     tor_free(header);
     tor_free(body);
 }
@@ -190,7 +202,7 @@ test_dir_handle_get_not_found(void *data)
 
   done:
     UNMOCK(connection_write_to_buf_impl_);
-    connection_free_(TO_CONN(conn));
+    connection_free_minimal(TO_CONN(conn));
     tor_free(header);
 }
 
@@ -225,7 +237,7 @@ test_dir_handle_get_robots_txt(void *data)
 
   done:
     UNMOCK(connection_write_to_buf_impl_);
-    connection_free_(TO_CONN(conn));
+    connection_free_minimal(TO_CONN(conn));
     tor_free(header);
     tor_free(body);
 }
@@ -254,7 +266,7 @@ test_dir_handle_get_rendezvous2_not_found_if_not_encrypted(void *data)
 
   done:
     UNMOCK(connection_write_to_buf_impl_);
-    connection_free_(TO_CONN(conn));
+    connection_free_minimal(TO_CONN(conn));
     tor_free(header);
 }
 
@@ -282,7 +294,7 @@ test_dir_handle_get_rendezvous2_on_encrypted_conn_with_invalid_desc_id(
 
   done:
     UNMOCK(connection_write_to_buf_impl_);
-    connection_free_(TO_CONN(conn));
+    connection_free_minimal(TO_CONN(conn));
     tor_free(header);
 }
 
@@ -315,7 +327,7 @@ test_dir_handle_get_rendezvous2_on_encrypted_conn_not_well_formed(void *data)
 
   done:
     UNMOCK(connection_write_to_buf_impl_);
-    connection_free_(TO_CONN(conn));
+    connection_free_minimal(TO_CONN(conn));
     tor_free(header);
 }
 
@@ -344,7 +356,7 @@ test_dir_handle_get_rendezvous2_not_found(void *data)
 
   done:
     UNMOCK(connection_write_to_buf_impl_);
-    connection_free_(TO_CONN(conn));
+    connection_free_minimal(TO_CONN(conn));
     tor_free(header);
     rend_cache_free_all();
 }
@@ -424,7 +436,7 @@ test_dir_handle_get_rendezvous2_on_encrypted_conn_success(void *data)
     UNMOCK(connection_write_to_buf_impl_);
     NS_UNMOCK(router_get_my_routerinfo);
 
-    connection_free_(TO_CONN(conn));
+    connection_free_minimal(TO_CONN(conn));
     tor_free(header);
     tor_free(body);
     rend_encoded_v2_service_descriptor_free(desc_holder);
@@ -457,7 +469,7 @@ test_dir_handle_get_micro_d_not_found(void *data)
   done:
     UNMOCK(connection_write_to_buf_impl_);
 
-    connection_free_(TO_CONN(conn));
+    connection_free_minimal(TO_CONN(conn));
     tor_free(header);
 }
 
@@ -469,6 +481,7 @@ init_mock_options(void)
   memset(mock_options, 0, sizeof(or_options_t));
   mock_options->TestingTorNetwork = 1;
   mock_options->DataDirectory = tor_strdup(get_fname_rnd("datadir_tmp"));
+  mock_options->CacheDirectory = tor_strdup(mock_options->DataDirectory);
   check_private_dir(mock_options->DataDirectory, CPD_CREATE, NULL);
 }
 
@@ -541,7 +554,7 @@ test_dir_handle_get_micro_d(void *data)
     UNMOCK(connection_write_to_buf_impl_);
 
     or_options_free(mock_options); mock_options = NULL;
-    connection_free_(TO_CONN(conn));
+    connection_free_minimal(TO_CONN(conn));
     tor_free(header);
     tor_free(body);
     smartlist_free(list);
@@ -595,7 +608,7 @@ test_dir_handle_get_micro_d_server_busy(void *data)
     UNMOCK(connection_write_to_buf_impl_);
 
     or_options_free(mock_options); mock_options = NULL;
-    connection_free_(TO_CONN(conn));
+    connection_free_minimal(TO_CONN(conn));
     tor_free(header);
     smartlist_free(list);
     microdesc_free_all();
@@ -632,7 +645,7 @@ test_dir_handle_get_networkstatus_bridges_not_found_without_auth(void *data)
     UNMOCK(get_options);
     UNMOCK(connection_write_to_buf_impl_);
     or_options_free(mock_options); mock_options = NULL;
-    connection_free_(TO_CONN(conn));
+    connection_free_minimal(TO_CONN(conn));
     tor_free(header);
 }
 
@@ -672,7 +685,7 @@ test_dir_handle_get_networkstatus_bridges(void *data)
     UNMOCK(get_options);
     UNMOCK(connection_write_to_buf_impl_);
     or_options_free(mock_options); mock_options = NULL;
-    connection_free_(TO_CONN(conn));
+    connection_free_minimal(TO_CONN(conn));
     tor_free(header);
 }
 
@@ -709,7 +722,7 @@ test_dir_handle_get_networkstatus_bridges_not_found_wrong_auth(void *data)
     UNMOCK(get_options);
     UNMOCK(connection_write_to_buf_impl_);
     or_options_free(mock_options); mock_options = NULL;
-    connection_free_(TO_CONN(conn));
+    connection_free_minimal(TO_CONN(conn));
     tor_free(header);
 }
 
@@ -737,7 +750,7 @@ test_dir_handle_get_server_descriptors_not_found(void* data)
   done:
     UNMOCK(connection_write_to_buf_impl_);
     or_options_free(mock_options); mock_options = NULL;
-    connection_free_(TO_CONN(conn));
+    connection_free_minimal(TO_CONN(conn));
     tor_free(header);
 }
 
@@ -798,7 +811,7 @@ test_dir_handle_get_server_descriptors_all(void* data)
   done:
     NS_UNMOCK(router_get_my_routerinfo);
     UNMOCK(connection_write_to_buf_impl_);
-    connection_free_(TO_CONN(conn));
+    connection_free_minimal(TO_CONN(conn));
     tor_free(header);
     tor_free(body);
 
@@ -902,7 +915,7 @@ test_dir_handle_get_server_descriptors_authority(void* data)
     UNMOCK(connection_write_to_buf_impl_);
     tor_free(mock_routerinfo->cache_info.signed_descriptor_body);
     tor_free(mock_routerinfo);
-    connection_free_(TO_CONN(conn));
+    connection_free_minimal(TO_CONN(conn));
     tor_free(header);
     tor_free(body);
     crypto_pk_free(identity_pkey);
@@ -974,7 +987,7 @@ test_dir_handle_get_server_descriptors_fp(void* data)
     UNMOCK(connection_write_to_buf_impl_);
     tor_free(mock_routerinfo->cache_info.signed_descriptor_body);
     tor_free(mock_routerinfo);
-    connection_free_(TO_CONN(conn));
+    connection_free_minimal(TO_CONN(conn));
     tor_free(header);
     tor_free(body);
     crypto_pk_free(identity_pkey);
@@ -1038,7 +1051,7 @@ test_dir_handle_get_server_descriptors_d(void* data)
   done:
     UNMOCK(connection_write_to_buf_impl_);
     tor_free(mock_routerinfo);
-    connection_free_(TO_CONN(conn));
+    connection_free_minimal(TO_CONN(conn));
     tor_free(header);
     tor_free(body);
     crypto_pk_free(identity_pkey);
@@ -1094,7 +1107,7 @@ test_dir_handle_get_server_descriptors_busy(void* data)
     UNMOCK(get_options);
     UNMOCK(connection_write_to_buf_impl_);
     tor_free(mock_routerinfo);
-    connection_free_(TO_CONN(conn));
+    connection_free_minimal(TO_CONN(conn));
     tor_free(header);
     crypto_pk_free(identity_pkey);
 
@@ -1125,7 +1138,7 @@ test_dir_handle_get_server_keys_bad_req(void* data)
 
   done:
     UNMOCK(connection_write_to_buf_impl_);
-    connection_free_(TO_CONN(conn));
+    connection_free_minimal(TO_CONN(conn));
     tor_free(header);
 }
 
@@ -1151,7 +1164,7 @@ test_dir_handle_get_server_keys_all_not_found(void* data)
 
   done:
     UNMOCK(connection_write_to_buf_impl_);
-    connection_free_(TO_CONN(conn));
+    connection_free_minimal(TO_CONN(conn));
     tor_free(header);
 }
 
@@ -1210,7 +1223,7 @@ test_dir_handle_get_server_keys_all(void* data)
 
   done:
     UNMOCK(connection_write_to_buf_impl_);
-    connection_free_(TO_CONN(conn));
+    connection_free_minimal(TO_CONN(conn));
     tor_free(header);
     tor_free(body);
 
@@ -1240,7 +1253,7 @@ test_dir_handle_get_server_keys_authority_not_found(void* data)
 
   done:
     UNMOCK(connection_write_to_buf_impl_);
-    connection_free_(TO_CONN(conn));
+    connection_free_minimal(TO_CONN(conn));
     tor_free(header);
 }
 
@@ -1288,7 +1301,7 @@ test_dir_handle_get_server_keys_authority(void* data)
   done:
     UNMOCK(get_my_v3_authority_cert);
     UNMOCK(connection_write_to_buf_impl_);
-    connection_free_(TO_CONN(conn));
+    connection_free_minimal(TO_CONN(conn));
     tor_free(header);
     tor_free(body);
     authority_cert_free(mock_cert); mock_cert = NULL;
@@ -1316,7 +1329,7 @@ test_dir_handle_get_server_keys_fp_not_found(void* data)
 
   done:
     UNMOCK(connection_write_to_buf_impl_);
-    connection_free_(TO_CONN(conn));
+    connection_free_minimal(TO_CONN(conn));
     tor_free(header);
 }
 
@@ -1370,7 +1383,7 @@ test_dir_handle_get_server_keys_fp(void* data)
 
   done:
     UNMOCK(connection_write_to_buf_impl_);
-    connection_free_(TO_CONN(conn));
+    connection_free_minimal(TO_CONN(conn));
     tor_free(header);
     tor_free(body);
     clear_dir_servers();
@@ -1399,7 +1412,7 @@ test_dir_handle_get_server_keys_sk_not_found(void* data)
 
   done:
     UNMOCK(connection_write_to_buf_impl_);
-    connection_free_(TO_CONN(conn));
+    connection_free_minimal(TO_CONN(conn));
     tor_free(header);
 }
 
@@ -1444,7 +1457,7 @@ test_dir_handle_get_server_keys_sk(void* data)
   done:
     UNMOCK(get_my_v3_authority_cert);
     UNMOCK(connection_write_to_buf_impl_);
-    connection_free_(TO_CONN(conn));
+    connection_free_minimal(TO_CONN(conn));
     authority_cert_free(mock_cert); mock_cert = NULL;
     tor_free(header);
     tor_free(body);
@@ -1472,7 +1485,7 @@ test_dir_handle_get_server_keys_fpsk_not_found(void* data)
 
   done:
     UNMOCK(connection_write_to_buf_impl_);
-    connection_free_(TO_CONN(conn));
+    connection_free_minimal(TO_CONN(conn));
     tor_free(header);
 }
 
@@ -1529,7 +1542,7 @@ test_dir_handle_get_server_keys_fpsk(void* data)
 
   done:
     UNMOCK(connection_write_to_buf_impl_);
-    connection_free_(TO_CONN(conn));
+    connection_free_minimal(TO_CONN(conn));
     tor_free(header);
     tor_free(body);
 
@@ -1583,7 +1596,7 @@ test_dir_handle_get_server_keys_busy(void* data)
   done:
     UNMOCK(get_options);
     UNMOCK(connection_write_to_buf_impl_);
-    connection_free_(TO_CONN(conn));
+    connection_free_minimal(TO_CONN(conn));
     tor_free(header);
     or_options_free(mock_options); mock_options = NULL;
 
@@ -1649,7 +1662,7 @@ test_dir_handle_get_status_vote_current_consensus_ns_not_enough_sigs(void* d)
     UNMOCK(connection_write_to_buf_impl_);
     UNMOCK(get_options);
 
-    connection_free_(TO_CONN(conn));
+    connection_free_minimal(TO_CONN(conn));
     tor_free(header);
     tor_free(stats);
     smartlist_free(mock_ns_val->voters);
@@ -1690,7 +1703,7 @@ test_dir_handle_get_status_vote_current_consensus_ns_not_found(void* data)
   done:
     UNMOCK(connection_write_to_buf_impl_);
     UNMOCK(get_options);
-    connection_free_(TO_CONN(conn));
+    connection_free_minimal(TO_CONN(conn));
     tor_free(header);
     tor_free(stats);
     or_options_free(mock_options); mock_options = NULL;
@@ -1764,7 +1777,7 @@ test_dir_handle_get_status_vote_current_consensus_too_old(void *data)
     UNMOCK(networkstatus_get_latest_consensus_by_flavor);
     UNMOCK(connection_write_to_buf_impl_);
     UNMOCK(get_options);
-    connection_free_(TO_CONN(conn));
+    connection_free_minimal(TO_CONN(conn));
     tor_free(header);
     tor_free(mock_ns_val);
     or_options_free(mock_options); mock_options = NULL;
@@ -1825,7 +1838,7 @@ status_vote_current_consensus_ns_test(char **header, char **body,
 
   done:
     UNMOCK(connection_write_to_buf_impl_);
-    connection_free_(TO_CONN(conn));
+    connection_free_minimal(TO_CONN(conn));
 }
 
 static void
@@ -1948,7 +1961,7 @@ test_dir_handle_get_status_vote_current_not_found(void* data)
 
   done:
     UNMOCK(connection_write_to_buf_impl_);
-    connection_free_(TO_CONN(conn));
+    connection_free_minimal(TO_CONN(conn));
     tor_free(header);
 }
 
@@ -1971,7 +1984,7 @@ status_vote_current_d_test(char **header, char **body, size_t *body_l)
 
   done:
     UNMOCK(connection_write_to_buf_impl_);
-    connection_free_(TO_CONN(conn));
+    connection_free_minimal(TO_CONN(conn));
 }
 
 static void
@@ -1991,7 +2004,7 @@ status_vote_next_d_test(char **header, char **body, size_t *body_l)
 
   done:
     UNMOCK(connection_write_to_buf_impl_);
-    connection_free_(TO_CONN(conn));
+    connection_free_minimal(TO_CONN(conn));
 }
 
 static void
@@ -2056,7 +2069,7 @@ test_dir_handle_get_status_vote_d(void* data)
   mock_options->TestingV3AuthInitialDistDelay = 1;
 
   time_t now = 1441223455 -1;
-  dirvote_recalculate_timing(mock_options, now);
+  voting_schedule_recalculate_timing(mock_options, now);
 
   const char *msg_out = NULL;
   int status_out = 0;
@@ -2094,6 +2107,7 @@ test_dir_handle_get_status_vote_d(void* data)
 
     clear_dir_servers();
     dirvote_free_all();
+    routerlist_free_all();
 }
 
 static void
@@ -2116,7 +2130,7 @@ test_dir_handle_get_status_vote_next_not_found(void* data)
 
   done:
     UNMOCK(connection_write_to_buf_impl_);
-    connection_free_(TO_CONN(conn));
+    connection_free_minimal(TO_CONN(conn));
     tor_free(header);
 }
 
@@ -2135,7 +2149,7 @@ status_vote_next_consensus_test(char **header, char **body, size_t *body_used)
                       body, body_used, 18, 0);
   done:
     UNMOCK(connection_write_to_buf_impl_);
-    connection_free_(TO_CONN(conn));
+    connection_free_minimal(TO_CONN(conn));
 }
 
 static void
@@ -2175,7 +2189,7 @@ test_dir_handle_get_status_vote_current_authority_not_found(void* data)
 
   done:
     UNMOCK(connection_write_to_buf_impl_);
-    connection_free_(TO_CONN(conn));
+    connection_free_minimal(TO_CONN(conn));
     tor_free(header);
 }
 
@@ -2199,7 +2213,7 @@ test_dir_handle_get_status_vote_next_authority_not_found(void* data)
 
   done:
     UNMOCK(connection_write_to_buf_impl_);
-    connection_free_(TO_CONN(conn));
+    connection_free_minimal(TO_CONN(conn));
     tor_free(header);
 }
 
@@ -2281,7 +2295,7 @@ status_vote_next_consensus_signatures_test(char **header, char **body,
                       body, body_used, 22, 0);
 
   done:
-    connection_free_(TO_CONN(conn));
+    connection_free_minimal(TO_CONN(conn));
     UNMOCK(connection_write_to_buf_impl_);
 }
 
@@ -2402,7 +2416,7 @@ test_dir_handle_get_status_vote_next_authority(void* data)
   mock_options->TestingV3AuthInitialDistDelay = 1;
 
   time_t now = 1441223455 -1;
-  dirvote_recalculate_timing(mock_options, now);
+  voting_schedule_recalculate_timing(mock_options, now);
 
   struct pending_vote_t *vote = dirvote_add_vote(VOTE_BODY_V3, &msg_out,
                                                  &status_out);
@@ -2429,7 +2443,7 @@ test_dir_handle_get_status_vote_next_authority(void* data)
   done:
     UNMOCK(connection_write_to_buf_impl_);
     UNMOCK(get_my_v3_authority_cert);
-    connection_free_(TO_CONN(conn));
+    connection_free_minimal(TO_CONN(conn));
     tor_free(header);
     tor_free(body);
     authority_cert_free(mock_cert); mock_cert = NULL;
@@ -2481,7 +2495,7 @@ test_dir_handle_get_status_vote_current_authority(void* data)
   mock_options->TestingV3AuthInitialDistDelay = 1;
 
   time_t now = 1441223455;
-  dirvote_recalculate_timing(mock_options, now-1);
+  voting_schedule_recalculate_timing(mock_options, now-1);
 
   struct pending_vote_t *vote = dirvote_add_vote(VOTE_BODY_V3, &msg_out,
                                                  &status_out);
@@ -2511,7 +2525,7 @@ test_dir_handle_get_status_vote_current_authority(void* data)
   done:
     UNMOCK(connection_write_to_buf_impl_);
     UNMOCK(get_my_v3_authority_cert);
-    connection_free_(TO_CONN(conn));
+    connection_free_minimal(TO_CONN(conn));
     tor_free(header);
     tor_free(body);
     authority_cert_free(mock_cert); mock_cert = NULL;
@@ -2630,4 +2644,3 @@ struct testcase_t dir_handle_get_tests[] = {
   DIR_HANDLE_CMD(parse_accept_encoding, 0),
   END_OF_TESTCASES
 };
-

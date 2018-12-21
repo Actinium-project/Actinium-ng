@@ -29,12 +29,12 @@
     Jean-Philippe Aumasson (https://131002.net/siphash/siphash24.c)
 */
 
-#include "torint.h"
+#include "lib/cc/torint.h"
+#include "lib/log/util_bug.h"
+
 #include "siphash.h"
-/* for tor_assert */
-#include "util.h"
-/* for memcpy */
 #include <string.h>
+#include <stdlib.h>
 #include "byteorder.h"
 
 #define ROTATE(x, b) (uint64_t)( ((x) << (b)) | ( (x) >> (64 - (b))) )
@@ -122,4 +122,10 @@ void siphash_set_global_key(const struct sipkey *key)
 	the_siphash_key.k0 = key->k0;
 	the_siphash_key.k1 = key->k1;
 	the_siphash_key_is_set = 1;
+}
+
+void siphash_unset_global_key(void)
+{
+	the_siphash_key_is_set = 0;
+	memset(&the_siphash_key, 0, sizeof(the_siphash_key));
 }

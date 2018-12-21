@@ -1,20 +1,40 @@
+/* Copyright (c) 2016-2018, The Tor Project, Inc. */
+/* See LICENSE for licensing information */
+
 #define SHARED_RANDOM_PRIVATE
 #define SHARED_RANDOM_STATE_PRIVATE
 #define CONFIG_PRIVATE
 #define DIRVOTE_PRIVATE
 
-#include "or.h"
-#include "test.h"
-#include "config.h"
-#include "dirvote.h"
-#include "shared_random.h"
-#include "shared_random_state.h"
-#include "routerkeys.h"
-#include "routerlist.h"
-#include "router.h"
-#include "routerparse.h"
-#include "networkstatus.h"
-#include "log_test_helpers.h"
+#include "core/or/or.h"
+#include "test/test.h"
+#include "app/config/config.h"
+#include "lib/crypt_ops/crypto_rand.h"
+#include "feature/dirauth/dirvote.h"
+#include "feature/dirauth/shared_random.h"
+#include "feature/dirauth/shared_random_state.h"
+#include "test/log_test_helpers.h"
+#include "feature/nodelist/networkstatus.h"
+#include "feature/relay/router.h"
+#include "feature/relay/routerkeys.h"
+#include "feature/nodelist/authcert.h"
+#include "feature/nodelist/dirlist.h"
+#include "feature/dirparse/authcert_parse.h"
+#include "feature/hs_common/shared_random_client.h"
+#include "feature/dircommon/voting_schedule.h"
+
+#include "feature/dirclient/dir_server_st.h"
+#include "feature/nodelist/networkstatus_st.h"
+#include "app/config/or_state_st.h"
+
+#ifdef HAVE_SYS_STAT_H
+#include <sys/stat.h>
+#endif
+
+#ifdef _WIN32
+/* For mkdir */
+#include <direct.h>
+#endif
 
 static authority_cert_t *mock_cert;
 
@@ -167,7 +187,7 @@ test_get_state_valid_until_time(void *arg)
     retval = parse_rfc1123_time("Mon, 20 Apr 2015 00:00:01 UTC",
                                 &current_time);
     tt_int_op(retval, OP_EQ, 0);
-    dirvote_recalculate_timing(get_options(), current_time);
+    voting_schedule_recalculate_timing(get_options(), current_time);
     valid_until_time = get_state_valid_until_time(current_time);
 
     /* Compare it with the correct result */
@@ -179,7 +199,7 @@ test_get_state_valid_until_time(void *arg)
     retval = parse_rfc1123_time("Mon, 20 Apr 2015 19:22:00 UTC",
                                 &current_time);
     tt_int_op(retval, OP_EQ, 0);
-    dirvote_recalculate_timing(get_options(), current_time);
+    voting_schedule_recalculate_timing(get_options(), current_time);
     valid_until_time = get_state_valid_until_time(current_time);
 
     format_iso_time(tbuf, valid_until_time);
@@ -190,7 +210,7 @@ test_get_state_valid_until_time(void *arg)
     retval = parse_rfc1123_time("Mon, 20 Apr 2015 23:59:00 UTC",
                                 &current_time);
     tt_int_op(retval, OP_EQ, 0);
-    dirvote_recalculate_timing(get_options(), current_time);
+    voting_schedule_recalculate_timing(get_options(), current_time);
     valid_until_time = get_state_valid_until_time(current_time);
 
     format_iso_time(tbuf, valid_until_time);
@@ -201,7 +221,7 @@ test_get_state_valid_until_time(void *arg)
     retval = parse_rfc1123_time("Mon, 20 Apr 2015 00:00:00 UTC",
                                 &current_time);
     tt_int_op(retval, OP_EQ, 0);
-    dirvote_recalculate_timing(get_options(), current_time);
+    voting_schedule_recalculate_timing(get_options(), current_time);
     valid_until_time = get_state_valid_until_time(current_time);
 
     format_iso_time(tbuf, valid_until_time);
@@ -239,9 +259,8 @@ test_get_start_time_of_current_run(void *arg)
     retval = parse_rfc1123_time("Mon, 20 Apr 2015 00:00:01 UTC",
                                 &current_time);
     tt_int_op(retval, OP_EQ, 0);
-    dirvote_recalculate_timing(get_options(), current_time);
-    run_start_time =
-      sr_state_get_start_time_of_current_protocol_run(current_time);
+    voting_schedule_recalculate_timing(get_options(), current_time);
+    run_start_time = sr_state_get_start_time_of_current_protocol_run();
 
     /* Compare it with the correct result */
     format_iso_time(tbuf, run_start_time);
@@ -252,9 +271,8 @@ test_get_start_time_of_current_run(void *arg)
     retval = parse_rfc1123_time("Mon, 20 Apr 2015 23:59:59 UTC",
                                 &current_time);
     tt_int_op(retval, OP_EQ, 0);
-    dirvote_recalculate_timing(get_options(), current_time);
-    run_start_time =
-      sr_state_get_start_time_of_current_protocol_run(current_time);
+    voting_schedule_recalculate_timing(get_options(), current_time);
+    run_start_time = sr_state_get_start_time_of_current_protocol_run();
 
     /* Compare it with the correct result */
     format_iso_time(tbuf, run_start_time);
@@ -265,13 +283,46 @@ test_get_start_time_of_current_run(void *arg)
     retval = parse_rfc1123_time("Mon, 20 Apr 2015 00:00:00 UTC",
                                 &current_time);
     tt_int_op(retval, OP_EQ, 0);
-    dirvote_recalculate_timing(get_options(), current_time);
-    run_start_time =
-      sr_state_get_start_time_of_current_protocol_run(current_time);
+    voting_schedule_recalculate_timing(get_options(), current_time);
+    run_start_time = sr_state_get_start_time_of_current_protocol_run();
 
     /* Compare it with the correct result */
     format_iso_time(tbuf, run_start_time);
     tt_str_op("2015-04-20 00:00:00", OP_EQ, tbuf);
+  }
+
+  {
+    /* We want the local time to be past midnight, but the current consensus to
+     * have valid-after 23:00 (e.g. this can happen if we fetch a new consensus
+     * at 00:08 before dircaches have a chance to get the midnight consensus).
+     *
+     * Basically, we want to cause a desynch between ns->valid_after (23:00)
+     * and the voting_schedule.interval_starts (01:00), to make sure that
+     * sr_state_get_start_time_of_current_protocol_run() handles it gracefully:
+     * It should actually follow the local consensus time and not the voting
+     * schedule (which is designed for authority voting purposes). */
+    retval = parse_rfc1123_time("Mon, 20 Apr 2015 00:00:00 UTC",
+                                &mock_consensus.fresh_until);
+    tt_int_op(retval, OP_EQ, 0);
+
+    retval = parse_rfc1123_time("Mon, 19 Apr 2015 23:00:00 UTC",
+                                &mock_consensus.valid_after);
+
+    retval = parse_rfc1123_time("Mon, 20 Apr 2015 00:08:00 UTC",
+                                &current_time);
+    tt_int_op(retval, OP_EQ, 0);
+    update_approx_time(current_time);
+    voting_schedule_recalculate_timing(get_options(), current_time);
+
+    run_start_time = sr_state_get_start_time_of_current_protocol_run();
+
+    /* Compare it with the correct result */
+    format_iso_time(tbuf, run_start_time);
+    tt_str_op("2015-04-19 00:00:00", OP_EQ, tbuf);
+    /* Check that voting_schedule.interval_starts is at 01:00 (see above) */
+    time_t interval_starts = voting_schedule_get_next_valid_after_time();
+    format_iso_time(tbuf, interval_starts);
+    tt_str_op("2015-04-20 01:00:00", OP_EQ, tbuf);
   }
 
   /* Next test is testing it without a consensus to use the testing voting
@@ -288,9 +339,8 @@ test_get_start_time_of_current_run(void *arg)
     retval = parse_rfc1123_time("Mon, 20 Apr 2015 00:15:32 UTC",
                                 &current_time);
     tt_int_op(retval, OP_EQ, 0);
-    dirvote_recalculate_timing(get_options(), current_time);
-    run_start_time =
-      sr_state_get_start_time_of_current_protocol_run(current_time);
+    voting_schedule_recalculate_timing(get_options(), current_time);
+    run_start_time = sr_state_get_start_time_of_current_protocol_run();
 
     /* Compare it with the correct result */
     format_iso_time(tbuf, run_start_time);
@@ -321,9 +371,9 @@ test_get_start_time_functions(void *arg)
   tt_int_op(retval, OP_EQ, 0);
   time_t now = mock_consensus.valid_after;
 
-  dirvote_recalculate_timing(get_options(), now);
+  voting_schedule_recalculate_timing(get_options(), now);
   time_t start_time_of_protocol_run =
-    sr_state_get_start_time_of_current_protocol_run(now);
+    sr_state_get_start_time_of_current_protocol_run();
   tt_assert(start_time_of_protocol_run);
 
   /* Check that the round start time of the beginning of the run, is itself */
@@ -399,7 +449,7 @@ test_sr_commit(void *arg)
                                sizeof(our_commit->hashed_reveal)));
     /* Do we have a valid encoded commit and reveal. Note the following only
      * tests if the generated values are correct. Their could be a bug in
-     * the decode function but we test them seperately. */
+     * the decode function but we test them separately. */
     tt_int_op(0, OP_EQ, reveal_decode(our_commit->encoded_reveal,
                                    &test_commit));
     tt_int_op(0, OP_EQ, commit_decode(our_commit->encoded_commit,
@@ -609,7 +659,7 @@ test_vote(void *arg)
     ret = smartlist_split_string(chunks, lines, "\n", SPLIT_IGNORE_BLANK, 0);
     tt_int_op(ret, OP_EQ, 4);
     tt_str_op(smartlist_get(chunks, 0), OP_EQ, "shared-rand-participate");
-    /* Get our commitment line and will validate it agains our commit. The
+    /* Get our commitment line and will validate it against our commit. The
      * format is as follow:
      * "shared-rand-commitment" SP version SP algname SP identity
      *                          SP COMMIT [SP REVEAL] NL
@@ -869,6 +919,7 @@ test_sr_setup_commits(void)
   /* Now during REVEAL phase save commit D by restoring its reveal. */
   set_sr_phase(SR_PHASE_REVEAL);
   save_commit_to_state(place_holder);
+  place_holder = NULL;
   tt_str_op(commit_d->encoded_reveal, OP_EQ,
             "DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD");
   /* Go back to an empty encoded reveal value. */
@@ -877,6 +928,7 @@ test_sr_setup_commits(void)
   tt_assert(!commit_has_reveal_value(commit_d));
 
  done:
+  tor_free(place_holder);
   authority_cert_free(auth_cert);
 }
 
@@ -1267,7 +1319,7 @@ test_keep_commit(void *arg)
     expect_log_msg_containing("doesn't match the commit value.");
     expect_log_msg_containing("has an invalid reveal value.");
     assert_log_predicate(mock_saved_log_n_entries() == 2,
-                         "expected 2 log entries");
+                         ("expected 2 log entries"));
     teardown_capture_of_logs();
     memcpy(commit->hashed_reveal, place_holder.hashed_reveal,
            sizeof(commit->hashed_reveal));
@@ -1348,7 +1400,7 @@ test_state_update(void *arg)
   tt_assert(state->current_srv);
 
  done:
-  sr_state_free();
+  sr_state_free_all();
   UNMOCK(get_my_v3_authority_cert);
 }
 
@@ -1382,4 +1434,3 @@ struct testcase_t sr_tests[] = {
     NULL, NULL },
   END_OF_TESTCASES
 };
-

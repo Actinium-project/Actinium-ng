@@ -1,31 +1,40 @@
 /* Copyright (c) 2001-2004, Roger Dingledine.
  * Copyright (c) 2004-2006, Roger Dingledine, Nick Mathewson.
- * Copyright (c) 2007-2017, The Tor Project, Inc. */
+ * Copyright (c) 2007-2018, The Tor Project, Inc. */
 /* See LICENSE for licensing information */
-
-extern const char tor_git_revision[];
-
-/* Ordinarily defined in tor_main.c; this bit is just here to provide one
- * since we're not linking to tor_main.c */
-const char tor_git_revision[] = "";
 
 /**
  * \file test_common.c
  * \brief Common pieces to implement unit tests.
  **/
 
+#define MAINLOOP_PRIVATE
 #include "orconfig.h"
-#include "or.h"
-#include "control.h"
-#include "config.h"
-#include "rephist.h"
-#include "backtrace.h"
-#include "test.h"
-#include "channelpadding.h"
+#include "core/or/or.h"
+#include "feature/control/control.h"
+#include "app/config/config.h"
+#include "lib/crypt_ops/crypto_dh.h"
+#include "lib/crypt_ops/crypto_ed25519.h"
+#include "lib/crypt_ops/crypto_rand.h"
+#include "feature/stats/predict_ports.h"
+#include "feature/stats/rephist.h"
+#include "lib/err/backtrace.h"
+#include "test/test.h"
+#include "core/or/channelpadding.h"
+#include "core/mainloop/mainloop.h"
+#include "lib/compress/compress.h"
+#include "lib/evloop/compat_libevent.h"
+#include "lib/crypt_ops/crypto_init.h"
 
 #include <stdio.h>
 #ifdef HAVE_FCNTL_H
 #include <fcntl.h>
+#endif
+#ifdef HAVE_UNISTD_H
+#include <unistd.h>
+#endif
+#ifdef HAVE_SYS_STAT_H
+#include <sys/stat.h>
 #endif
 
 #ifdef _WIN32
@@ -34,13 +43,6 @@ const char tor_git_revision[] = "";
 #else
 #include <dirent.h>
 #endif /* defined(_WIN32) */
-
-#include "or.h"
-
-#ifdef USE_DMALLOC
-#include <dmalloc.h>
-#include "main.h"
-#endif
 
 /** Temporary directory (set up by setup_directory) under which we store all
  * our files during testing. */
@@ -112,8 +114,8 @@ get_fname_suffix(const char *name, const char *suffix)
   setup_directory();
   if (!name)
     return temp_dir;
-  tor_snprintf(buf,sizeof(buf),"%s/%s%s%s",temp_dir,name,suffix ? "_" : "",
-               suffix ? suffix : "");
+  tor_snprintf(buf,sizeof(buf),"%s%s%s%s%s", temp_dir, PATH_SEPARATOR, name,
+               suffix ? "_" : "", suffix ? suffix : "");
   return buf;
 }
 
@@ -222,6 +224,21 @@ an_assertion_failed(void)
   tinytest_set_test_failed_();
 }
 
+void tinytest_prefork(void);
+void tinytest_postfork(void);
+void
+tinytest_prefork(void)
+{
+  free_pregenerated_keys();
+  crypto_prefork();
+}
+void
+tinytest_postfork(void)
+{
+  crypto_postfork();
+  init_pregenerated_keys();
+}
+
 /** Main entry point for unit test code: parse the command line, and run
  * some unit tests. */
 int
@@ -235,13 +252,6 @@ main(int c, const char **v)
 
   /* We must initialise logs before we call tor_assert() */
   init_logging(1);
-
-#ifdef USE_DMALLOC
-  {
-    int r = crypto_use_tor_alloc_functions();
-    tor_assert(r == 0);
-  }
-#endif /* defined(USE_DMALLOC) */
 
   update_approx_time(time(NULL));
   options = options_new();
@@ -284,21 +294,25 @@ main(int c, const char **v)
     s.masks[LOG_WARN-LOG_ERR] |= LD_BUG;
     add_stream_log(&s, "", fileno(stdout));
   }
+  init_protocol_warning_severity_level();
 
   options->command = CMD_RUN_UNITTESTS;
   if (crypto_global_init(accel_crypto, NULL, NULL)) {
     printf("Can't initialize crypto subsystem; exiting.\n");
     return 1;
   }
-  crypto_set_tls_dh_prime();
   if (crypto_seed_rng() < 0) {
     printf("Couldn't seed RNG; exiting.\n");
     return 1;
   }
   rep_hist_init();
   setup_directory();
+  initialize_mainloop_events();
   options_init(options);
   options->DataDirectory = tor_strdup(temp_dir);
+  tor_asprintf(&options->KeyDirectory, "%s"PATH_SEPARATOR"keys",
+               options->DataDirectory);
+  options->CacheDirectory = tor_strdup(temp_dir);
   options->EntryStatistics = 1;
   if (set_options(options, &errmsg) < 0) {
     printf("Failed to set initial options: %s\n", errmsg);
@@ -319,10 +333,7 @@ main(int c, const char **v)
   int have_failed = (tinytest_main(c, v, testgroups) != 0);
 
   free_pregenerated_keys();
-#ifdef USE_DMALLOC
-  tor_free_all(0);
-  dmalloc_log_unfreed();
-#endif
+
   crypto_global_cleanup();
 
   if (have_failed)
@@ -330,4 +341,3 @@ main(int c, const char **v)
   else
     return 0;
 }
-

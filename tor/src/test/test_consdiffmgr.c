@@ -1,20 +1,25 @@
-/* Copyright (c) 2017, The Tor Project, Inc. */
+/* Copyright (c) 2017-2018, The Tor Project, Inc. */
 /* See LICENSE for licensing information */
 
 #define CONSDIFFMGR_PRIVATE
 
-#include "or.h"
-#include "config.h"
-#include "conscache.h"
-#include "consdiff.h"
-#include "consdiffmgr.h"
-#include "cpuworker.h"
-#include "networkstatus.h"
-#include "routerparse.h"
-#include "workqueue.h"
+#include "core/or/or.h"
+#include "app/config/config.h"
+#include "feature/dircache/conscache.h"
+#include "feature/dircommon/consdiff.h"
+#include "feature/dircache/consdiffmgr.h"
+#include "core/mainloop/cpuworker.h"
+#include "lib/crypt_ops/crypto_rand.h"
+#include "feature/nodelist/networkstatus.h"
+#include "feature/dirparse/ns_parse.h"
+#include "lib/evloop/workqueue.h"
+#include "lib/compress/compress.h"
+#include "lib/encoding/confline.h"
 
-#include "test.h"
-#include "log_test_helpers.h"
+#include "feature/nodelist/networkstatus_st.h"
+
+#include "test/test.h"
+#include "test/log_test_helpers.h"
 
 // ============================== Setup/teardown the consdiffmgr
 // These functions get run before/after each test in this module
@@ -24,8 +29,8 @@ consdiffmgr_test_setup(const struct testcase_t *arg)
 {
   (void)arg;
   char *ddir_fname = tor_strdup(get_fname_rnd("datadir_cdm"));
-  tor_free(get_options_mutable()->DataDirectory);
-  get_options_mutable()->DataDirectory = ddir_fname; // now owns the pointer.
+  tor_free(get_options_mutable()->CacheDirectory);
+  get_options_mutable()->CacheDirectory = ddir_fname; // now owns the pointer.
   check_private_dir(ddir_fname, CPD_CREATE, NULL);
 
   consdiff_cfg_t consdiff_cfg = { 300 };
@@ -215,8 +220,8 @@ test_consdiffmgr_init_failure(void *arg)
   /* As in ...test_setup, but do not create the datadir. The missing directory
    * will cause a failure. */
   char *ddir_fname = tor_strdup(get_fname_rnd("datadir_cdm"));
-  tor_free(get_options_mutable()->DataDirectory);
-  get_options_mutable()->DataDirectory = ddir_fname; // now owns the pointer.
+  tor_free(get_options_mutable()->CacheDirectory);
+  get_options_mutable()->CacheDirectory = ddir_fname; // now owns the pointer.
 
   consdiff_cfg_t consdiff_cfg = { 7200, 300 };
 
@@ -893,4 +898,3 @@ struct testcase_t consdiffmgr_tests[] = {
 
   END_OF_TESTCASES
 };
-
