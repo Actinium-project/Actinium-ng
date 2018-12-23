@@ -184,8 +184,8 @@
         <translation>Beursie enkriptasie voltooi</translation>
     </message>
     <message>
-        <source>%1 will close now to finish the encryption process. Remember that encrypting your wallet cannot fully protect your bitcoins from being stolen by malware infecting your computer.</source>
-        <translation>%1 gaan nou toe maak om die enkripsie proses klaar te maak. Onthou dat jou bitcoins nie ten volle beskerm kan word deur die beursie te enkrip teen "malware" wat jou rekenaar besmet.</translation>
+        <source>%1 will close now to finish the encryption process. Remember that encrypting your wallet cannot fully protect your actiniums from being stolen by malware infecting your computer.</source>
+        <translation>%1 gaan nou toe maak om die enkripsie proses klaar te maak. Onthou dat jou actiniums nie ten volle beskerm kan word deur die beursie te enkrip teen "malware" wat jou rekenaar besmet.</translation>
     </message>
     <message>
         <source>IMPORTANT: Any previous backups you have made of your wallet file should be replaced with the newly generated, encrypted wallet file. For security reasons, previous backups of the unencrypted wallet file will become useless as soon as you start using the new, encrypted wallet.</source>
@@ -330,7 +330,7 @@
         <translation>Klik om netwerk aktiwiteit weer aan te skakel.</translation>
     </message>
     <message>
-        <source>Send coins to a Actinium address</source>
+        <source>Send coins to an Actinium address</source>
         <translation>Stuur muntstukke na 'n Actinium adres</translation>
     </message>
     <message>

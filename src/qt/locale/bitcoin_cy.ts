@@ -176,8 +176,8 @@
         <translation>Waled Wedi Amgryptio</translation>
     </message>
     <message>
-        <source>%1 will close now to finish the encryption process. Remember that encrypting your wallet cannot fully protect your bitcoins from being stolen by malware infecting your computer.</source>
-        <translation>Bydd %1 nawr yn gorffen y broses amgryptio. Cofiwch nad ydy amgryptio eich waled yn llawn amddiffyn eich bitcoins rhag cael eu dwyn gan afiechyd yn heintio eich cyfrifiadur.</translation>
+        <source>%1 will close now to finish the encryption process. Remember that encrypting your wallet cannot fully protect your actiniums from being stolen by malware infecting your computer.</source>
+        <translation>Bydd %1 nawr yn gorffen y broses amgryptio. Cofiwch nad ydy amgryptio eich waled yn llawn amddiffyn eich actiniums rhag cael eu dwyn gan afiechyd yn heintio eich cyfrifiadur.</translation>
     </message>
     <message>
         <source>IMPORTANT: Any previous backups you have made of your wallet file should be replaced with the newly generated, encrypted wallet file. For security reasons, previous backups of the unencrypted wallet file will become useless as soon as you start using the new, encrypted wallet.</source>
@@ -334,7 +334,7 @@
         <translation>Ailfynegi y blociau ar ddisg...</translation>
     </message>
     <message>
-        <source>Send coins to a Actinium address</source>
+        <source>Send coins to an Actinium address</source>
         <translation>Anfon arian i gyfeiriad Actinium</translation>
     </message>
     <message>

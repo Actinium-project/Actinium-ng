@@ -126,7 +126,7 @@
         <translation>Address king pamag-Tanggap</translation>
     </message>
     <message>
-        <source>Send coins to a Actinium address</source>
+        <source>Send coins to an Actinium address</source>
         <translation>Magpadalang barya king Actinium address</translation>
     </message>
     <message>

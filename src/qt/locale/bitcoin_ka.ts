@@ -188,7 +188,7 @@
         <translation>საფულე დაშიფრულია</translation>
     </message>
     <message>
-        <source>%1 will close now to finish the encryption process. Remember that encrypting your wallet cannot fully protect your bitcoins from being stolen by malware infecting your computer.</source>
+        <source>%1 will close now to finish the encryption process. Remember that encrypting your wallet cannot fully protect your actiniums from being stolen by malware infecting your computer.</source>
         <translation>%1 ახლა დაიხურება დაშიფრვის პროცესის დასასრულებლად. გახსოვდეთ, რომ თქვენი საფული დაშიფრვა სრულად არ იცავს თქვენს ბიტკოინებს მოპარვისგან მავნე პროგრამების მიერ თქვენი კომპიუტერის ინფიცირების საშუალებით.</translation>
     </message>
     <message>
@@ -322,7 +322,7 @@
         <translation>დისკზე ბლოკების რეინდექსაცია...</translation>
     </message>
     <message>
-        <source>Send coins to a Actinium address</source>
+        <source>Send coins to an Actinium address</source>
         <translation>მონეტების გაგზავნა Actinium-მისამართზე</translation>
     </message>
     <message>

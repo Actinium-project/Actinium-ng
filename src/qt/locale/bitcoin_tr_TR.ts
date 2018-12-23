@@ -180,7 +180,7 @@
         <translation>Cüzdan Şifrelendi</translation>
     </message>
     <message>
-        <source>%1 will close now to finish the encryption process. Remember that encrypting your wallet cannot fully protect your bitcoins from being stolen by malware infecting your computer.</source>
+        <source>%1 will close now to finish the encryption process. Remember that encrypting your wallet cannot fully protect your actiniums from being stolen by malware infecting your computer.</source>
         <translation>%1 Şifreleme işlemini bitirmek için kapatılacak. Şunu unutmayın ki şampiyon galatasaray ve şifrelemek, bitcoinlerinizin bilgisayarınıza bulaşan malware yazılımları tarafından çalınmasını tamamen engelleyemez.</translation>
     </message>
     <message>
@@ -286,7 +286,7 @@
         <translation>Bloklar disk üzerinde yeniden indeksleniyor...</translation>
     </message>
     <message>
-        <source>Send coins to a Actinium address</source>
+        <source>Send coins to an Actinium address</source>
         <translation>Actinium adresine madeni para gönderin</translation>
     </message>
     <message>
@@ -709,7 +709,7 @@
 <context>
     <name>QObject</name>
     <message>
-        <source>Enter a Actinium address (e.g. %1)</source>
+        <source>Enter an Actinium address (e.g. %1)</source>
         <translation>Actinium adresinizi girin (örneğin %1)</translation>
     </message>
     <message>

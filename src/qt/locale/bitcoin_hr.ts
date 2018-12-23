@@ -306,7 +306,7 @@
         <translation>Re-indeksiranje blokova na disku...</translation>
     </message>
     <message>
-        <source>Send coins to a Actinium address</source>
+        <source>Send coins to an Actinium address</source>
         <translation>Slanje novca na bitcoin adresu</translation>
     </message>
     <message>

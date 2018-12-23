@@ -334,7 +334,7 @@
         <translation>Besig met herindeksering van blokke op hardeskyf...</translation>
     </message>
     <message>
-        <source>Send coins to a Actinium address</source>
+        <source>Send coins to an Actinium address</source>
         <translation>Stuur munte na 'n Actinium adres</translation>
     </message>
     <message>
@@ -1144,7 +1144,7 @@
         <translation>Bedrag</translation>
     </message>
     <message>
-        <source>Enter a Actinium address (e.g. %1)</source>
+        <source>Enter an Actinium address (e.g. %1)</source>
         <translation>Voer in 'n Actinium adres (bv. %1)</translation>
     </message>
     <message>

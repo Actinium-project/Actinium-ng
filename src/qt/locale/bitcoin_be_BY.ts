@@ -302,7 +302,7 @@
         <translation>Пераіндэксацыя блокаў на дыску...</translation>
     </message>
     <message>
-        <source>Send coins to a Actinium address</source>
+        <source>Send coins to an Actinium address</source>
         <translation>Даслаць манеты на Біткойн-адрас</translation>
     </message>
     <message>

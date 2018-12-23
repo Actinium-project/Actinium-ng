@@ -188,7 +188,7 @@
         <translation>محفظة مشفرة</translation>
     </message>
     <message>
-        <source>%1 will close now to finish the encryption process. Remember that encrypting your wallet cannot fully protect your bitcoins from being stolen by malware infecting your computer.</source>
+        <source>%1 will close now to finish the encryption process. Remember that encrypting your wallet cannot fully protect your actiniums from being stolen by malware infecting your computer.</source>
         <translation>سيتم إغلاق %1 الآن لإنهاء عملية التشفير. تذكر أن تشفير محفظتك لا يمكن أن يحمي البتكوين الخاص بك بالكامل من السرقة عبر البرامج الضارة التي بامكانها أن تصيب جهاز الكمبيوتر الخاص بك.</translation>
     </message>
     <message>
@@ -346,7 +346,7 @@
         <translation>إعادة فهرسة الكتل على القرص ...</translation>
     </message>
     <message>
-        <source>Send coins to a Actinium address</source>
+        <source>Send coins to an Actinium address</source>
         <translation>ارسل عملات الى عنوان بيتكوين</translation>
     </message>
     <message>
@@ -860,7 +860,7 @@
         <translation>قد لا تكون المعاملات الأخيرة مرئية بعد، وبالتالي قد يكون رصيد محفظتك غير صحيح. ستكون هذه المعلومات صحيحة بمجرد الانتهاء من محفظتك مع شبكة البيتكوين، كما هو مفصل أدناه.</translation>
     </message>
     <message>
-        <source>Attempting to spend bitcoins that are affected by not-yet-displayed transactions will not be accepted by the network.</source>
+        <source>Attempting to spend actiniums that are affected by not-yet-displayed transactions will not be accepted by the network.</source>
         <translation>لن تقبل الشبكة محاولة إنفاق البتكوين المتأثرة بالمعاملات التي لم يتم عرضها بعد.</translation>
     </message>
     <message>
@@ -1350,7 +1350,7 @@
         <translation>مبلغ</translation>
     </message>
     <message>
-        <source>Enter a Actinium address (e.g. %1)</source>
+        <source>Enter an Actinium address (e.g. %1)</source>
         <translation>ادخل عنوان محفطة البتكوين (مثال %1)</translation>
     </message>
     <message>
@@ -1975,7 +1975,7 @@
         <translation>إخفاء</translation>
     </message>
     <message>
-        <source>Paying only the minimum fee is just fine as long as there is less transaction volume than space in the blocks. But be aware that this can end up in a never confirming transaction once there is more demand for bitcoin transactions than the network can process.</source>
+        <source>Paying only the minimum fee is just fine as long as there is less transaction volume than space in the blocks. But be aware that this can end up in a never confirming transaction once there is more demand for actinium transactions than the network can process.</source>
         <translation>إن دفع الحد الأدنى فقط من الرسوم يجوز طالما أن حجم المعاملات أقل من المساحة الموجودة في الكتل. ولكن كن على علم بأن هذا يمكن أن ينتهي في معاملة غير مؤكدة أبداً عندما يكون هناك طلب أكبر على معاملات البتكوين مما تستطيع الشبكة معالجته.</translation>
     </message>
     <message>
@@ -2198,7 +2198,7 @@
         <translation>ازل هذه المداخله</translation>
     </message>
     <message>
-        <source>The fee will be deducted from the amount being sent. The recipient will receive less bitcoins than you enter in the amount field. If multiple recipients are selected, the fee is split equally.</source>
+        <source>The fee will be deducted from the amount being sent. The recipient will receive less actiniums than you enter in the amount field. If multiple recipients are selected, the fee is split equally.</source>
         <translation>سيتم خصم الرسوم من المبلغ الذي يتم إرساله. لذا سوف يتلقى المستلم مبلغ أقل من البتكوين المدخل في حقل المبلغ. في حالة تحديد عدة مستلمين، يتم تقسيم الرسوم بالتساوي.</translation>
     </message>
     <message>

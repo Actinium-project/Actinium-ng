@@ -150,7 +150,7 @@
         <translation>Дискдаги блоклар қайта индексланмоқда...</translation>
     </message>
     <message>
-        <source>Send coins to a Actinium address</source>
+        <source>Send coins to an Actinium address</source>
         <translation>Тангаларни Actinium манзилига жўнатиш</translation>
     </message>
     <message>
@@ -674,7 +674,7 @@
         <translation>Миқдори</translation>
     </message>
     <message>
-        <source>Enter a Actinium address (e.g. %1)</source>
+        <source>Enter an Actinium address (e.g. %1)</source>
         <translation>Actinium манзилини киритинг (масалан.  %1)</translation>
     </message>
     <message>

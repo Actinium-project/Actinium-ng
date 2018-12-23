@@ -318,7 +318,7 @@
         <translation>بازنشانی بلوک‌ها روی دیسک...</translation>
     </message>
     <message>
-        <source>Send coins to a Actinium address</source>
+        <source>Send coins to an Actinium address</source>
         <translation>ارسال وجه به نشانی بیت‌کوین</translation>
     </message>
     <message>
@@ -1012,7 +1012,7 @@
         <translation>مبلغ</translation>
     </message>
     <message>
-        <source>Enter a Actinium address (e.g. %1)</source>
+        <source>Enter an Actinium address (e.g. %1)</source>
         <translation>یک آدرس بیت‌کوین وارد کنید (مثلاً %1)</translation>
     </message>
     <message>

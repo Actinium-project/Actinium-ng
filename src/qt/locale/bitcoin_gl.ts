@@ -134,7 +134,7 @@
         <translation>Reindexando bloques no disco...</translation>
     </message>
     <message>
-        <source>Send coins to a Actinium address</source>
+        <source>Send coins to an Actinium address</source>
         <translation>Enviar moedas a unha dirección Actinium</translation>
     </message>
     <message>

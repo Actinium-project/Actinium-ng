@@ -122,7 +122,7 @@
         <translation>Recibiendo direcciones</translation>
     </message>
     <message>
-        <source>Send coins to a Actinium address</source>
+        <source>Send coins to an Actinium addresss</source>
         <translation>Enviar monedas a una dirección Actinium</translation>
     </message>
     <message>

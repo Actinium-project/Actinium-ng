@@ -184,7 +184,7 @@
         <translation>Portafoglio criptato</translation>
     </message>
     <message>
-        <source>%1 will close now to finish the encryption process. Remember that encrypting your wallet cannot fully protect your bitcoins from being stolen by malware infecting your computer.</source>
+        <source>%1 will close now to finish the encryption process. Remember that encrypting your wallet cannot fully protect your actiniums from being stolen by malware infecting your computer.</source>
         <translation>%1 ora si chiuderà per concludere il processo di criptaggio. Ricorda che criptare il tuo portafoglio non può definitivamente proteggere i tuoi bitcoin da furti tramite malware che infetta il tuo computer.</translation>
     </message>
     <message>
@@ -350,7 +350,7 @@
         <translation>Reindicizzazione dei blocchi sul disco...</translation>
     </message>
     <message>
-        <source>Send coins to a Actinium address</source>
+        <source>Send coins to an Actinium addresss</source>
         <translation>Invia monete ad un indirizzo Actinium...</translation>
     </message>
     <message>

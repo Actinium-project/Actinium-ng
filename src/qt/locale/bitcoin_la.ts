@@ -118,7 +118,7 @@
         <translation>Recreans indicem frustorum in disco...</translation>
     </message>
     <message>
-        <source>Send coins to a Actinium address</source>
+        <source>Send coins to an Actinium address</source>
         <translation>Mitte nummos ad inscriptionem Actinium</translation>
     </message>
     <message>
