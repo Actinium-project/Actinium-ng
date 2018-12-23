@@ -59,7 +59,7 @@
 #include <errno.h>
 #include <err.h>
 /* For SIZE_MAX */
-#include "lib/cc/torint.h"
+#include "torint.h"
 
 //#include "thread_private.h"
 

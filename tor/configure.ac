@@ -1,11 +1,11 @@
 dnl Copyright (c) 2001-2004, Roger Dingledine
 dnl Copyright (c) 2004-2006, Roger Dingledine, Nick Mathewson
-dnl Copyright (c) 2007-2018, The Tor Project, Inc.
+dnl Copyright (c) 2007-2017, The Tor Project, Inc.
 dnl See LICENSE for licensing information
 
 AC_PREREQ([2.63])
-AC_INIT([tor],[0.3.5.6-rc-dev])
-AC_CONFIG_SRCDIR([src/app/main/tor_main.c])
+AC_INIT([tor],[0.3.4.9-dev])
+AC_CONFIG_SRCDIR([src/or/main.c])
 AC_CONFIG_MACRO_DIR([m4])
 
 # "foreign" means we don't follow GNU package layout standards
@@ -21,8 +21,18 @@ AC_CANONICAL_HOST
 
 PKG_PROG_PKG_CONFIG
 
+if test -f "/etc/redhat-release"; then
+  if test -f "/usr/kerberos/include"; then
+    CPPFLAGS="$CPPFLAGS -I/usr/kerberos/include"
+  fi
+fi
+
+# Not a no-op; we want to make sure that CPPFLAGS is set before we use
+# the += operator on it in src/or/Makefile.am
+CPPFLAGS="$CPPFLAGS -I\${top_srcdir}/src/common"
+
 AC_ARG_ENABLE(openbsd-malloc,
-   AS_HELP_STRING(--enable-openbsd-malloc, [use malloc code from OpenBSD.  Linux only. Deprecated: see --with-malloc]))
+   AS_HELP_STRING(--enable-openbsd-malloc, [use malloc code from OpenBSD.  Linux only]))
 AC_ARG_ENABLE(static-openssl,
    AS_HELP_STRING(--enable-static-openssl, [link against a static openssl library. Requires --with-openssl-dir]))
 AC_ARG_ENABLE(static-libevent,
@@ -53,10 +63,6 @@ AC_ARG_ENABLE(restart-debugging,
    AS_HELP_STRING(--enable-restart-debugging, [Build Tor with support for debugging in-process restart. Developers only.]))
 AC_ARG_ENABLE(zstd-advanced-apis,
    AS_HELP_STRING(--disable-zstd-advanced-apis, [Build without support for zstd's "static-only" APIs.]))
-AC_ARG_ENABLE(nss,
-   AS_HELP_STRING(--enable-nss, [Use Mozilla's NSS TLS library. (EXPERIMENTAL)]))
-AC_ARG_ENABLE(pic,
-   AS_HELP_STRING(--enable-pic, [Build Tor's binaries as position-independent code, suitable to link as a library.]))
 
 if test "x$enable_coverage" != "xyes" -a "x$enable_asserts_in_tests" = "xno" ; then
     AC_MSG_ERROR([Can't disable assertions outside of coverage build])
@@ -68,16 +74,6 @@ AM_CONDITIONAL(DISABLE_ASSERTS_IN_UNIT_TESTS, test "x$enable_asserts_in_tests" =
 AM_CONDITIONAL(LIBFUZZER_ENABLED, test "x$enable_libfuzzer" = "xyes")
 AM_CONDITIONAL(OSS_FUZZ_ENABLED, test "x$enable_oss_fuzz" = "xyes")
 AM_CONDITIONAL(USE_RUST, test "x$enable_rust" = "xyes")
-AM_CONDITIONAL(USE_NSS, test "x$enable_nss" = "xyes")
-AM_CONDITIONAL(USE_OPENSSL, test "x$enable_nss" != "xyes")
-
-if test "x$enable_nss" = "xyes"; then
-  AC_DEFINE(ENABLE_NSS, 1,
-  	    [Defined if we're building with NSS.])
-else
-  AC_DEFINE(ENABLE_OPENSSL, 1,
-            [Defined if we're building with OpenSSL or LibreSSL])
-fi
 
 if test "$enable_static_tor" = "yes"; then
   enable_static_libevent="yes";
@@ -95,6 +91,8 @@ if test "$enable_memory_sentinels" = "no"; then
   AC_DEFINE(DISABLE_MEMORY_SENTINELS, 1,
            [Defined if we're turning off memory safety code to look for bugs])
 fi
+
+AM_CONDITIONAL(USE_OPENBSD_MALLOC, test "x$enable_openbsd_malloc" = "xyes")
 
 AC_ARG_ENABLE(asciidoc,
      AS_HELP_STRING(--disable-asciidoc, [don't use asciidoc (disables building of manpages)]),
@@ -192,6 +190,13 @@ if test "$enable_local_appdata" = "yes"; then
   AC_DEFINE(ENABLE_LOCAL_APPDATA, 1,
             [Defined if we default to host local appdata paths on Windows])
 fi
+
+# Tor2web mode flag
+AC_ARG_ENABLE(tor2web-mode,
+     AS_HELP_STRING(--enable-tor2web-mode, [support tor2web non-anonymous mode]),
+[if test "x$enableval" = "xyes"; then
+    CFLAGS="$CFLAGS -D ENABLE_TOR2WEB_MODE=1"
+fi])
 
 AC_ARG_ENABLE(tool-name-check,
      AS_HELP_STRING(--disable-tool-name-check, [check for sanely named toolchain when cross-compiling]))
@@ -427,7 +432,7 @@ AH_BOTTOM([
 #endif
 ])
 
-AM_CONDITIONAL(WIN32, test "x$bwin32" = "xtrue")
+
 AM_CONDITIONAL(BUILD_NT_SERVICES, test "x$bwin32" = "xtrue")
 AM_CONDITIONAL(BUILD_LIBTORRUNNER, test "x$bwin32" != "xtrue")
 
@@ -579,59 +584,55 @@ AM_CONDITIONAL(THREADS_WIN32, test "$bwin32" = "true")
 AM_CONDITIONAL(THREADS_PTHREADS, test "$bwin32" = "false")
 
 AC_CHECK_FUNCS(
-	_NSGetEnviron \
+        _NSGetEnviron \
 	RtlSecureZeroMemory \
 	SecureZeroMemory \
-	accept4 \
-	backtrace \
-	backtrace_symbols_fd \
+        accept4 \
+        backtrace \
+        backtrace_symbols_fd \
 	eventfd \
 	explicit_bzero \
 	timingsafe_memcmp \
-	flock \
-	ftime \
-	get_current_dir_name \
-	getaddrinfo \
-	getdelim \
-	getifaddrs \
-	getline \
-	getpass \
-	getrlimit \
-	gettimeofday \
-	gmtime_r \
+        flock \
+        ftime \
+        get_current_dir_name \
+        getaddrinfo \
+        getifaddrs \
+        getpass \
+        getrlimit \
+        gettimeofday \
+        gmtime_r \
 	gnu_get_libc_version \
 	htonll \
-	inet_aton \
-	ioctl \
-	issetugid \
-	llround \
-	localtime_r \
-	lround \
-	memmem \
-	memset_s \
-	mmap \
+        inet_aton \
+        ioctl \
+        issetugid \
+        llround \
+        localtime_r \
+        lround \
+        memmem \
+        memset_s \
+        mmap \
 	pipe \
 	pipe2 \
-	prctl \
+        prctl \
 	readpassphrase \
-	rint \
-	sigaction \
-	socketpair \
+        rint \
+        sigaction \
+        socketpair \
 	statvfs \
-	strncasecmp \
-	strcasecmp \
-	strlcat \
-	strlcpy \
+        strlcat \
+        strlcpy \
 	strnlen \
-	strptime \
-	strtok_r \
-	strtoull \
-	sysconf \
+        strptime \
+        strtok_r \
+        strtoull \
+        sysconf \
 	sysctl \
 	truncate \
-	uname \
+        uname \
 	usleep \
-	vasprintf \
+        vasprintf \
 	_vscprintf
 )
 
@@ -855,20 +856,7 @@ LIBS="$save_LIBS"
 AC_SUBST(TOR_LIB_MATH)
 
 dnl ------------------------------------------------------
-dnl Hello, NSS.  You're new around here.
-if test "x$enable_nss" = "xyes"; then
-  PKG_CHECK_MODULES(NSS,
-     [nss],
-     [have_nss=yes],
-     [have_nss=no; AC_MSG_ERROR([You asked for NSS but I can't find it.])])
-  AC_SUBST(NSS_CFLAGS)
-  AC_SUBST(NSS_LIBS)
-fi
-
-dnl ------------------------------------------------------
 dnl Where do you live, openssl?  And how do we call you?
-
-if test "x$enable_nss" != "xyes"; then
 
 tor_openssl_pkg_redhat="openssl"
 tor_openssl_pkg_debian="libssl-dev"
@@ -948,7 +936,6 @@ AC_CHECK_MEMBERS([struct ssl_method_st.get_cipher_by_char], , ,
 ])
 
 AC_CHECK_FUNCS([ \
-		ERR_load_KDF_strings \
 		SSL_SESSION_get_master_key \
 		SSL_get_server_random \
                 SSL_get_client_ciphers \
@@ -970,11 +957,6 @@ AC_CHECK_MEMBERS([SSL.state], , ,
 AC_CHECK_SIZEOF(SHA_CTX, , [AC_INCLUDES_DEFAULT()
 #include <openssl/sha.h>
 ])
-
-fi # enable_nss
-
-dnl ======================================================================
-dnl Can we use KIST?
 
 dnl Define the set of checks for KIST scheduler support.
 AC_DEFUN([CHECK_KIST_SUPPORT],[
@@ -1141,10 +1123,6 @@ AC_COMPILE_IFELSE([AC_LANG_PROGRAM([], [
 #error
 #endif])], have_clang=yes, have_clang=no)
 
-if test "x$enable_pic" = "xyes"; then
-    TOR_CHECK_CFLAGS(-fPIC)
-fi
-
 if test "x$enable_gcc_hardening" != "xno"; then
     CFLAGS="$CFLAGS -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=2"
     if test "x$have_clang" = "xyes"; then
@@ -1164,13 +1142,7 @@ m4_ifdef([AS_VAR_IF],[
     TOR_CHECK_CFLAGS(-Wstack-protector)
     TOR_CHECK_CFLAGS(--param ssp-buffer-size=1)
     if test "$bwin32" = "false" && test "$enable_libfuzzer" != "yes" && test "$enable_oss_fuzz" != "yes"; then
-       if test "$enable_pic" != "yes"; then
-           # If we have already enabled -fPIC, then we don't also need to
-           # compile with -fPIE...
-           TOR_CHECK_CFLAGS(-fPIE)
-       fi
-       # ... but we want to link our executables with -pie in any case, since
-       # they're executables, not a library.
+       TOR_CHECK_CFLAGS(-fPIE)
        TOR_CHECK_LDFLAGS(-pie, "$all_ldflags_for_check", "$all_libs_for_check")
     fi
     TOR_TRY_COMPILE_WITH_CFLAGS(-fwrapv, also_link, CFLAGS_FWRAPV="-fwrapv", true)
@@ -1211,17 +1183,17 @@ dnl variable.
 RUST_LINKER_OPTIONS=""
 if test "x$have_clang" = "xyes"; then
 	if test "x$CFLAGS_ASAN" != "x"; then
-		RUST_LINKER_OPTIONS="$RUST_LINKER_OPTIONS -Clink-arg=$CFLAGS_ASAN -Cdefault-linker-libraries"
+		RUST_LINKER_OPTIONS="$RUST_LINKER_OPTIONS $CFLAGS_ASAN"
 	fi
 	if test "x$CFLAGS_UBSAN" != "x"; then
-        	RUST_LINKER_OPTIONS="$RUST_LINKER_OPTIONS -Clink-arg=$CFLAGS_UBSAN -Cdefault-linker-libraries"
+        	RUST_LINKER_OPTIONS="$RUST_LINKER_OPTIONS $CFLAGS_UBSAN"
 	fi
 else
 	if test "x$CFLAGS_ASAN" != "x"; then
-		RUST_LINKER_OPTIONS="$RUST_LINKER_OPTIONS -Clink-arg=-fsanitize=address -Cdefault-linker-libraries"
+		RUST_LINKER_OPTIONS="$RUST_LINKER_OPTIONS -lasan"
 	fi
 	if test "x$CFLAGS_UBSAN" != "x"; then
-        	RUST_LINKER_OPTIONS="$RUST_LINKER_OPTIONS -Clink-arg=-fsanitize=undefined -Cdefault-linker-libraries"
+        	RUST_LINKER_OPTIONS="$RUST_LINKER_OPTIONS -lubsan"
 	fi
 fi
 AC_SUBST(RUST_LINKER_OPTIONS)
@@ -1430,58 +1402,60 @@ AC_SUBST(CURVE25519_LIBS)
 dnl Make sure to enable support for large off_t if available.
 AC_SYS_LARGEFILE
 
-AC_CHECK_HEADERS([errno.h \
-		  fcntl.h \
-		  signal.h \
-		  string.h \
-		  sys/capability.h \
-		  sys/fcntl.h \
-		  sys/stat.h \
-		  sys/time.h \
-		  sys/types.h \
-		  time.h \
-		  unistd.h \
-		  arpa/inet.h \
-		  crt_externs.h \
-		  execinfo.h \
-		  gnu/libc-version.h \
-		  grp.h \
-		  ifaddrs.h \
-		  inttypes.h \
-		  limits.h \
-		  linux/types.h \
-		  machine/limits.h \
-		  malloc.h \
-		  malloc/malloc.h \
-		  malloc_np.h \
-		  netdb.h \
-		  netinet/in.h \
-		  netinet/in6.h \
-		  pwd.h \
-		  readpassphrase.h \
-		  stdatomic.h \
-		  sys/eventfd.h \
-		  sys/file.h \
-		  sys/ioctl.h \
-		  sys/limits.h \
-		  sys/mman.h \
-		  sys/param.h \
-		  sys/prctl.h \
+AC_CHECK_HEADERS([assert.h \
+                  errno.h \
+                  fcntl.h \
+                  signal.h \
+                  string.h \
+                  sys/capability.h \
+                  sys/fcntl.h \
+                  sys/stat.h \
+                  sys/time.h \
+                  sys/types.h \
+                  time.h \
+                  unistd.h \
+                  arpa/inet.h \
+                  crt_externs.h \
+                  execinfo.h \
+                  gnu/libc-version.h \
+                  grp.h \
+                  ifaddrs.h \
+                  inttypes.h \
+                  limits.h \
+                  linux/types.h \
+                  machine/limits.h \
+                  malloc.h \
+                  malloc/malloc.h \
+                  malloc_np.h \
+                  netdb.h \
+                  netinet/in.h \
+                  netinet/in6.h \
+                  pwd.h \
+                  readpassphrase.h \
+                  stdint.h \
+                  stdatomic.h \
+                  sys/eventfd.h \
+                  sys/file.h \
+                  sys/ioctl.h \
+                  sys/limits.h \
+                  sys/mman.h \
+                  sys/param.h \
+                  sys/prctl.h \
 		  sys/random.h \
-		  sys/resource.h \
-		  sys/select.h \
-		  sys/socket.h \
-		  sys/statvfs.h \
-		  sys/syscall.h \
-		  sys/sysctl.h \
-		  sys/syslimits.h \
-		  sys/time.h \
-		  sys/types.h \
-		  sys/un.h \
-		  sys/utime.h \
-		  sys/wait.h \
-		  syslog.h \
-		  utime.h])
+                  sys/resource.h \
+                  sys/select.h \
+                  sys/socket.h \
+                  sys/statvfs.h \
+                  sys/syscall.h \
+                  sys/sysctl.h \
+                  sys/syslimits.h \
+                  sys/time.h \
+                  sys/types.h \
+                  sys/un.h \
+                  sys/utime.h \
+                  sys/wait.h \
+                  syslog.h \
+                  utime.h])
 
 AC_CHECK_HEADERS(sys/param.h)
 
@@ -1581,6 +1555,22 @@ AC_CHECK_MEMBERS([struct timeval.tv_sec], , ,
 #ifdef HAVE_SYS_TIME_H
 #include <sys/time.h>
 #endif])
+
+dnl In case we aren't given a working stdint.h, we'll need to grow our own.
+dnl Watch out.
+
+AC_CHECK_SIZEOF(int8_t)
+AC_CHECK_SIZEOF(int16_t)
+AC_CHECK_SIZEOF(int32_t)
+AC_CHECK_SIZEOF(int64_t)
+AC_CHECK_SIZEOF(uint8_t)
+AC_CHECK_SIZEOF(uint16_t)
+AC_CHECK_SIZEOF(uint32_t)
+AC_CHECK_SIZEOF(uint64_t)
+AC_CHECK_SIZEOF(intptr_t)
+AC_CHECK_SIZEOF(uintptr_t)
+
+dnl AC_CHECK_TYPES([int8_t, int16_t, int32_t, int64_t, uint8_t, uint16_t, uint32_t, uint64_t, intptr_t, uintptr_t])
 
 AC_CHECK_SIZEOF(char)
 AC_CHECK_SIZEOF(short)
@@ -1846,75 +1836,43 @@ if test "$tor_cv_uint8_uchar" = "no"; then
   AC_MSG_ERROR([We assume that uint8_t is the same type as unsigned char, but your compiler disagrees.])
 fi
 
+# Whether we should use the dmalloc memory allocation debugging library.
+AC_MSG_CHECKING(whether to use dmalloc (debug memory allocation library))
+AC_ARG_WITH(dmalloc,
+AS_HELP_STRING(--with-dmalloc, [use debug memory allocation library]),
+[if [[ "$withval" = "yes" ]]; then
+  dmalloc=1
+  AC_MSG_RESULT(yes)
+else
+  dmalloc=1
+  AC_MSG_RESULT(no)
+fi], [ dmalloc=0; AC_MSG_RESULT(no) ]
+)
+
+if [[ $dmalloc -eq 1 ]]; then
+  AC_CHECK_HEADERS(dmalloc.h, , AC_MSG_ERROR(dmalloc header file not found. Do you have the development files for dmalloc installed?))
+  AC_SEARCH_LIBS(dmalloc_malloc, [dmallocth dmalloc], , AC_MSG_ERROR(Libdmalloc library not found. If you enable it you better have it installed.))
+  AC_DEFINE(USE_DMALLOC, 1, [Debug memory allocation library])
+  AC_CHECK_FUNCS(dmalloc_strdup dmalloc_strndup)
+fi
+
 AC_ARG_WITH(tcmalloc,
-AS_HELP_STRING(--with-tcmalloc, [use tcmalloc memory allocation library. Deprecated; see --with-malloc]),
+AS_HELP_STRING(--with-tcmalloc, [use tcmalloc memory allocation library]),
 [ tcmalloc=yes ], [ tcmalloc=no ])
 
-default_malloc=system
-
-if test "x$enable_openbsd_malloc" = "xyes" ; then
-  AC_MSG_NOTICE([The --enable-openbsd-malloc argument is deprecated; use --with-malloc=openbsd instead.])
-  default_malloc=openbsd
-fi
-
 if test "x$tcmalloc" = "xyes"; then
-  AC_MSG_NOTICE([The --with-tcmalloc argument is deprecated; use --with-malloc=tcmalloc instead.])
-  default_malloc=tcmalloc
+   LDFLAGS="-ltcmalloc $LDFLAGS"
 fi
 
-AC_ARG_WITH(malloc,
-   AS_HELP_STRING([--with-malloc=[system,jemalloc,tcmalloc,openbsd]],
-                  [select special malloc implementation [system]]),
-   [ malloc="$with_malloc" ], [ malloc="$default_malloc" ])
-
-AS_CASE([$malloc],
-  [tcmalloc], [
-      PKG_CHECK_MODULES([TCMALLOC],
-			[libtcmalloc],
-			have_tcmalloc=yes,
-			have_tcmalloc=no)
-
-      if test "x$have_tcmalloc" = "xno" ; then
-          AC_MSG_ERROR([Unable to find tcmalloc requested by --with-malloc.])
-      fi
-
-      CFLAGS="$CFLAGS $TCMALLOC_CFLAGS"
-      LIBS="$TCMALLOC_LIBS $LIBS"
-  ],
-
-  [jemalloc], [
-      PKG_CHECK_MODULES([JEMALLOC],
-		        [jemalloc],
-			have_jemalloc=yes,
-			have_jemalloc=no)
-
-      if test "x$have_tcmalloc" = "xno" ; then
-          AC_MSG_ERROR([Unable to find jemalloc requested by --with-malloc.])
-      fi
-
-      CFLAGS="$CFLAGS $JEMALLOC_CFLAGS"
-      LIBS="$JEMALLOC_LIBS $LIBS"
-      using_custom_malloc=yes
-  ],
-
-  [openbsd], [
-    AC_MSG_WARN([The openbsd malloc port is deprecated in Tor 0.3.5 and will be removed in a future version.])
-    enable_openbsd_malloc=yes
-  ],
-
-  [system], [
-     # handle this later, including the jemalloc fallback
-    AC_CHECK_FUNCS(mallinfo)
-  ],
-
-  [AC_MSG_ERROR([--with-malloc=`$with_malloc' not supported, see --help])
-])
-
-AM_CONDITIONAL(USE_OPENBSD_MALLOC, test "x$enable_openbsd_malloc" = "xyes")
-
-if test "$malloc" != "system"; then
-  # Tell the C compiler not to use the system allocator functions.
-  TOR_CHECK_CFLAGS([-fno-builtin-malloc -fno-builtin-realloc -fno-builtin-calloc -fno-builtin-free])
+using_custom_malloc=no
+if test "x$enable_openbsd_malloc" = "xyes"; then
+   using_custom_malloc=yes
+fi
+if test "x$tcmalloc" = "xyes"; then
+   using_custom_malloc=yes
+fi
+if test "$using_custom_malloc" = "no"; then
+   AC_CHECK_FUNCS(mallinfo)
 fi
 if test "$using_custom_malloc" = "yes"; then
   # Tell the C compiler not to use the system allocator functions.
@@ -2414,19 +2372,20 @@ fi
 CPPFLAGS="$CPPFLAGS $TOR_CPPFLAGS_libevent $TOR_CPPFLAGS_openssl $TOR_CPPFLAGS_zlib"
 
 AC_CONFIG_FILES([
-	Doxyfile
-	Makefile
-	config.rust
-	contrib/dist/suse/tor.sh
-	contrib/operator-tools/tor.logrotate
-	contrib/dist/tor.sh
-	contrib/dist/torctl
-	contrib/dist/tor.service
-	src/config/torrc.sample
-	src/config/torrc.minimal
-	src/rust/.cargo/config
-	scripts/maint/checkOptionDocs.pl
-	scripts/maint/updateVersions.pl
+        Doxyfile
+        Makefile
+        config.rust
+        link_rust.sh
+        contrib/dist/suse/tor.sh
+        contrib/operator-tools/tor.logrotate
+        contrib/dist/tor.sh
+        contrib/dist/torctl
+        contrib/dist/tor.service
+        src/config/torrc.sample
+        src/config/torrc.minimal
+        src/rust/.cargo/config
+        scripts/maint/checkOptionDocs.pl
+        scripts/maint/updateVersions.pl
 ])
 
 if test "x$asciidoc" = "xtrue" && test "$ASCIIDOC" = "none"; then

@@ -12,8 +12,7 @@
 
 # To replace this list with the hard-coded fallback list (for testing), use
 # a command similar to:
-#   cat src/app/config/fallback_dirs.inc | grep \" | grep -v weight | \
-#   tr -d '\n' | \
+#   cat src/or/fallback_dirs.inc | grep \" | grep -v weight | tr -d '\n' | \
 #   sed 's/"" / /g' | sed 's/""/"/g' | tr \" '\n' | grep -v '^$' \
 #   > scripts/maint/fallback.whitelist
 #

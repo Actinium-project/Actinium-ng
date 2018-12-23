@@ -1,8 +1,8 @@
 /* Copyright (c) 2015-2018, The Tor Project, Inc. */
 /* See LICENSE for licensing information */
 #define LOG_PRIVATE
-#include "lib/log/log.h"
-#include "test/log_test_helpers.h"
+#include "torlog.h"
+#include "log_test_helpers.h"
 
 /**
  * \file log_test_helpers.c
@@ -258,4 +258,3 @@ mock_dump_saved_logs(void)
            escaped(m->generated_msg));
   } SMARTLIST_FOREACH_END(m);
 }
-

@@ -1,4 +1,4 @@
-/* Copyright (c) 2014-2018, The Tor Project, Inc. */
+/* Copyright (c) 2014-2017, The Tor Project, Inc. */
 /* See LICENSE for licensing information */
 
 /* Unit tests for handling different kinds of relay cell */
@@ -8,28 +8,23 @@
 #define CONNECTION_EDGE_PRIVATE
 #define CONNECTION_PRIVATE
 
-#include "core/or/or.h"
-#include "core/mainloop/mainloop.h"
-#include "app/config/config.h"
-#include "core/mainloop/connection.h"
-#include "lib/crypt_ops/crypto_cipher.h"
-#include "lib/crypt_ops/crypto_rand.h"
-#include "core/or/circuitbuild.h"
-#include "core/or/circuitlist.h"
-#include "core/or/connection_edge.h"
-#include "core/or/relay.h"
-#include "test/test.h"
-#include "test/log_test_helpers.h"
+#include "or.h"
+#include "main.h"
+#include "config.h"
+#include "connection.h"
+#include "crypto.h"
+#include "crypto_rand.h"
+#include "circuitbuild.h"
+#include "circuitlist.h"
+#include "connection_edge.h"
+#include "log_test_helpers.h"
+#include "relay.h"
+#include "test.h"
 
-#include "core/or/cell_st.h"
-#include "core/or/crypt_path_st.h"
-#include "core/or/entry_connection_st.h"
-#include "core/or/origin_circuit_st.h"
-#include "core/or/socks_request_st.h"
-#include "core/or/half_edge_st.h"
+#include "log_test_helpers.h"
 
-#include "feature/client/circpathbias.h"
-#include "core/or/connection_edge.h"
+#include "circpathbias.h"
+#include "connection_edge.h"
 
 static int srm_ncalls;
 static entry_connection_t *srm_conn;

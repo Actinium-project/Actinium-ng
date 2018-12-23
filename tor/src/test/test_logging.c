@@ -1,19 +1,10 @@
-/* Copyright (c) 2013-2018, The Tor Project, Inc. */
+/* Copyright (c) 2013-2017, The Tor Project, Inc. */
 /* See LICENSE for licensing information */
 
-#define CONFIG_PRIVATE
-
 #include "orconfig.h"
-#include "core/or/or.h"
-#include "app/config/config.h"
-#include "lib/err/torerr.h"
-#include "lib/log/log.h"
-#include "test/test.h"
-#include "lib/process/subprocess.h"
-
-#ifdef HAVE_UNISTD_H
-#include <unistd.h>
-#endif
+#include "or.h"
+#include "torlog.h"
+#include "test.h"
 
 static void
 dummy_cb_fn(int severity, uint32_t domain, const char *msg)
@@ -98,7 +89,7 @@ test_sigsafe_err(void *arg)
 
   init_logging(1);
   mark_logs_temp();
-  open_and_add_file_log(&include_bug, fn, 0);
+  add_file_log(&include_bug, fn, 0);
   tor_log_update_sigsafe_err_fds();
   close_temp_logs();
 
@@ -179,3 +170,4 @@ struct testcase_t logging_tests[] = {
   { "ratelim", test_ratelim, 0, NULL, NULL },
   END_OF_TESTCASES
 };
+

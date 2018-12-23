@@ -1,26 +1,25 @@
-/* Copyright (c) 2017-2018, The Tor Project, Inc. */
+/* Copyright (c) 2017, The Tor Project, Inc. */
 /* Copyright (c) 2017, isis agora lovecruft  */
 /* See LICENSE for licensing information     */
 
 /**
  * \file test_router.c
- * \brief Unittests for code in router.c
+ * \brief Unittests for code in src/or/router.c
  **/
 
-#include "core/or/or.h"
-#include "app/config/config.h"
-#include "core/mainloop/mainloop.h"
-#include "feature/hibernate/hibernate.h"
-#include "feature/nodelist/routerinfo_st.h"
-#include "feature/nodelist/routerlist.h"
-#include "feature/relay/router.h"
-#include "feature/stats/rephist.h"
-#include "lib/crypt_ops/crypto_curve25519.h"
-#include "lib/crypt_ops/crypto_ed25519.h"
+#include "or.h"
+#include "config.h"
+#include "crypto_curve25519.h"
+#include "crypto_ed25519.h"
+#include "hibernate.h"
+#include "main.h"
+#include "rephist.h"
+#include "router.h"
+#include "routerlist.h"
 
 /* Test suite stuff */
-#include "test/test.h"
-#include "test/log_test_helpers.h"
+#include "test.h"
+#include "log_test_helpers.h"
 
 NS_DECL(const routerinfo_t *, router_get_my_routerinfo, (void));
 
@@ -52,12 +51,9 @@ NS(router_get_my_routerinfo)(void)
     mock_routerinfo->platform = tor_strdup("unittest");
     mock_routerinfo->cache_info.published_on = now;
     mock_routerinfo->identity_pkey = crypto_pk_dup_key(ident_key);
-    router_set_rsa_onion_pkey(tap_key, &mock_routerinfo->onion_pkey,
-                              &mock_routerinfo->onion_pkey_len);
+    mock_routerinfo->onion_pkey = crypto_pk_dup_key(tap_key);
     mock_routerinfo->bandwidthrate = 9001;
     mock_routerinfo->bandwidthburst = 9002;
-    crypto_pk_free(ident_key);
-    crypto_pk_free(tap_key);
   }
 
   return mock_routerinfo;
@@ -95,14 +91,11 @@ test_router_dump_router_to_string_no_bridge_distribution_method(void *arg)
 
   /* Generate our server descriptor and ensure that the substring
    * "bridge-distribution-request any" occurs somewhere within it. */
-  crypto_pk_t *onion_pkey = router_get_rsa_onion_pkey(router->onion_pkey,
-                                                      router->onion_pkey_len);
   desc = router_dump_router_to_string(router,
                                       router->identity_pkey,
-                                      onion_pkey,
+                                      router->onion_pkey,
                                       &ntor_keypair,
                                       &signing_keypair);
-  crypto_pk_free(onion_pkey);
   tt_ptr_op(desc, !=, NULL);
   found = strstr(desc, needle);
   tt_ptr_op(found, !=, NULL);
@@ -235,7 +228,7 @@ test_router_check_descriptor_bandwidth_changed(void *arg)
   { #name, test_router_ ## name, flags, NULL, NULL }
 
 struct testcase_t router_tests[] = {
-  ROUTER_TEST(check_descriptor_bandwidth_changed, TT_FORK),
   ROUTER_TEST(dump_router_to_string_no_bridge_distribution_method, TT_FORK),
+  ROUTER_TEST(check_descriptor_bandwidth_changed, TT_FORK),
   END_OF_TESTCASES
 };

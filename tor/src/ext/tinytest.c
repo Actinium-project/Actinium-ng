@@ -25,7 +25,6 @@
 #ifdef TINYTEST_LOCAL
 #include "tinytest_local.h"
 #endif
-#define TINYTEST_POSTFORK
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -119,14 +118,6 @@ testcase_run_bare_(const struct testcase_t *testcase)
 
 #ifndef NO_FORKING
 
-#ifdef TINYTEST_POSTFORK
-void tinytest_prefork(void);
-void tinytest_postfork(void);
-#else
-static void tinytest_prefork(void) { }
-static void tinytest_postfork(void) { }
-#endif
-
 static enum outcome
 testcase_run_forked_(const struct testgroup_t *group,
 		     const struct testcase_t *testcase)
@@ -154,7 +145,7 @@ testcase_run_forked_(const struct testgroup_t *group,
 	if (opt_verbosity>0)
 		printf("[forking] ");
 
-	snprintf(buffer, sizeof(buffer), "\"%s\" --RUNNING-FORKED %s %s%s",
+	snprintf(buffer, sizeof(buffer), "%s --RUNNING-FORKED %s %s%s",
 		 commandname, verbosity_flag, group->prefix, testcase->name);
 
 	memset(&si, 0, sizeof(si));
@@ -187,12 +178,10 @@ testcase_run_forked_(const struct testgroup_t *group,
 
 	if (opt_verbosity>0)
 		printf("[forking] ");
-	tinytest_prefork();
 	pid = fork();
 #ifdef FORK_BREAKS_GCOV
 	vproc_transaction_begin(0);
 #endif
-	tinytest_postfork();
 	if (!pid) {
 		/* child. */
 		int test_r, write_r;

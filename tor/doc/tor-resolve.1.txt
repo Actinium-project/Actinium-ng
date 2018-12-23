@@ -47,7 +47,7 @@ SEE ALSO
 --------
 **tor**(1), **torify**(1). +
 
-For protocol details, see: https://spec.torproject.org/socks-extensions
+See doc/socks-extensions.txt in the Tor package for protocol details.
 
 AUTHORS
 -------

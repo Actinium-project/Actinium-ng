@@ -1,15 +1,17 @@
-/* Copyright (c) 2017-2018, The Tor Project, Inc. */
+/* Copyright (c) 2017, The Tor Project, Inc. */
 /* See LICENSE for licensing information */
 
+#define ROUTERPARSE_PRIVATE
 #define HS_DESCRIPTOR_PRIVATE
 
-#include "core/or/or.h"
-#include "trunnel/ed25519_cert.h" /* Trunnel interface. */
-#include "lib/crypt_ops/crypto_ed25519.h"
-#include "feature/hs/hs_descriptor.h"
-#include "feature/dirparse/unparseable.h"
+#include "or.h"
+#include "ed25519_cert.h" /* Trunnel interface. */
+#include "crypto_ed25519.h"
+#include "hs_descriptor.h"
+#include "routerparse.h"
+#include "util.h"
 
-#include "test/fuzz/fuzzing.h"
+#include "fuzzing.h"
 
 static void
 mock_dump_desc__nodump(const char *desc, const char *type)
@@ -37,13 +39,11 @@ static size_t
 mock_decrypt_desc_layer(const hs_descriptor_t *desc,
                         const uint8_t *encrypted_blob,
                         size_t encrypted_blob_size,
-                        const uint8_t *descriptor_cookie,
                         int is_superencrypted_layer,
                         char **decrypted_out)
 {
   (void)is_superencrypted_layer;
   (void)desc;
-  (void)descriptor_cookie;
   const size_t overhead = HS_DESC_ENCRYPTED_SALT_LEN + DIGEST256_LEN;
   if (encrypted_blob_size < overhead)
     return 0;
@@ -85,7 +85,7 @@ fuzz_main(const uint8_t *data, size_t sz)
   char *fuzzing_data = tor_memdup_nulterm(data, sz);
   memset(subcredential, 'A', sizeof(subcredential));
 
-  hs_desc_decode_descriptor(fuzzing_data, subcredential, NULL, &desc);
+  hs_desc_decode_descriptor(fuzzing_data, subcredential, &desc);
   if (desc) {
     log_debug(LD_GENERAL, "Decoding okay");
     hs_descriptor_free(desc);

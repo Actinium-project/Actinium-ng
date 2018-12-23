@@ -1,15 +1,10 @@
-/* Copyright (c) 2016-2018, The Tor Project, Inc. */
+/* Copyright (c) 2016-2017, The Tor Project, Inc. */
 /* See LICENSE for licensing information */
-
-#include "core/or/or.h"
-#include "feature/dirparse/unparseable.h"
-#include "feature/rend/rendcommon.h"
-#include "feature/rend/rendparse.h"
-#include "lib/crypt_ops/crypto_ed25519.h"
-
-#include "feature/rend/rend_service_descriptor_st.h"
-
-#include "test/fuzz/fuzzing.h"
+#define ROUTERPARSE_PRIVATE
+#include "or.h"
+#include "routerparse.h"
+#include "rendcommon.h"
+#include "fuzzing.h"
 
 static void
 mock_dump_desc__nodump(const char *desc, const char *type)
@@ -48,3 +43,4 @@ fuzz_main(const uint8_t *data, size_t sz)
   rend_service_descriptor_free(desc);
   return 0;
 }
+

@@ -12,15 +12,15 @@
 mod internal {
     use std::u64;
 
-    use rand_core::impls::next_u32_via_fill;
-    use rand_core::impls::next_u64_via_fill;
     use rand_core::CryptoRng;
     use rand_core::Error;
     use rand_core::RngCore;
+    use rand_core::impls::next_u32_via_fill;
+    use rand_core::impls::next_u64_via_fill;
 
     use external::c_tor_crypto_rand;
-    use external::c_tor_crypto_seed_rng;
     use external::c_tor_crypto_strongest_rand;
+    use external::c_tor_crypto_seed_rng;
 
     use tor_log::LogDomain;
     use tor_log::LogSeverity;
@@ -45,15 +45,12 @@ mod internal {
         #[allow(dead_code)]
         pub fn new() -> Self {
             if !c_tor_crypto_seed_rng() {
-                tor_log_msg!(
-                    LogSeverity::Warn,
-                    LogDomain::General,
-                    "TorRng::from_seed()",
-                    "The RNG could not be seeded!"
-                );
+                tor_log_msg!(LogSeverity::Warn, LogDomain::General,
+                             "TorRng::from_seed()",
+                             "The RNG could not be seeded!");
             }
             // XXX also log success at info level —isis
-            TorRng { _unused: [0u8; 0] }
+            TorRng{ _unused: [0u8; 0] }
         }
     }
 
@@ -95,15 +92,12 @@ mod internal {
         #[allow(dead_code)]
         pub fn new() -> Self {
             if !c_tor_crypto_seed_rng() {
-                tor_log_msg!(
-                    LogSeverity::Warn,
-                    LogDomain::General,
-                    "TorStrongestRng::from_seed()",
-                    "The RNG could not be seeded!"
-                );
+                tor_log_msg!(LogSeverity::Warn, LogDomain::General,
+                             "TorStrongestRng::from_seed()",
+                             "The RNG could not be seeded!");
             }
             // XXX also log success at info level —isis
-            TorStrongestRng { _unused: [0u8; 0] }
+            TorStrongestRng{ _unused: [0u8; 0] }
         }
     }
 
@@ -143,3 +137,4 @@ mod internal {
 // Finally, expose the public functionality of whichever appropriate internal
 // module.
 pub use self::internal::*;
+

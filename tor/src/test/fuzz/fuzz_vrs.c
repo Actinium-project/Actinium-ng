@@ -1,19 +1,13 @@
-/* Copyright (c) 2016-2018, The Tor Project, Inc. */
+/* Copyright (c) 2016-2017, The Tor Project, Inc. */
 /* See LICENSE for licensing information */
-#define NS_PARSE_PRIVATE
+#define ROUTERPARSE_PRIVATE
 #define NETWORKSTATUS_PRIVATE
-#include "core/or/or.h"
-#include "feature/dirparse/ns_parse.h"
-#include "feature/dirparse/unparseable.h"
-#include "lib/memarea/memarea.h"
-#include "feature/nodelist/microdesc.h"
-#include "feature/nodelist/networkstatus.h"
-
-#include "feature/nodelist/networkstatus_st.h"
-#include "feature/nodelist/vote_routerstatus_st.h"
-#include "lib/crypt_ops/crypto_ed25519.h"
-
-#include "test/fuzz/fuzzing.h"
+#include "or.h"
+#include "routerparse.h"
+#include "memarea.h"
+#include "microdesc.h"
+#include "networkstatus.h"
+#include "fuzzing.h"
 
 static void
 mock_dump_desc__nodump(const char *desc, const char *type)
@@ -85,3 +79,4 @@ fuzz_main(const uint8_t *data, size_t sz)
   tor_free(str);
   return 0;
 }
+

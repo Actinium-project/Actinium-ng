@@ -1,11 +1,10 @@
-/* Copyright (c) 2017-2018, The Tor Project, Inc. */
+/* Copyright (c) 2017, The Tor Project, Inc. */
 /* See LICENSE for licensing information */
 
-#include "core/or/or.h"
-#include "lib/crypt_ops/crypto_rand.h"
-#include "lib/fs/storagedir.h"
-#include "lib/encoding/confline.h"
-#include "test/test.h"
+#include "or.h"
+#include "crypto_rand.h"
+#include "storagedir.h"
+#include "test.h"
 
 #ifdef HAVE_UTIME_H
 #include <utime.h>
@@ -283,7 +282,7 @@ test_storagedir_save_labeled(void *arg)
   int r = storage_dir_save_labeled_to_file(d, labels, inp, 8192, &fname);
   tt_int_op(r, OP_EQ, 0);
 
-  size_t n = 0;
+  size_t n;
   saved = storage_dir_read(d, fname, 1, &n);
   tt_assert(memchr(saved, '\0', n));
   tt_str_op((char*)saved, OP_EQ, expected); /* NUL guarantees strcmp works */
@@ -374,3 +373,4 @@ struct testcase_t storagedir_tests[] = {
   ENT(read_labeled),
   END_OF_TESTCASES
 };
+

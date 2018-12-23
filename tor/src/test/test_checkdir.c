@@ -1,8 +1,8 @@
-/* Copyright (c) 2014-2018, The Tor Project, Inc. */
+/* Copyright (c) 2014-2017, The Tor Project, Inc. */
 /* See LICENSE for licensing information */
 
 #include "orconfig.h"
-#include "core/or/or.h"
+#include "or.h"
 
 #ifdef _WIN32
 #include <direct.h>
@@ -10,12 +10,9 @@
 #include <dirent.h>
 #endif
 
-#include "app/config/config.h"
-#include "test/test.h"
-
-#ifdef HAVE_SYS_STAT_H
-#include <sys/stat.h>
-#endif
+#include "config.h"
+#include "test.h"
+#include "util.h"
 
 #ifdef _WIN32
 #define mkdir(a,b) mkdir(a)
@@ -149,3 +146,4 @@ struct testcase_t checkdir_tests[] = {
   CHECKDIR(perms, TT_FORK),
   END_OF_TESTCASES
 };
+

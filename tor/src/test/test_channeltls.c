@@ -1,4 +1,4 @@
-/* Copyright (c) 2014-2018, The Tor Project, Inc. */
+/* Copyright (c) 2014-2017, The Tor Project, Inc. */
 /* See LICENSE for licensing information */
 
 #include "orconfig.h"
@@ -6,23 +6,20 @@
 #include <math.h>
 
 #define TOR_CHANNEL_INTERNAL_
-#include "core/or/or.h"
-#include "lib/net/address.h"
-#include "lib/container/buffers.h"
-#include "core/or/channel.h"
-#include "core/or/channeltls.h"
-#include "core/mainloop/connection.h"
-#include "core/or/connection_or.h"
-#include "app/config/config.h"
+#include "or.h"
+#include "address.h"
+#include "buffers.h"
+#include "channel.h"
+#include "channeltls.h"
+#include "connection_or.h"
+#include "config.h"
 /* For init/free stuff */
-#include "core/or/scheduler.h"
-#include "lib/tls/tortls.h"
-
-#include "core/or/or_connection_st.h"
+#include "scheduler.h"
+#include "tortls.h"
 
 /* Test suite stuff */
-#include "test/test.h"
-#include "test/fakechans.h"
+#include "test.h"
+#include "fakechans.h"
 
 /* The channeltls unit tests */
 static void test_channeltls_create(void *arg);
@@ -337,3 +334,4 @@ struct testcase_t channeltls_tests[] = {
     TT_FORK, NULL, NULL },
   END_OF_TESTCASES
 };
+

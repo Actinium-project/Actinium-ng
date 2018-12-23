@@ -1,12 +1,12 @@
 /* Copyright (c) 2001-2004, Roger Dingledine.
  * Copyright (c) 2004-2006, Roger Dingledine, Nick Mathewson.
- * Copyright (c) 2007-2018, The Tor Project, Inc. */
+ * Copyright (c) 2007-2017, The Tor Project, Inc. */
 /* See LICENSE for licensing information */
 
 #include "orconfig.h"
-#include "core/or/or.h"
-#include "lib/thread/threads.h"
-#include "test/test.h"
+#include "or.h"
+#include "compat_threads.h"
+#include "test.h"
 
 /** mutex for thread test to stop the threads hitting data at the same time. */
 static tor_mutex_t *thread_test_mutex_ = NULL;
@@ -234,33 +234,25 @@ test_threads_conditionvar(void *arg)
   if (timeout) {
     ti->tv = &msec100;
   }
-
-#define SPIN_UNTIL(condition,sleep_msec)        \
-  while (1) {                                   \
-    tor_mutex_acquire(ti->mutex);               \
-    if (condition) {                            \
-      break;                                    \
-    }                                           \
-    tor_mutex_release(ti->mutex);               \
-    tor_sleep_msec(sleep_msec);                 \
-  }
-
   spawn_func(cv_test_thr_fn_, ti);
   spawn_func(cv_test_thr_fn_, ti);
   spawn_func(cv_test_thr_fn_, ti);
   spawn_func(cv_test_thr_fn_, ti);
 
-  SPIN_UNTIL(ti->n_threads == 4, 10);
-
-  time_t started_at = time(NULL);
-
+  tor_mutex_acquire(ti->mutex);
   ti->addend = 7;
   ti->shutdown = 1;
   tor_cond_signal_one(ti->cond);
   tor_mutex_release(ti->mutex);
 
 #define SPIN()                                  \
-  SPIN_UNTIL(ti->addend == 0, 0)
+  while (1) {                                   \
+    tor_mutex_acquire(ti->mutex);               \
+    if (ti->addend == 0) {                      \
+      break;                                    \
+    }                                           \
+    tor_mutex_release(ti->mutex);               \
+  }
 
   SPIN();
 
@@ -287,9 +279,8 @@ test_threads_conditionvar(void *arg)
   if (!timeout) {
     tt_int_op(ti->n_shutdown, OP_EQ, 4);
   } else {
-    const int GIVE_UP_AFTER_SEC = 30;
-    SPIN_UNTIL((ti->n_timeouts == 2 ||
-                time(NULL) >= started_at + GIVE_UP_AFTER_SEC), 10);
+    tor_sleep_msec(200);
+    tor_mutex_acquire(ti->mutex);
     tt_int_op(ti->n_shutdown, OP_EQ, 2);
     tt_int_op(ti->n_timeouts, OP_EQ, 2);
     tor_mutex_release(ti->mutex);
@@ -310,3 +301,4 @@ struct testcase_t thread_tests[] = {
     &passthrough_setup, (void*)"tv" },
   END_OF_TESTCASES
 };
+

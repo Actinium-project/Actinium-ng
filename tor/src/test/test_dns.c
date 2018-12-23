@@ -1,18 +1,14 @@
-/* Copyright (c) 2015-2018, The Tor Project, Inc. */
+/* Copyright (c) 2015-2017, The Tor Project, Inc. */
 /* See LICENSE for licensing information */
 
-#include "core/or/or.h"
-#include "test/test.h"
+#include "or.h"
+#include "test.h"
 
 #define DNS_PRIVATE
 
-#include "feature/relay/dns.h"
-#include "core/mainloop/connection.h"
-#include "core/or/connection_edge.h"
-#include "feature/relay/router.h"
-
-#include "core/or/edge_connection_st.h"
-#include "core/or/or_circuit_st.h"
+#include "dns.h"
+#include "connection.h"
+#include "router.h"
 
 #define NS_MODULE dns
 
@@ -749,3 +745,4 @@ struct testcase_t dns_tests[] = {
 };
 
 #undef NS_MODULE
+

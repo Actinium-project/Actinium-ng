@@ -1,8 +1,8 @@
-// Copyright (c) 2016-2018, The Tor Project, Inc. */
+// Copyright (c) 2016-2017, The Tor Project, Inc. */
 // See LICENSE for licensing information */
 
-use std::collections::hash_map;
 use std::collections::HashMap;
+use std::collections::hash_map;
 use std::ffi::CStr;
 use std::fmt;
 use std::str;
@@ -12,28 +12,28 @@ use std::string::String;
 use external::c_tor_version_as_new_as;
 
 use errors::ProtoverError;
-use protoset::ProtoSet;
 use protoset::Version;
+use protoset::ProtoSet;
 
 /// The first version of Tor that included "proto" entries in its descriptors.
 /// Authorities should use this to decide whether to guess proto lines.
 ///
 /// C_RUST_COUPLED:
-///     protover.h `FIRST_TOR_VERSION_TO_ADVERTISE_PROTOCOLS`
+///     src/or/protover.h `FIRST_TOR_VERSION_TO_ADVERTISE_PROTOCOLS`
 const FIRST_TOR_VERSION_TO_ADVERTISE_PROTOCOLS: &'static str = "0.2.9.3-alpha";
 
 /// The maximum number of subprotocol version numbers we will attempt to expand
 /// before concluding that someone is trying to DoS us
 ///
-/// C_RUST_COUPLED: protover.c `MAX_PROTOCOLS_TO_EXPAND`
-const MAX_PROTOCOLS_TO_EXPAND: usize = (1 << 16);
+/// C_RUST_COUPLED: src/or/protover.c `MAX_PROTOCOLS_TO_EXPAND`
+const MAX_PROTOCOLS_TO_EXPAND: usize = (1<<16);
 
 /// The maximum size an `UnknownProtocol`'s name may be.
 pub(crate) const MAX_PROTOCOL_NAME_LENGTH: usize = 100;
 
 /// Known subprotocols in Tor. Indicates which subprotocol a relay supports.
 ///
-/// C_RUST_COUPLED: protover.h `protocol_type_t`
+/// C_RUST_COUPLED: src/or/protover.h `protocol_type_t`
 #[derive(Clone, Hash, Eq, PartialEq, Debug)]
 pub enum Protocol {
     Cons,
@@ -57,7 +57,7 @@ impl fmt::Display for Protocol {
 /// Translates a string representation of a protocol into a Proto type.
 /// Error if the string is an unrecognized protocol name.
 ///
-/// C_RUST_COUPLED: protover.c `PROTOCOL_NAMES`
+/// C_RUST_COUPLED: src/or/protover.c `PROTOCOL_NAMES`
 impl FromStr for Protocol {
     type Err = ProtoverError;
 
@@ -124,17 +124,6 @@ impl From<Protocol> for UnknownProtocol {
     }
 }
 
-#[cfg(feature = "test_linking_hack")]
-fn have_linkauth_v1() -> bool {
-    true
-}
-
-#[cfg(not(feature = "test_linking_hack"))]
-fn have_linkauth_v1() -> bool {
-    use external::c_tor_is_using_nss;
-    !c_tor_is_using_nss()
-}
-
 /// Get a CStr representation of current supported protocols, for
 /// passing to C, or for converting to a `&str` for Rust.
 ///
@@ -150,35 +139,18 @@ fn have_linkauth_v1() -> bool {
 /// Rust code can use the `&'static CStr` as a normal `&'a str` by
 /// calling `protover::get_supported_protocols`.
 ///
-//  C_RUST_COUPLED: protover.c `protover_get_supported_protocols`
+//  C_RUST_COUPLED: src/or/protover.c `protover_get_supported_protocols`
 pub(crate) fn get_supported_protocols_cstr() -> &'static CStr {
-    if !have_linkauth_v1() {
-        cstr!(
-            "Cons=1-2 \
-             Desc=1-2 \
-             DirCache=1-2 \
-             HSDir=1-2 \
-             HSIntro=3-4 \
-             HSRend=1-2 \
-             Link=1-5 \
-             LinkAuth=3 \
-             Microdesc=1-2 \
-             Relay=1-2"
-        )
-    } else {
-        cstr!(
-            "Cons=1-2 \
-             Desc=1-2 \
-             DirCache=1-2 \
-             HSDir=1-2 \
-             HSIntro=3-4 \
-             HSRend=1-2 \
-             Link=1-5 \
-             LinkAuth=1,3 \
-             Microdesc=1-2 \
-             Relay=1-2"
-        )
-    }
+    cstr!("Cons=1-2 \
+           Desc=1-2 \
+           DirCache=1-2 \
+           HSDir=1-2 \
+           HSIntro=3-4 \
+           HSRend=1-2 \
+           Link=1-5 \
+           LinkAuth=1,3 \
+           Microdesc=1-2 \
+           Relay=1-2")
 }
 
 /// A map of protocol names to the versions of them which are supported.
@@ -187,7 +159,7 @@ pub struct ProtoEntry(HashMap<Protocol, ProtoSet>);
 
 impl Default for ProtoEntry {
     fn default() -> ProtoEntry {
-        ProtoEntry(HashMap::new())
+        ProtoEntry( HashMap::new() )
     }
 }
 
@@ -241,7 +213,9 @@ impl FromStr for ProtoEntry {
     ///
     /// # Returns
     ///
-    /// A `Result` whose `Ok` value is a `ProtoEntry`.
+    /// A `Result` whose `Ok` value is a `ProtoEntry`, where the
+    /// first element is the subprotocol type (see `protover::Protocol`) and the last
+    /// element is an ordered set of `(low, high)` unique version numbers which are supported.
     /// Otherwise, the `Err` value of this `Result` is a `ProtoverError`.
     fn from_str(protocol_entry: &str) -> Result<ProtoEntry, ProtoverError> {
         let mut proto_entry: ProtoEntry = ProtoEntry::default();
@@ -275,7 +249,7 @@ impl FromStr for ProtoEntry {
 /// Generate an implementation of `ToString` for either a `ProtoEntry` or an
 /// `UnvalidatedProtoEntry`.
 macro_rules! impl_to_string_for_proto_entry {
-    ($t:ty) => {
+    ($t:ty) => (
         impl ToString for $t {
             fn to_string(&self) -> String {
                 let mut parts: Vec<String> = Vec::new();
@@ -287,7 +261,7 @@ macro_rules! impl_to_string_for_proto_entry {
                 parts.join(" ")
             }
         }
-    };
+    )
 }
 
 impl_to_string_for_proto_entry!(ProtoEntry);
@@ -301,7 +275,7 @@ pub struct UnvalidatedProtoEntry(HashMap<UnknownProtocol, ProtoSet>);
 
 impl Default for UnvalidatedProtoEntry {
     fn default() -> UnvalidatedProtoEntry {
-        UnvalidatedProtoEntry(HashMap::new())
+        UnvalidatedProtoEntry( HashMap::new() )
     }
 }
 
@@ -359,7 +333,7 @@ impl UnvalidatedProtoEntry {
     pub fn all_supported(&self) -> Option<UnvalidatedProtoEntry> {
         let mut unsupported: UnvalidatedProtoEntry = UnvalidatedProtoEntry::default();
         let supported: ProtoEntry = match ProtoEntry::supported() {
-            Ok(x) => x,
+            Ok(x)  => x,
             Err(_) => return None,
         };
 
@@ -485,12 +459,11 @@ impl UnvalidatedProtoEntry {
     /// following are true:
     ///
     /// * If a protocol name is an empty string, e.g. `"Cons=1,3 =3-5"`.
-    /// * If an entry has no equals sign, e.g. `"Cons=1,3 Desc"`.
-    /// * If there is leading or trailing whitespace, e.g. `" Cons=1,3 Link=3"`.
-    /// * If there is any other extra whitespice, e.g. `"Cons=1,3  Link=3"`.
-    fn parse_protocol_and_version_str<'a>(
-        protocol_string: &'a str,
-    ) -> Result<Vec<(&'a str, &'a str)>, ProtoverError> {
+    /// * If a protocol name cannot be parsed as utf-8.
+    /// * If the version numbers are an empty string, e.g. `"Cons="`.
+    fn parse_protocol_and_version_str<'a>(protocol_string: &'a str)
+        -> Result<Vec<(&'a str, &'a str)>, ProtoverError>
+    {
         let mut protovers: Vec<(&str, &str)> = Vec::new();
 
         for subproto in protocol_string.split(' ') {
@@ -526,9 +499,11 @@ impl FromStr for UnvalidatedProtoEntry {
     ///
     /// # Returns
     ///
-    /// A `Result` whose `Ok` value is an `UnvalidatedProtoEntry`.
+    /// A `Result` whose `Ok` value is a `ProtoSet` holding all of the
+    /// unique version numbers.
     ///
-    /// The returned `Result`'s `Err` value is an `ProtoverError`.
+    /// The returned `Result`'s `Err` value is an `ProtoverError` whose `Display`
+    /// impl has a description of the error.
     ///
     /// # Errors
     ///
@@ -555,9 +530,9 @@ impl FromStr for UnvalidatedProtoEntry {
 impl UnvalidatedProtoEntry {
     /// Create an `UnknownProtocol`, ignoring whether or not it
     /// exceeds MAX_PROTOCOL_NAME_LENGTH.
-    pub(crate) fn from_str_any_len(
-        protocol_string: &str,
-    ) -> Result<UnvalidatedProtoEntry, ProtoverError> {
+    pub(crate) fn from_str_any_len(protocol_string: &str)
+        -> Result<UnvalidatedProtoEntry, ProtoverError>
+    {
         let mut parsed: UnvalidatedProtoEntry = UnvalidatedProtoEntry::default();
         let parts: Vec<(&str, &str)> =
             UnvalidatedProtoEntry::parse_protocol_and_version_str(protocol_string)?;
@@ -592,11 +567,11 @@ impl From<ProtoEntry> for UnvalidatedProtoEntry {
 /// The "protocols" are *not* guaranteed to be known/supported `Protocol`s, in
 /// order to allow new subprotocols to be introduced even if Directory
 /// Authorities don't yet know of them.
-pub struct ProtoverVote(HashMap<UnknownProtocol, HashMap<Version, usize>>);
+pub struct ProtoverVote( HashMap<UnknownProtocol, HashMap<Version, usize>> );
 
 impl Default for ProtoverVote {
     fn default() -> ProtoverVote {
-        ProtoverVote(HashMap::new())
+        ProtoverVote( HashMap::new() )
     }
 }
 
@@ -610,10 +585,9 @@ impl IntoIterator for ProtoverVote {
 }
 
 impl ProtoverVote {
-    pub fn entry(
-        &mut self,
-        key: UnknownProtocol,
-    ) -> hash_map::Entry<UnknownProtocol, HashMap<Version, usize>> {
+    pub fn entry(&mut self, key: UnknownProtocol)
+        -> hash_map::Entry<UnknownProtocol, HashMap<Version, usize>>
+    {
         self.0.entry(key)
     }
 
@@ -634,11 +608,8 @@ impl ProtoverVote {
     /// let vote = ProtoverVote::compute(protos, &2);
     /// assert_eq!("Link=3", vote.to_string());
     /// ```
-    // C_RUST_COUPLED: protover.c protover_compute_vote
-    pub fn compute(
-        proto_entries: &[UnvalidatedProtoEntry],
-        threshold: &usize,
-    ) -> UnvalidatedProtoEntry {
+    // C_RUST_COUPLED: /src/or/protover.c protover_compute_vote
+    pub fn compute(proto_entries: &[UnvalidatedProtoEntry], threshold: &usize) -> UnvalidatedProtoEntry {
         let mut all_count: ProtoverVote = ProtoverVote::default();
         let mut final_output: UnvalidatedProtoEntry = UnvalidatedProtoEntry::default();
 
@@ -664,7 +635,8 @@ impl ProtoverVote {
                     all_count.entry(protocol.clone()).or_insert(HashMap::new());
 
                 for version in versions.clone().expand() {
-                    let counter: &mut usize = supported_vers.entry(version).or_insert(0);
+                    let counter: &mut usize =
+                        supported_vers.entry(version).or_insert(0);
                     *counter += 1;
                 }
             }
@@ -743,22 +715,16 @@ pub(crate) fn compute_for_old_tor_cstr(version: &str) -> &'static CStr {
         return empty;
     }
     if c_tor_version_as_new_as(version, "0.2.9.1-alpha") {
-        return cstr!(
-            "Cons=1-2 Desc=1-2 DirCache=1 HSDir=1 HSIntro=3 HSRend=1-2 \
-             Link=1-4 LinkAuth=1 Microdesc=1-2 Relay=1-2"
-        );
+        return cstr!("Cons=1-2 Desc=1-2 DirCache=1 HSDir=1 HSIntro=3 HSRend=1-2 \
+                      Link=1-4 LinkAuth=1 Microdesc=1-2 Relay=1-2");
     }
     if c_tor_version_as_new_as(version, "0.2.7.5") {
-        return cstr!(
-            "Cons=1-2 Desc=1-2 DirCache=1 HSDir=1 HSIntro=3 HSRend=1 \
-             Link=1-4 LinkAuth=1 Microdesc=1-2 Relay=1-2"
-        );
+        return cstr!("Cons=1-2 Desc=1-2 DirCache=1 HSDir=1 HSIntro=3 HSRend=1 \
+                      Link=1-4 LinkAuth=1 Microdesc=1-2 Relay=1-2");
     }
     if c_tor_version_as_new_as(version, "0.2.4.19") {
-        return cstr!(
-            "Cons=1 Desc=1 DirCache=1 HSDir=1 HSIntro=3 HSRend=1 \
-             Link=1-4 LinkAuth=1 Microdesc=1 Relay=1-2"
-        );
+        return cstr!("Cons=1 Desc=1 DirCache=1 HSDir=1 HSIntro=3 HSRend=1 \
+                      Link=1-4 LinkAuth=1 Microdesc=1 Relay=1-2");
     }
     empty
 }
@@ -793,9 +759,7 @@ pub(crate) fn compute_for_old_tor_cstr(version: &str) -> &'static CStr {
 pub fn compute_for_old_tor(version: &str) -> Result<&'static str, ProtoverError> {
     // .to_str() fails with a Utf8Error if it couldn't validate the
     // utf-8, so convert that here into an Unparseable ProtoverError.
-    compute_for_old_tor_cstr(version)
-        .to_str()
-        .or(Err(ProtoverError::Unparseable))
+    compute_for_old_tor_cstr(version).to_str().or(Err(ProtoverError::Unparseable))
 }
 
 #[cfg(test)]
@@ -829,19 +793,19 @@ mod test {
     }
 
     macro_rules! assert_protoentry_is_parseable {
-        ($e:expr) => {
+        ($e:expr) => (
             let protoentry: Result<ProtoEntry, ProtoverError> = $e.parse();
 
             assert!(protoentry.is_ok(), format!("{:?}", protoentry.err()));
-        };
+        )
     }
 
     macro_rules! assert_protoentry_is_unparseable {
-        ($e:expr) => {
+        ($e:expr) => (
             let protoentry: Result<ProtoEntry, ProtoverError> = $e.parse();
 
             assert!(protoentry.is_err());
-        };
+        )
     }
 
     #[test]
@@ -927,45 +891,24 @@ mod test {
     #[test]
     fn test_contract_protocol_list() {
         let mut versions = "";
-        assert_eq!(
-            String::from(versions),
-            ProtoSet::from_str(&versions).unwrap().to_string()
-        );
+        assert_eq!(String::from(versions), ProtoSet::from_str(&versions).unwrap().to_string());
 
         versions = "1";
-        assert_eq!(
-            String::from(versions),
-            ProtoSet::from_str(&versions).unwrap().to_string()
-        );
+        assert_eq!(String::from(versions), ProtoSet::from_str(&versions).unwrap().to_string());
 
         versions = "1-2";
-        assert_eq!(
-            String::from(versions),
-            ProtoSet::from_str(&versions).unwrap().to_string()
-        );
+        assert_eq!(String::from(versions), ProtoSet::from_str(&versions).unwrap().to_string());
 
         versions = "1,3";
-        assert_eq!(
-            String::from(versions),
-            ProtoSet::from_str(&versions).unwrap().to_string()
-        );
+        assert_eq!(String::from(versions), ProtoSet::from_str(&versions).unwrap().to_string());
 
         versions = "1-4";
-        assert_eq!(
-            String::from(versions),
-            ProtoSet::from_str(&versions).unwrap().to_string()
-        );
+        assert_eq!(String::from(versions), ProtoSet::from_str(&versions).unwrap().to_string());
 
         versions = "1,3,5-7";
-        assert_eq!(
-            String::from(versions),
-            ProtoSet::from_str(&versions).unwrap().to_string()
-        );
+        assert_eq!(String::from(versions), ProtoSet::from_str(&versions).unwrap().to_string());
 
         versions = "1-3,500";
-        assert_eq!(
-            String::from(versions),
-            ProtoSet::from_str(&versions).unwrap().to_string()
-        );
+        assert_eq!(String::from(versions), ProtoSet::from_str(&versions).unwrap().to_string());
     }
 }

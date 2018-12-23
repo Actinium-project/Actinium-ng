@@ -1,4 +1,4 @@
-/* Copyright (c) 2014-2018, The Tor Project, Inc. */
+/* Copyright (c) 2014-2017, The Tor Project, Inc. */
 /* See LICENSE for licensing information */
 
 #include "orconfig.h"
@@ -6,23 +6,18 @@
 #define CONNECTION_PRIVATE
 #define CONNECTION_EDGE_PRIVATE
 
-#include "core/or/or.h"
-#include "test/test.h"
+#include "or.h"
+#include "test.h"
 
-#include "feature/client/addressmap.h"
-#include "app/config/config.h"
-#include "app/config/confparse.h"
-#include "core/mainloop/connection.h"
-#include "core/or/connection_edge.h"
-#include "feature/nodelist/nodelist.h"
+#include "addressmap.h"
+#include "config.h"
+#include "confparse.h"
+#include "connection.h"
+#include "connection_edge.h"
+#include "nodelist.h"
 
-#include "feature/hs/hs_cache.h"
-#include "feature/rend/rendcache.h"
-
-#include "core/or/entry_connection_st.h"
-#include "core/or/socks_request_st.h"
-
-#include "lib/encoding/confline.h"
+#include "hs_cache.h"
+#include "rendcache.h"
 
 static void *
 entryconn_rewrite_setup(const struct testcase_t *tc)
@@ -835,3 +830,4 @@ struct testcase_t entryconn_tests[] = {
 
   END_OF_TESTCASES
 };
+

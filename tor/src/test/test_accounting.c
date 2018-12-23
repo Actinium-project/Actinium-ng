@@ -1,15 +1,13 @@
-/* Copyright (c) 2014-2018, The Tor Project, Inc. */
+/* Copyright (c) 2014-2017, The Tor Project, Inc. */
 /* See LICENSE for licensing information */
 
-#include "core/or/or.h"
-#include "test/test.h"
+#include "or.h"
+#include "test.h"
 #define HIBERNATE_PRIVATE
-#include "feature/hibernate/hibernate.h"
-#include "app/config/config.h"
+#include "hibernate.h"
+#include "config.h"
 #define STATEFILE_PRIVATE
-#include "app/config/statefile.h"
-
-#include "app/config/or_state_st.h"
+#include "statefile.h"
 
 #define NS_MODULE accounting
 
@@ -104,3 +102,4 @@ struct testcase_t accounting_tests[] = {
   { "bwlimits", test_accounting_limits, TT_FORK, NULL, NULL },
   END_OF_TESTCASES
 };
+

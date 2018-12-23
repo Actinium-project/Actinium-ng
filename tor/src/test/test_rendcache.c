@@ -1,25 +1,18 @@
-/* Copyright (c) 2010-2018, The Tor Project, Inc. */
+/* Copyright (c) 2010-2017, The Tor Project, Inc. */
 /* See LICENSE for licensing information */
 
 #include "orconfig.h"
-#include "core/or/or.h"
+#include "or.h"
 
-#include "test/test.h"
+#include "test.h"
 #define RENDCACHE_PRIVATE
-#include "feature/rend/rendcache.h"
-#include "feature/relay/router.h"
-#include "feature/nodelist/routerlist.h"
-#include "app/config/config.h"
-#include "feature/hs/hs_common.h"
-
-#include "core/or/extend_info_st.h"
-#include "feature/rend/rend_encoded_v2_service_descriptor_st.h"
-#include "feature/rend/rend_intro_point_st.h"
-#include "feature/rend/rend_service_descriptor_st.h"
-#include "feature/nodelist/routerinfo_st.h"
-
-#include "test/rend_test_helpers.h"
-#include "test/log_test_helpers.h"
+#include "rendcache.h"
+#include "router.h"
+#include "routerlist.h"
+#include "config.h"
+#include "hs_common.h"
+#include "rend_test_helpers.h"
+#include "log_test_helpers.h"
 
 #define NS_MODULE rend_cache
 
