@@ -728,7 +728,7 @@ fs::path GetDefaultDataDir()
     // Windows < Vista: C:\Documents and Settings\Username\Application Data\Actinium
     // Windows >= Vista: C:\Users\Username\AppData\Roaming\Actinium
     // Mac: ~/Library/Application Support/Actinium
-    // Unix: ~/.bitcoin
+    // Unix: ~/.actinium
 #ifdef WIN32
     // Windows
     return GetSpecialFolderPath(CSIDL_APPDATA) / "Actinium";
