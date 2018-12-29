@@ -744,7 +744,7 @@ fs::path GetDefaultDataDir()
     return pathRet / "Library/Application Support/Actinium";
 #else
     // Unix
-    return pathRet / ".bitcoin";
+    return pathRet / ".actinium";
 #endif
 #endif
 }
