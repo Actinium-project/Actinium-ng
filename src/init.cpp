@@ -851,7 +851,7 @@ void SetupPluggableTransport(boost::optional<std::string> &plugin, struct stat *
     std::string torPluginPath = gArgs.GetArg("-torpluginpath", "");
     if (torPlugin == "meek")
     {
-        printf("Running Tor with Meek\n");
+        LogPrintf("Running Tor with Meek\n");
 #ifdef WIN32
         if (stat("meek-client.exe", sb) == 0 && (*sb).st_mode & S_IXUSR)
         {
@@ -866,7 +866,7 @@ void SetupPluggableTransport(boost::optional<std::string> &plugin, struct stat *
     }
     else if (torPlugin == "obfs4")
     {
-        printf("Running Tor with OBFS4\n");
+        LogPrintf("Running Tor with OBFS4\n");
 #ifdef WIN32
         if (stat("obfs4proxy.exe", sb) == 0 && (*sb).st_mode & S_IXUSR)
         {
@@ -883,7 +883,7 @@ void SetupPluggableTransport(boost::optional<std::string> &plugin, struct stat *
 
 void RunTor()
 {
-    printf("TOR thread started.\n");
+    LogPrintf("Embedded Tor started.\n");
     boost::optional <std::string> clientTransportPlugin;
     struct stat sb;
     SetupPluggableTransport(clientTransportPlugin, &sb);
