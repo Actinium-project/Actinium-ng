@@ -22,7 +22,7 @@ How to Upgrade
 If you are running an older version, shut it down. Wait until it has completely
 shut down (which might take a few minutes for older versions), then run the
 installer (on Windows) or just copy over `/Applications/Actinium-Qt` (on Mac)
-or `bitcoind`/`Actinium-qt` (on Linux).
+or `Actiniumd`/`Actinium-qt` (on Linux).
 
 The first time you run version 0.15.0, your chainstate database will be converted to a
 new format, which will take anywhere from a few minutes to half an hour,
@@ -47,8 +47,9 @@ processing the entire blockchain.
 Compatibility
 ==============
 
-Actinium Core is extensively tested on multiple operating systems using
-the Linux kernel, macOS 10.10+, and Windows 7 and newer (Windows XP is not supported).
+Bitcoin Core is supported and extensively tested on operating systems using
+the Linux kernel, macOS 10.10+, and Windows 7 and newer.  It is not recommended
+to use Bitcoin Core on unsupported systems.
 
 Actinium Core should also work on most other Unix-like systems but is not
 frequently tested on them.
