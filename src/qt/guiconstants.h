@@ -50,5 +50,6 @@ static const int MAX_URI_LENGTH = 255;
 #define QAPP_ORG_DOMAIN "actinium.org"
 #define QAPP_APP_NAME_DEFAULT "Actinium-Qt"
 #define QAPP_APP_NAME_TESTNET "Actinium-Qt-testnet"
+#define QAPP_APP_NAME_REGTEST "Actinium-Qt-regtest"
 
 #endif // BITCOIN_QT_GUICONSTANTS_H
