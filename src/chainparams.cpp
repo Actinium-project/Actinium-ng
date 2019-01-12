@@ -94,7 +94,7 @@ public:
 
 
         // The best chain should have at least this much work.
-        consensus.nMinimumChainWork = uint256S("0x0000000000000000000000000000000000000000000000000bd15b3e5bf07c82");
+        consensus.nMinimumChainWork = uint256S("0x0000000000000000000000000000000000000000000000000c8b16c30d125663");
 
         // By default assume that the signatures in ancestors of this block are valid.
         consensus.defaultAssumeValid = uint256S("0xa9981048eaac207ec6ae84afd3e29d1f4e8c602269564b468ec9bde97b569925"); //block 123800
@@ -111,8 +111,8 @@ public:
         pchMessageStart[3] = 0xd7;
         nDefaultPort = 4334;
         nPruneAfterHeight = 100000;
-        m_assumed_blockchain_size = 200;
-        m_assumed_chain_state_size = 3;
+        m_assumed_blockchain_size = 1;
+        m_assumed_chain_state_size = 0;
 
         genesis = CreateGenesisBlock(1524649713, 743522, 0x1e0ffff0, 1, 50 * COIN);
         consensus.hashGenesisBlock = genesis.GetHash();
@@ -168,6 +168,7 @@ public:
                 {90690, uint256S("0xb9270df40c471556893a5a6538c20119f03ddf55ec394dd322e4a204be22d7fb")},
                 {123800, uint256S("0xa9981048eaac207ec6ae84afd3e29d1f4e8c602269564b468ec9bde97b569925")},
                 {140174, uint256S("0x8a80f31eec86c4303b8076e7d29e0cee95568d5b045568fde283723a964bfc35")},
+                {151165, uint256S("0x43342321907e9c88c9beb3e235771d4f3f3049dd2cd92d016ce9df56365b3edd")}
             }
         };
 
@@ -231,8 +232,8 @@ public:
         pchMessageStart[3] = 0xf7;
         nDefaultPort = 4335;
         nPruneAfterHeight = 1000;
-        m_assumed_blockchain_size = 20;
-        m_assumed_chain_state_size = 2;
+        m_assumed_blockchain_size = 1;
+        m_assumed_chain_state_size = 0;
 
         genesis = CreateGenesisBlock(1524650001, 19905, 0x1e0ffff0, 1, 50 * COIN);
         consensus.hashGenesisBlock = genesis.GetHash();
