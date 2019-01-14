@@ -1469,16 +1469,16 @@ bool AppInitMain(InitInterfaces& interfaces)
     // Start Tor
     if(gArgs.GetBoolArg("-torenabled", false)){
         StartTorEnabled(threadGroup, scheduler);
-        SetReachable(NET_ONION, true);
-        SetReachable(NET_IPV4, true);
-        SetReachable(NET_IPV6, true);
+        SetReachable(NET_ONION, false);
+        SetReachable(NET_IPV4, false);
+        SetReachable(NET_IPV6, false);
         proxyType addrProxy = proxyType(CService(LookupNumeric("127.0.0.1", 9050)), true);
         SetProxy(NET_IPV4, addrProxy);
         SetProxy(NET_IPV6, addrProxy);
         SetProxy(NET_ONION, addrProxy);
-        SetReachable(NET_IPV4, false);
-        SetReachable(NET_IPV6, false);
-        SetReachable(NET_ONION, false);
+        SetReachable(NET_IPV4, true);
+        SetReachable(NET_IPV6, true);
+        SetReachable(NET_ONION, true);
     }
 
     bool proxyRandomize = gArgs.GetBoolArg("-proxyrandomize", DEFAULT_PROXYRANDOMIZE);
