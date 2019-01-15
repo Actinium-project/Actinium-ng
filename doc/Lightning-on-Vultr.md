@@ -1,14 +1,11 @@
-We have to add the location of the config file whenever we start it.
-lightning-cli getinfo will display the status of the lightningd daemon:How to compile and run a Actinium Lightning node on a Vserver using Vultr
+## How to compile and run a Actinium Lightning node on a vServer using Vultr
 
 This howto describes the basic steps to setup an Actinium Lightning node on a vServer offered from hosting companies like [vultr.com](https://www.vultr.com). 
-Any other hosting provider with similiar setup should work as long as it is the same Operating system and meets the minimal standards
-like ssh access.
+Any other hosting provider with similiar setup should work as long as it is the same Operating system and meets the minimal standards like ssh access.
 
 ### Prequesites:
 
-You can adminster the server from any operating system on your PC, as long as you have  a SSH client. Ideally, you already have
-some experience with the Linux bash, but even as a beginner to Linux, it should be possible for you to setup the server.
+You can adminster the server from any operating system on your PC, as long as you have  a SSH client. Ideally, you already have some experience with the Linux bash, but even as a beginner to Linux, it should be possible for you to setup the server.
 Both Windows and macOS offer ssh clients, [putty](https://www.putty.org/)  being the most popular for Windows. 
 You need to own some ACM to fund the channels with your node, so purchase some at exchanges who [offer ACM.](https://coinmarketcap.com/currencies/actinium/#markets) 
 
@@ -138,7 +135,7 @@ cd acm-lightning
 make
 sudo make install
 ~~~
-- Now again, we have to place a config file for Lightning into the default working dir, and match rpcuser and rpcpassword likein the Actinium.conf file we placed unter ~/.actinium:
+- Now again we have to place a config file for Lightning into the default working dir and match rpcuser and rpcpassword like in the Actinium.conf file we placed at ~/.actinium:
 ~~~bash
 cd ~
 mkdir .lightning
@@ -202,26 +199,26 @@ You should see an output similar to this:
 
 >```
 >{
->  "id": "0228de6714942ee30fc6fbff581b7589177d1a0f79e24a480698e28a43d12db02c", 
->  "alias": "MY-ACM-LIGHTNING-NODE", 
->  "color": "008100", 
->  "address": [
->  {
->      "type": "ipv4", 
->      "address": "1.2.3.4", 
->      "port": 9735
->    }
->  ], 
->  "binding": [
->    {
->      "type": "ipv6", 
->      "address": "::", 
->      "port": 9735
->    }
->  ], 
->  "version": "v0.6.1rc1-3-g81a4145-modded", 
->  "blockheight": 79289, 
->  "network": "actinium"
+>"id": "0228de6714942ee30fc6fbff581b7589177d1a0f79e24a480698e28a43d12db02c", 
+>"alias": "MY-ACM-LIGHTNING-NODE", 
+>"color": "008100", 
+>"address": [
+>{
+> "type": "ipv4", 
+> "address": "1.2.3.4", 
+> "port": 9735
+>}
+>], 
+>"binding": [
+>{
+> "type": "ipv6", 
+> "address": "::", 
+> "port": 9735
+>}
+>], 
+>"version": "v0.6.1rc1-3-g81a4145-modded", 
+>"blockheight": 79289, 
+>"network": "actinium"
 >}
 >```
 
