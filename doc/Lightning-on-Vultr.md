@@ -47,7 +47,7 @@ swapon /swapfile
 echo "/swapfile swap swap defaults 0 0" >> /etc/fstab
 ~~~
 
-- You have to restart your server. You can either do it via [my.vultr.com](my.vultr.com) or through ssh:
+- You have to restart your server. You can either do it via [my.vultr.com](https://my.vultr.com) or through ssh:
 ~~~bash
 reboot
 ~~~
