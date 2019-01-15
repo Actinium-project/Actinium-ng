@@ -15,7 +15,7 @@ You need to own some ACM to fund the channels with your node, so purchase some a
 
 Register at [vultr.com](https://www.vultr.com)  and send in an initial funding to create a Vultr Cloud Computer vServer (VC2) instance. I have chosen the minimum of 10$ to cover the costs for 2 months. Chose a location that fits you best and as Operating System you should chose **Ubuntu 18.04 x64**.
 
-I think the 5$ package with 25 GB SSD storage, 1GB RAM and 1TB bandwith the most suitable for a low price to do the job, though there might be then need for higher RAM, especially while compiling - but to that later.
+I think the 5$ package with 25 GB SSD storage, 1GB RAM and 1TB bandwith the most suitable for a low price to do the job, though there might be the need for higher RAM, especially while compiling - but to that later.
 Finally fill in  a Server hostname at point 7 and click **deploy now**.
 
 The server will be up and running in a short time, you can check it´s status at the menu **Servers**. Click on the server caption or the three horizontal dots to view the server details of your server. Copy your IP address and password for root and save it, you will need it later.
@@ -118,7 +118,7 @@ torenabled=0
 ~~~bash
 Actiniumd
 ~~~
-- You should see a daemon output now, just watch the lines for any errors. Top stop the daemon, login with another ssh shell and do a:
+- You should see a daemon output now, just watch the lines for any errors. To stop the daemon, login with another ssh shell and do a:
 ~~~bash
 Actinium-cli -getinfo
 Actinium-cli stop
@@ -135,14 +135,14 @@ cd acm-lightning
 make
 sudo make install
 ~~~
-- Now again we have to place a config file for Lightning into the default working dir and match rpcuser and rpcpassword like in the Actinium.conf file we placed at ~/.actinium:
+- Now we have to place a config file for Lightning into the default working dir and match rpcuser and rpcpassword like in the Actinium.conf file we placed at ~/.actinium:
 ~~~bash
 cd ~
 mkdir .lightning
 cd .lightning
 nano conf
 ~~~
-- Place the following textblock in the file, adapt rpcuser, rpcpassword like configured in Actinium.conf and configure other variables so that it matches your installation. alias can be chosen with your personal caption. log-file path and lightning-dir  have to be adapted to your username. Just exchange **foo** with your username.
+- Place the following textblock in the file, adapt **rpcuser**, **rpcpassword** like configured in Actinium.conf and configure other variables so that it matches your installation. **alias** can be chosen with your personal caption. **log-file** path and **lightning-dir**  have to be adapted to your username. Just exchange **foo** with your username.
   Save with CTRL+o and CTRL+x.
 ~~~bash
 alias=MY-LIGHTNING-NODE
@@ -158,7 +158,7 @@ log-file=/home/foo/.lightning/lightning.log
 lightning-dir=/home/foo/.lightning
 daemon
 ~~~
-- As we stopped Actiniumd above, we have to restart it first. For this task, **screen** comes in handy. Otherwise the Actiniumd daemon would exit, if you log out from the secure shell. 
+- As we stopped Actiniumd above, we have to restart it first. For this task **screen** comes in handy. Otherwise the Actiniumd daemon would exit, if you log out from the secure shell. 
 
   ```bash
   screen Actiniumd
@@ -169,7 +169,7 @@ daemon
   ```bash
   screen -RD
   ```
-- Press again CTRL+A+D to come back to the bash. We have to invoke the location of the config file for lightning-cli whenever we start it. We do not need screen for lightningd, as it flips into the background automatically. Additionally we want the status of the Lightning daemon displayed:
+- Press again CTRL+A+D to come back to the bash. We have to invoke the location of the config file for lightningd whenever we start it. We do not need screen for lightningd, as it flips into the background automatically. Additionally we want the status of the Lightning daemon displayed:
 
 ~~~bash
 lightningd --conf=$HOME/.lightning/conf
@@ -236,5 +236,5 @@ Take your preferred [Actinium wallet](https://actinium.org/#wallets) or exchange
 lightning-cli connect <node_id> <ip> [<port>]
 lightning-cli fundchannel <node_id> <amount_in_satoshis>
 ~~~
-You will find all availabe **node_id** and **ip:port** at the [Official Actinium Lightning node list](https://github.com/Actinium-project/Actinium/wiki/Official-Lightning-Nodes) and visualized at [The Lightning node explorer](https://ln-explorer.actinium.org/).
+You will find all availabe **node_id** and **ip:port** at the [Official Actinium Lightning node list](https://github.com/Actinium-project/Actinium/wiki/Official-Lightning-Nodes) and visualized including the unofficial ones at [The Lightning node explorer](https://ln-explorer.actinium.org/).
 Once you have established a channel to another node, it will be displayed in the Node explorer.
