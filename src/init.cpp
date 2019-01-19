@@ -284,10 +284,10 @@ void Shutdown(InitInterfaces& interfaces)
         LogPrintf("%s: Unable to remove pidfile: %s\n", __func__, e.what());
     }
 #endif
+    interfaces.chain_clients.clear();
     UnregisterAllValidationInterfaces();
     GetMainSignals().UnregisterBackgroundSignalScheduler();
     GetMainSignals().UnregisterWithMempoolSignals(mempool);
-    interfaces.chain_clients.clear();
     globalVerifyHandle.reset();
     ECC_Stop();
     LogPrintf("%s: done\n", __func__);
@@ -1068,7 +1068,7 @@ bool AppInitParameterInteraction()
 
     // also see: InitParameterInteraction()
 
-    if (!fs::is_directory(GetBlocksDir(false))) {
+    if (!fs::is_directory(GetBlocksDir())) {
         return InitError(strprintf(_("Specified blocks directory \"%s\" does not exist."), gArgs.GetArg("-blocksdir", "").c_str()));
     }
 

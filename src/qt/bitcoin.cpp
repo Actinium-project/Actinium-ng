@@ -24,7 +24,7 @@
 
 #ifdef ENABLE_WALLET
 #include <qt/paymentserver.h>
-#include <qt/walletmodel.h>
+#include <qt/walletcontroller.h>
 #endif
 
 #include <interfaces/handler.h>
@@ -184,10 +184,6 @@ BitcoinApplication::BitcoinApplication(interfaces::Node& node, int &argc, char *
     clientModel(nullptr),
     window(nullptr),
     pollShutdownTimer(nullptr),
-#ifdef ENABLE_WALLET
-    paymentServer(nullptr),
-    m_wallet_models(),
-#endif
     returnValue(0),
     platformStyle(nullptr)
 {
@@ -212,7 +208,7 @@ BitcoinApplication::~BitcoinApplication()
     if(coreThread)
     {
         qDebug() << __func__ << ": Stopping thread";
-        Q_EMIT stopThread();
+        coreThread->quit();
         coreThread->wait();
         qDebug() << __func__ << ": Stopped thread";
     }
@@ -279,8 +275,7 @@ void BitcoinApplication::startThread()
     connect(this, &BitcoinApplication::requestedInitialize, executor, &BitcoinCore::initialize);
     connect(this, &BitcoinApplication::requestedShutdown, executor, &BitcoinCore::shutdown);
     /*  make sure executor object is deleted in its own thread */
-    connect(this, &BitcoinApplication::stopThread, executor, &QObject::deleteLater);
-    connect(this, &BitcoinApplication::stopThread, coreThread, &QThread::quit);
+    connect(coreThread, &QThread::finished, executor, &QObject::deleteLater);
 
     coreThread->start();
 }
@@ -316,11 +311,8 @@ void BitcoinApplication::requestShutdown()
     pollShutdownTimer->stop();
 
 #ifdef ENABLE_WALLET
-    window->removeAllWallets();
-    for (const WalletModel* walletModel : m_wallet_models) {
-        delete walletModel;
-    }
-    m_wallet_models.clear();
+    delete m_wallet_controller;
+    m_wallet_controller = nullptr;
 #endif
     delete clientModel;
     clientModel = nullptr;
@@ -329,35 +321,6 @@ void BitcoinApplication::requestShutdown()
 
     // Request shutdown from core thread
     Q_EMIT requestedShutdown();
-}
-
-void BitcoinApplication::addWallet(WalletModel* walletModel)
-{
-#ifdef ENABLE_WALLET
-    window->addWallet(walletModel);
-
-    if (m_wallet_models.empty()) {
-        window->setCurrentWallet(walletModel);
-    }
-
-#ifdef ENABLE_BIP70
-    connect(walletModel, &WalletModel::coinsSent,
-        paymentServer, &PaymentServer::fetchPaymentACK);
-#endif
-    connect(walletModel, &WalletModel::unload, this, &BitcoinApplication::removeWallet);
-
-    m_wallet_models.push_back(walletModel);
-#endif
-}
-
-void BitcoinApplication::removeWallet()
-{
-#ifdef ENABLE_WALLET
-    WalletModel* walletModel = static_cast<WalletModel*>(sender());
-    m_wallet_models.erase(std::find(m_wallet_models.begin(), m_wallet_models.end(), walletModel));
-    window->removeWallet(walletModel);
-    walletModel->deleteLater();
-#endif
 }
 
 void BitcoinApplication::initializeResult(bool success)
@@ -370,26 +333,22 @@ void BitcoinApplication::initializeResult(bool success)
         // Log this only after AppInitMain finishes, as then logging setup is guaranteed complete
         qWarning() << "Platform customization:" << platformStyle->getName();
 #ifdef ENABLE_WALLET
+        m_wallet_controller = new WalletController(m_node, platformStyle, optionsModel, this);
 #ifdef ENABLE_BIP70
         PaymentServer::LoadRootCAs();
 #endif
-        if (paymentServer) paymentServer->setOptionsModel(optionsModel);
+        if (paymentServer) {
+            paymentServer->setOptionsModel(optionsModel);
+#ifdef ENABLE_BIP70
+            connect(m_wallet_controller, &WalletController::coinsSent, paymentServer, &PaymentServer::fetchPaymentACK);
+#endif
+        }
 #endif
 
         clientModel = new ClientModel(m_node, optionsModel);
         window->setClientModel(clientModel);
-
 #ifdef ENABLE_WALLET
-        m_handler_load_wallet = m_node.handleLoadWallet([this](std::unique_ptr<interfaces::Wallet> wallet) {
-            WalletModel* wallet_model = new WalletModel(std::move(wallet), m_node, platformStyle, optionsModel, nullptr);
-            // Fix wallet model thread affinity.
-            wallet_model->moveToThread(thread());
-            QMetaObject::invokeMethod(this, "addWallet", Qt::QueuedConnection, Q_ARG(WalletModel*, wallet_model));
-        });
-
-        for (auto& wallet : m_node.getWallets()) {
-            addWallet(new WalletModel(std::move(wallet), m_node, platformStyle, optionsModel));
-        }
+        window->setWalletController(m_wallet_controller);
 #endif
 
         // If -min option passed, start window minimized (iconified) or minimized to tray
@@ -493,9 +452,6 @@ int GuiMain(int argc, char* argv[])
     //   IMPORTANT if it is no longer a typedef use the normal variant above
     qRegisterMetaType< CAmount >("CAmount");
     qRegisterMetaType< std::function<void()> >("std::function<void()>");
-#ifdef ENABLE_WALLET
-    qRegisterMetaType<WalletModel*>("WalletModel*");
-#endif
 
     /// 2. Parse command-line options. We do this after qt in order to show an error if there are problems parsing these
     // Command-line options take precedence:
