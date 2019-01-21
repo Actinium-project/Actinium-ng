@@ -159,25 +159,21 @@ log-file=/home/foo/.lightning/lightning.log
 lightning-dir=/home/foo/.lightning
 daemon
 ~~~
-- As we stopped Actiniumd above, we have to restart it first. For this task **screen** comes in handy. Otherwise the Actiniumd daemon would exit, if you log out from the secure shell. 
+- As we stopped Actiniumd above, we have to restart it first. Whenever we log out from the secure shell, the started programs within the bash would quit too. To prevent this, we will use the flag **-daemon** to start Actiniumd as daemon in the background.
+  You will not be able to see any output to stdout, because Actiniumd will run as background process, however you always will be able to examine the logfile in the directory .actinium
 
-  ```bash
-  screen Actiniumd
-  ```
+```bash
+Actiniumd -daemon
+```
 
-  A new window will pop up and you will notice all the output from the daemon. To switch back to the console, we have to press CTRL+A+D. You can return to the process - now running in the background - with the command:
-
-  ```bash
-  screen -RD
-  ```
-- Press again CTRL+A+D to come back to the bash. We have to invoke the location of the config file for lightningd whenever we start it. We do not need screen for lightningd, as it flips into the background automatically. Additionally we want the status of the Lightning daemon displayed:
+- We have to invoke the location of the config file for lightningd whenever we start it. lightningd will run  as background process automatically. Additionally we want the status of the Lightning daemon displayed:
 
 ~~~bash
 lightningd --conf=$HOME/.lightning/conf
 lightning-cli getinfo
 ~~~
 
-f you have configured daemon's logfile like in the example above you can now check its contents with 
+If you have configured the daemon's logfile like in the example above you can now check its contents with 
 
 ```bash
 cat $HOME/.lightning/lightning.log
@@ -205,16 +201,16 @@ You should see an output similar to this:
 >"color": "008100", 
 >"address": [
 >{
-> "type": "ipv4", 
-> "address": "1.2.3.4", 
-> "port": 9735
+>"type": "ipv4", 
+>"address": "1.2.3.4", 
+>"port": 9735
 >}
 >], 
 >"binding": [
 >{
-> "type": "ipv6", 
-> "address": "::", 
-> "port": 9735
+>"type": "ipv6", 
+>"address": "::", 
+>"port": 9735
 >}
 >], 
 >"version": "v0.6.1rc1-3-g81a4145-modded", 
@@ -239,3 +235,4 @@ lightning-cli fundchannel <node_id> <amount_in_satoshis>
 ~~~
 You will find all availabe **node_id** and **ip:port** at the [Official Actinium Lightning node list](https://github.com/Actinium-project/Actinium/wiki/Official-Lightning-Nodes) and visualized including the unofficial ones at [The Lightning node explorer](https://ln-explorer.actinium.org/).
 Once you have established a channel to another node, it will be displayed in the Node explorer.
+
