@@ -23,8 +23,8 @@ These are the dependencies currently used by Actinium Core. You can find instruc
 | protobuf | [2.6.1](https://github.com/google/protobuf/releases) |  | No |  |  |
 | Python (tests) |  | [3.4](https://www.python.org/downloads) |  |  |  |
 | qrencode | [3.4.4](https://fukuchi.org/works/qrencode) |  | No |  |  |
-| Qt | [5.9.7](https://download.qt.io/official_releases/qt/) | [5.2](https://github.com/Actinium-project/Actinium-ng/pull/14725) | No |  |  |
-| XCB |  |  |  |  | [Yes](https://github.com/Actinium-project/Actinium-ng/blob/master/depends/packages/qt.mk#L87) (Linux only) |
-| xkbcommon |  |  |  |  | [Yes](https://github.com/Actinium-project/Actinium-ng/blob/master/depends/packages/qt.mk#L86) (Linux only) |
-| ZeroMQ | [4.2.5](https://github.com/zeromq/libzmq/releases) | 4.0.0 | No |  |  |
+| Qt | [5.9.7](https://download.qt.io/official_releases/qt/) | [5.2](https://github.com/bitcoin/bitcoin/pull/14725) | No |  |  |
+| XCB |  |  |  |  | [Yes](https://github.com/bitcoin/bitcoin/blob/master/depends/packages/qt.mk#L87) (Linux only) |
+| xkbcommon |  |  |  |  | [Yes](https://github.com/bitcoin/bitcoin/blob/master/depends/packages/qt.mk#L86) (Linux only) |
+| ZeroMQ | [4.3.1](https://github.com/zeromq/libzmq/releases) | 4.0.0 | No |  |  |
 | zlib | [1.2.11](https://zlib.net/) |  |  |  | No |
