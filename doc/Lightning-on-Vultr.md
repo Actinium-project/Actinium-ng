@@ -83,14 +83,22 @@ cd src
 git clone https://github.com/Actinium-project/Actinium-ng.git
 cd Actinium-ng
 ./autogen.sh
-./configure LIBS="-lcap -lseccomp" --without-gui --disable-shared --with-miniupnpc=no
+./configure --without-gui --disable-shared --with-miniupnpc=no
 ~~~
-- If no error message was displayed, we can go on and start the make process. It will take a lot of time to compile.
+- If no error message was displayed, we can go on and start the make process. It will take a lot of time to compile. 
 
 ~~~
 make
 ~~~
-- If the compilation process finished without any error, we can go on installing the binaries:
+- Occasionally you might face some linker errors with seccomp & cap. If that is the case, use this configure line instead: 
+
+  ```bash
+  ./configure LIBS="-lcap -lseccomp" --without-gui --disable-shared --with-miniupnpc=no
+  
+  make
+  ```
+
+- If the compile process has finished without any error, it is time to install the binaries:
 ~~~
 sudo make install
 ~~~
