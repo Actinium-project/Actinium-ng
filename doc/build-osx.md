@@ -16,13 +16,18 @@ Then install [Homebrew](https://brew.sh).
 Dependencies
 ----------------------
 
-    brew install automake berkeley-db4 libtool boost miniupnpc openssl pkg-config protobuf python qt libevent qrencode
+    brew install automake berkeley-db4 libtool boost miniupnpc openssl pkg-config protobuf python qt libevent zmq qrencode
 
 See [dependencies.md](dependencies.md) for a complete overview.
 
 If you want to build the disk image with `make deploy` (.dmg / optional), you need RSVG:
 
     brew install librsvg
+
+Make the Homebrew OpenSSL headers visible to the configure script  (do ```brew info openssl``` to find out why this is necessary, or if you use Homebrew with installation folders different from the default).
+
+    export LDFLAGS+=-L/usr/local/opt/openssl/lib
+    export CPPFLAGS+=-I/usr/local/opt/openssl/include
 
 Berkeley DB
 -----------
@@ -53,7 +58,7 @@ Build Actinium Core
     You can disable the GUI build by passing `--without-gui` to configure.
 
         ./autogen.sh
-        ./configure
+        ./configure --disable-shared --with-gui=qt5
         make
 
 3.  It is recommended to build and run the unit tests:
