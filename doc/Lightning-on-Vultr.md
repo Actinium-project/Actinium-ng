@@ -65,8 +65,8 @@ ssh foo@serverIP
 sudo apt install -y \
 build-essential libtool autotools-dev git automake pkg-config bsdmainutils python3 \
 libssl-dev libevent-dev libboost-system-dev libboost-filesystem-dev \
-libboost-chrono-dev libboost-test-dev libboost-thread-dev zlib1g-dev libminiupnpc-dev \
-libunivalue0 libgmp-dev libsqlite3-dev python net-tools
+libboost-chrono-dev libboost-test-dev libboost-thread-dev zlib1g-dev \
+libgmp-dev libsqlite3-dev python net-tools
 
 sudo apt install software-properties-common
 sudo add-apt-repository ppa:bitcoin/bitcoin
@@ -83,14 +83,22 @@ cd src
 git clone https://github.com/Actinium-project/Actinium-ng.git
 cd Actinium-ng
 ./autogen.sh
-./configure --without-gui  --with-miniupnpc --enable-upnp-default
+./configure --without-gui --disable-shared --with-miniupnpc=no
 ~~~
-- If no error message was displayed, we can go on and start the make process. It will take a lot of time to compile.
+- If no error message was displayed, we can go on and start the make process. It will take a lot of time to compile. 
 
 ~~~
 make
 ~~~
-- If the compilation process finished without any error, we can go on installing the binaries:
+- Occasionally you might face some linker errors with seccomp & cap. If that is the case, use this configure line instead: 
+
+  ```bash
+  ./configure LIBS="-lcap -lseccomp" --without-gui --disable-shared --with-miniupnpc=no
+  
+  make
+  ```
+
+- If the compile process has finished without any error, it is time to install the binaries:
 ~~~
 sudo make install
 ~~~
