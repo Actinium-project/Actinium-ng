@@ -2,7 +2,7 @@
 # Copyright (c) 2018 The Bitcoin Core developers
 # Distributed under the MIT software license, see the accompanying
 # file COPYING or http://www.opensource.org/licenses/mit-license.php.
-"""Test bitcoin-wallet."""
+"""Test Actinium-wallet."""
 import subprocess
 import textwrap
 
@@ -39,7 +39,7 @@ class ToolWalletTest(BitcoinTestFramework):
     def run_test(self):
 
         self.assert_raises_tool_error('Invalid command: foo', 'foo')
-        # `bitcoin-wallet help` is an error. Use `bitcoin-wallet -help`
+        # `Actinium-wallet help` is an error. Use `Actinium-wallet -help`
         self.assert_raises_tool_error('Invalid command: help', 'help')
         self.assert_raises_tool_error('Error: two methods provided (info and create). Only one method should be provided.', 'info', 'create')
         self.assert_raises_tool_error('Error parsing command line arguments: Invalid parameter -foo', '-foo')
