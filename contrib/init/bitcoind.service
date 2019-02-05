@@ -1,24 +1,48 @@
 # It is not recommended to modify this file in-place, because it will
 # be overwritten during package upgrades. If you want to add further
 # options or overwrite existing ones then use
-# $ systemctl edit bitcoind.service
+# $ systemctl edit actinium.service
 # See "man systemd.service" for details.
 
 # Note that almost all daemon options could be specified in
-# /etc/bitcoin/Actinium.conf
+# /etc/actinium/Actinium.conf, except for those explicitly specified as arguments
+# in ExecStart=
 
 [Unit]
 Description=Actinium daemon
 After=network.target
 
 [Service]
-ExecStart=/usr/bin/bitcoind -daemon -conf=/etc/bitcoin/Actinium.conf -pid=/run/bitcoind/bitcoind.pid
-# Creates /run/bitcoind owned by bitcoin
-RuntimeDirectory=bitcoind
-User=bitcoin
+ExecStart=/usr/bin/Actiniumd -daemon \
+                            -pid=/run/Actiniumd/Actinium.pid \
+                            -conf=/etc/actinium/Actinium.conf \
+                            -datadir=/var/lib/Actiniumd
+
+# Process management
+####################
+
 Type=forking
-PIDFile=/run/bitcoind/bitcoind.pid
+PIDFile=/run/Actiniumd/Actiniumd.pid
 Restart=on-failure
+
+# Directory creation and permissions
+####################################
+
+# Run as actinium:actinium
+User=actinium
+Group=actinium
+
+# /run/Actiniumd
+RuntimeDirectory=Actiniumd
+RuntimeDirectoryMode=0710
+
+# /etc/actinium
+ConfigurationDirectory=actinium
+ConfigurationDirectoryMode=0710
+
+# /var/lib/Actiniumd
+StateDirectory=Actiniumd
+StateDirectoryMode=0710
 
 # Hardening measures
 ####################
