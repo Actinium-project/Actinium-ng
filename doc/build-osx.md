@@ -26,8 +26,8 @@ If you want to build the disk image with `make deploy` (.dmg / optional), you ne
 
 Make the Homebrew OpenSSL headers visible to the configure script  (do ```brew info openssl``` to find out why this is necessary, or if you use Homebrew with installation folders different from the default).
 
-    export LDFLAGS+=-L/usr/local/opt/openssl/lib
-    export CPPFLAGS+=-I/usr/local/opt/openssl/include
+    LDFLAGS+=-L/usr/local/opt/openssl/lib
+    CPPFLAGS+=-I/usr/local/opt/openssl/include
 
 Berkeley DB
 -----------
