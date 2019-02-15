@@ -27,6 +27,7 @@
 #include <script/sign.h>
 #include <shutdown.h>
 #include <timedata.h>
+#include <util/bip32.h>
 #include <util/system.h>
 #include <util/moneystr.h>
 #include <wallet/coincontrol.h>
@@ -172,17 +173,11 @@ static UniValue getnewaddress(const JSONRPCRequest& request)
                 },
             }.ToString());
 
-    // Belt and suspenders check for disabled private keys
-    if (pwallet->IsWalletFlagSet(WALLET_FLAG_DISABLE_PRIVATE_KEYS)) {
-        throw JSONRPCError(RPC_WALLET_ERROR, "Error: Private keys are disabled for this wallet");
-    }
-
     LOCK(pwallet->cs_wallet);
 
     if (!pwallet->CanGetAddresses()) {
         throw JSONRPCError(RPC_WALLET_ERROR, "Error: This wallet has no available keys");
     }
-
 
     // Parse the label first so we don't generate a key if there's an error
     std::string label;
@@ -238,11 +233,6 @@ static UniValue getrawchangeaddress(const JSONRPCRequest& request)
             + HelpExampleRpc("getrawchangeaddress", "")
                 },
             }.ToString());
-
-    // Belt and suspenders check for disabled private keys
-    if (pwallet->IsWalletFlagSet(WALLET_FLAG_DISABLE_PRIVATE_KEYS)) {
-        throw JSONRPCError(RPC_WALLET_ERROR, "Error: Private keys are disabled for this wallet");
-    }
 
     LOCK(pwallet->cs_wallet);
 
@@ -2418,7 +2408,6 @@ static UniValue getwalletinfo(const JSONRPCRequest& request)
             "  \"unlocked_until\": ttt,             (numeric) the timestamp in seconds since epoch (midnight Jan 1 1970 GMT) that the wallet is unlocked for transfers, or 0 if the wallet is locked\n"
             "  \"paytxfee\": x.xxxx,                (numeric) the transaction fee configuration, set in " + CURRENCY_UNIT + "/kB\n"
             "  \"hdseedid\": \"<hash160>\"            (string, optional) the Hash160 of the HD seed (only present when HD is enabled)\n"
-            "  \"hdmasterkeyid\": \"<hash160>\"       (string, optional) alias for hdseedid retained for backwards-compatibility. Will be removed in V0.18.\n"
             "  \"private_keys_enabled\": true|false (boolean) false if privatekeys are disabled for this wallet (enforced watch-only wallet)\n"
             "}\n"
                 },
@@ -2447,7 +2436,7 @@ static UniValue getwalletinfo(const JSONRPCRequest& request)
     obj.pushKV("keypoololdest", pwallet->GetOldestKeyPoolTime());
     obj.pushKV("keypoolsize", (int64_t)kpExternalSize);
     CKeyID seed_id = pwallet->GetHDChain().seed_id;
-    if (!seed_id.IsNull() && pwallet->CanSupportFeature(FEATURE_HD_SPLIT)) {
+    if (pwallet->CanSupportFeature(FEATURE_HD_SPLIT)) {
         obj.pushKV("keypoolsize_hd_internal",   (int64_t)(pwallet->GetKeyPoolSize() - kpExternalSize));
     }
     if (pwallet->IsCrypted()) {
@@ -2456,7 +2445,6 @@ static UniValue getwalletinfo(const JSONRPCRequest& request)
     obj.pushKV("paytxfee", ValueFromAmount(pwallet->m_pay_tx_fee.GetFeePerK()));
     if (!seed_id.IsNull()) {
         obj.pushKV("hdseedid", seed_id.GetHex());
-        obj.pushKV("hdmasterkeyid", seed_id.GetHex());
     }
     obj.pushKV("private_keys_enabled", !pwallet->IsWalletFlagSet(WALLET_FLAG_DISABLE_PRIVATE_KEYS));
     return obj;
@@ -2770,7 +2758,8 @@ static UniValue listunspent(const JSONRPCRequest& request)
             "    \"scriptPubKey\" : \"key\",   (string) the script key\n"
             "    \"amount\" : x.xxx,         (numeric) the transaction output amount in " + CURRENCY_UNIT + "\n"
             "    \"confirmations\" : n,      (numeric) The number of confirmations\n"
-            "    \"redeemScript\" : n        (string) The redeemScript if scriptPubKey is P2SH\n"
+            "    \"redeemScript\" : \"script\" (string) The redeemScript if scriptPubKey is P2SH"
+            "    \"witnessScript\" : \"script\" (string) witnessScript if the scriptPubKey is P2WSH or P2SH-P2WSH\n"
             "    \"spendable\" : xxx,        (bool) Whether we have the private keys to spend this output\n"
             "    \"solvable\" : xxx,         (bool) Whether we know how to spend this output, ignoring the lack of keys\n"
             "    \"desc\" : xxx,             (string, only when solvable) A descriptor for spending this output\n"
@@ -2884,6 +2873,28 @@ static UniValue listunspent(const JSONRPCRequest& request)
                 CScript redeemScript;
                 if (pwallet->GetCScript(hash, redeemScript)) {
                     entry.pushKV("redeemScript", HexStr(redeemScript.begin(), redeemScript.end()));
+                    // Now check if the redeemScript is actually a P2WSH script
+                    CTxDestination witness_destination;
+                    if (redeemScript.IsPayToWitnessScriptHash()) {
+                        bool extracted = ExtractDestination(redeemScript, witness_destination);
+                        assert(extracted);
+                        // Also return the witness script
+                        const WitnessV0ScriptHash& whash = boost::get<WitnessV0ScriptHash>(witness_destination);
+                        CScriptID id;
+                        CRIPEMD160().Write(whash.begin(), whash.size()).Finalize(id.begin());
+                        CScript witnessScript;
+                        if (pwallet->GetCScript(id, witnessScript)) {
+                            entry.pushKV("witnessScript", HexStr(witnessScript.begin(), witnessScript.end()));
+                        }
+                    }
+                }
+            } else if (scriptPubKey.IsPayToWitnessScriptHash()) {
+                const WitnessV0ScriptHash& whash = boost::get<WitnessV0ScriptHash>(address);
+                CScriptID id;
+                CRIPEMD160().Write(whash.begin(), whash.size()).Finalize(id.begin());
+                CScript witnessScript;
+                if (pwallet->GetCScript(id, witnessScript)) {
+                    entry.pushKV("witnessScript", HexStr(witnessScript.begin(), witnessScript.end()));
                 }
             }
         }
@@ -3139,7 +3150,8 @@ UniValue signrawtransactionwithwallet(const JSONRPCRequest& request)
                                     {"txid", RPCArg::Type::STR_HEX, RPCArg::Optional::NO, "The transaction id"},
                                     {"vout", RPCArg::Type::NUM, RPCArg::Optional::NO, "The output number"},
                                     {"scriptPubKey", RPCArg::Type::STR_HEX, RPCArg::Optional::NO, "script key"},
-                                    {"redeemScript", RPCArg::Type::STR_HEX, RPCArg::Optional::OMITTED, "(required for P2SH or P2WSH) redeem script"},
+                                    {"redeemScript", RPCArg::Type::STR_HEX, RPCArg::Optional::OMITTED, "(required for P2SH) redeem script"},
+                                    {"witnessScript", RPCArg::Type::STR_HEX, RPCArg::Optional::OMITTED, "(required for P2WSH or P2SH-P2WSH) witness script"},
                                     {"amount", RPCArg::Type::AMOUNT, RPCArg::Optional::NO, "The amount spent"},
                                 },
                             },
@@ -3660,7 +3672,7 @@ UniValue getaddressinfo(const JSONRPCRequest& request)
             "  \"timestamp\" : timestamp,      (number, optional) The creation time of the key if available in seconds since epoch (Jan 1 1970 GMT)\n"
             "  \"hdkeypath\" : \"keypath\"       (string, optional) The HD keypath if the key is HD and available\n"
             "  \"hdseedid\" : \"<hash160>\"      (string, optional) The Hash160 of the HD seed\n"
-            "  \"hdmasterkeyid\" : \"<hash160>\" (string, optional) alias for hdseedid maintained for backwards compatibility. Will be removed in V0.18.\n"
+            "  \"hdmasterfingerprint\" : \"<hash160>\" (string, optional) The fingperint of the master key.\n"
             "  \"labels\"                      (object) Array of labels associated with the address.\n"
             "    [\n"
             "      { (json object of label data)\n"
@@ -3723,10 +3735,10 @@ UniValue getaddressinfo(const JSONRPCRequest& request)
     }
     if (meta) {
         ret.pushKV("timestamp", meta->nCreateTime);
-        if (!meta->hdKeypath.empty()) {
-            ret.pushKV("hdkeypath", meta->hdKeypath);
+        if (meta->has_key_origin) {
+            ret.pushKV("hdkeypath", WriteHDKeypath(meta->key_origin.path));
             ret.pushKV("hdseedid", meta->hd_seed_id.GetHex());
-            ret.pushKV("hdmasterkeyid", meta->hd_seed_id.GetHex());
+            ret.pushKV("hdmasterfingerprint", HexStr(meta->key_origin.fingerprint, meta->key_origin.fingerprint + 4));
         }
     }
 
