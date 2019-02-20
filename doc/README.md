@@ -5,7 +5,7 @@ Setup
 ---------------------
 Actinium Core is the original Actinium client and it builds the backbone of the network. It downloads and, by default, stores the entire history of Actinium transactions, which requires a few hundred gigabytes of disk space. Depending on the speed of your computer and network connection, the synchronization process can take anywhere from a few hours to a day or more.
 
-To download Actinium Core, visit [bitcoincore.org](https://actinium.org/).
+To download Actinium Core, visit [actinium.org](https://actinium.org/).
 
 Running
 ---------------------
