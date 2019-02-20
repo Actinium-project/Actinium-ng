@@ -16,7 +16,7 @@ The following are some helpful notes on how to run Actinium Core on your native 
 Unpack the files into a directory and run:
 
 - `bin/Actinium-qt` (GUI) or
-- `bin/bitcoind` (headless)
+- `bin/Actiniumd` (headless)
 
 ### Windows
 
