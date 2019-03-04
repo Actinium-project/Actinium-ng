@@ -1,12 +1,12 @@
 UNIX BUILD NOTES
 ====================
-Some notes on how to build Actinium Core in Unix.
+Some notes on how to build Actinium in Unix.
 
 (For BSD specific instructions, see `build-*bsd.md` in this directory.)
 
 Note
 ---------------------
-Always use absolute paths to configure and compile Actinium Core and the dependencies.
+Always use absolute paths to configure and compile Actinium and the dependencies.
 For example, when specifying the path of the dependency:
 
 	../dist/configure --enable-cxx --disable-shared --with-pic --prefix=$BDB_PREFIX
@@ -55,7 +55,7 @@ Memory Requirements
 --------------------
 
 C++ compilers are memory-hungry. It is recommended to have at least 1.5 GB of
-memory available when compiling Actinium Core. On systems with less, gcc can be
+memory available when compiling Actinium. On systems with less, gcc can be
 tuned to conserve memory with additional CXXFLAGS:
 
 
@@ -78,20 +78,14 @@ Now, you can either build from self-compiled [depends](/depends/README.md) or in
 
 BerkeleyDB is required for the wallet.
 
-**For Ubuntu only:** db4.8 packages are available [here](https://launchpad.net/~bitcoin/+archive/bitcoin).
-You can add the repository and install using the following commands:
-
-    sudo apt-get install software-properties-common
-    sudo add-apt-repository ppa:bitcoin/bitcoin
-    sudo apt-get update
-    sudo apt-get install libdb4.8-dev libdb4.8++-dev
-
 Ubuntu and Debian have their own libdb-dev and libdb++-dev packages, but these will install
 BerkeleyDB 5.1 or later. This will break binary wallet compatibility with the distributed executables, which
 are based on BerkeleyDB 4.8. If you do not care about wallet compatibility,
 pass `--with-incompatible-bdb` to configure.
 
-To build Actinium Core without wallet, see [*Disable-wallet mode*](/doc/build-unix.md#disable-wallet-mode)
+Otherwise, you can build from self-compiled `depends` (see above).
+
+To build Actinium without wallet, see [*Disable-wallet mode*](/doc/build-unix.md#disable-wallet-mode)
 
 
 Optional (see --with-miniupnpc and --enable-upnp-default):
@@ -183,7 +177,7 @@ If you need to build Boost yourself:
 
 Security
 --------
-To help make your Actinium Core installation more secure by making certain attacks impossible to
+To help make your Actinium installation more secure by making certain attacks impossible to
 exploit even if a vulnerability is found, binaries are hardened by default.
 This can be disabled with:
 
@@ -213,7 +207,7 @@ Hardening enables the following features:
     ET_DYN
 
 * _Non-executable Stack_: If the stack is executable then trivial stack-based buffer overflow exploits are possible if
-    vulnerable buffers are found. By default, Actinium Core should be built with a non-executable stack,
+    vulnerable buffers are found. By default, Actinium should be built with a non-executable stack,
     but if one of the libraries it uses asks for an executable stack or someone makes a mistake
     and uses a compiler extension which requires an executable stack, it will silently build an
     executable without the non-executable stack protection.
@@ -229,7 +223,7 @@ Hardening enables the following features:
 
 Disable-wallet mode
 --------------------
-When the intention is to run only a P2P node without a wallet, Actinium Core may be compiled in
+When the intention is to run only a P2P node without a wallet, Actinium may be compiled in
 disable-wallet mode with:
 
     ./configure --disable-wallet
@@ -260,7 +254,7 @@ Note:
 Enabling wallet support requires either compiling against a Berkeley DB newer than 4.8 (package `db`) using `--with-incompatible-bdb`,
 or building and depending on a local version of Berkeley DB 4.8. The readily available Arch Linux packages are currently built using
 `--with-incompatible-bdb` according to the [PKGBUILD](https://projects.archlinux.org/svntogit/community.git/tree/bitcoin/trunk/PKGBUILD).
-As mentioned above, when maintaining portability of the wallet between the standard Actinium Core distributions and independently built
+As mentioned above, when maintaining portability of the wallet between the standard Actinium distributions and independently built
 node software is desired, Berkeley DB 4.8 must be used.
 
 
