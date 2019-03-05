@@ -30,7 +30,7 @@ packages:
 - "faketime"
 - "bsdmainutils"
 - "ca-certificates"
-- "python"
+- "python3"
 remotes:
 - "url": "https://github.com/Actinium-project/Actinium-ng.git"
   "dir": "bitcoin"
