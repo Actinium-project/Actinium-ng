@@ -218,14 +218,7 @@ class P2PConnection(asyncio.Protocol):
         def maybe_write():
             if not self._transport:
                 return
-<<<<<<< HEAD
-            # Python <3.4.4 does not have is_closing, so we have to check for
-            # its existence explicitly as long as Actinium Core supports all
-            # Python 3.4 versions.
-            if hasattr(self._transport, 'is_closing') and self._transport.is_closing():
-=======
             if self._transport.is_closing():
->>>>>>> d8a62db8bf68896397f175e1d7d52b7be5021985
                 return
             self._transport.write(raw_message_bytes)
         NetworkThread.network_event_loop.call_soon_threadsafe(maybe_write)

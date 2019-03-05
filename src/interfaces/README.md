@@ -2,15 +2,9 @@
 
 The following interfaces are defined here:
 
-<<<<<<< HEAD
-* [`Chain`](chain.h) — used by wallet to access blockchain and mempool state. Added in [#10973](https://github.com/Actinium-project/Actinium-ng/pull/10973).
-
-* [`ChainClient`](chain.h) — used by node to start & stop `Chain` clients. Added in [#10973](https://github.com/Actinium-project/Actinium-ng/pull/10973).
-=======
 * [`Chain`](chain.h) — used by wallet to access blockchain and mempool state. Added in [#14437](https://github.com/bitcoin/bitcoin/pull/14437), [#14711](https://github.com/bitcoin/bitcoin/pull/14711), [#15288](https://github.com/bitcoin/bitcoin/pull/15288), and [#10973](https://github.com/bitcoin/bitcoin/pull/10973).
 
 * [`ChainClient`](chain.h) — used by node to start & stop `Chain` clients. Added in [#14437](https://github.com/bitcoin/bitcoin/pull/14437).
->>>>>>> d8a62db8bf68896397f175e1d7d52b7be5021985
 
 * [`Node`](node.h) — used by GUI to start & stop bitcoin node. Added in [#10244](https://github.com/Actinium-project/Actinium-ng/pull/10244).
 
