@@ -67,6 +67,11 @@ build process.
 
 See also: [dependencies.md](dependencies.md).
 
+Acquire the source in the usual way:
+
+    git clone https://github.com/bitcoin/bitcoin.git
+    cd bitcoin
+
 ## Building for 64-bit Windows
 
 The first step is to install the mingw-w64 cross-compilation tool chain:
@@ -88,6 +93,7 @@ Acquire the source in the usual way:
     git clone https://github.com/Actinium-project/Actinium-ng.git
 
 Once the source code is ready the build steps are below:
+Build using:
 
     PATH=$(echo "$PATH" | sed -e 's/:\/mnt.*//g') # strip out problematic Windows %PATH% imported var
     cd depends
@@ -116,6 +122,7 @@ Acquire the source in the usual way:
     git clone https://github.com/Actinium-project/Actinium-ng.git
 
 Then build using:
+Build using:
 
     PATH=$(echo "$PATH" | sed -e 's/:\/mnt.*//g') # strip out problematic Windows %PATH% imported var
     cd depends
