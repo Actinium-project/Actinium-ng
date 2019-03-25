@@ -656,7 +656,8 @@ Actinium_wallet_LDADD = \
   $(LIBMEMENV) \
   $(LIBSECP256K1) \
   $(LIBUNIVALUE) \
-  $(TOR_LIBS)
+  $(TOR_LIBS) \
+  $(SSL_LIBS) \
 
 Actinium_wallet_LDADD += $(BOOST_LIBS) $(BDB_LIBS) $(CRYPTO_LIBS) $(EVENT_PTHREADS_LIBS) $(EVENT_LIBS) $(MINIUPNPC_LIBS) $(ZMQ_LIBS)
 #
