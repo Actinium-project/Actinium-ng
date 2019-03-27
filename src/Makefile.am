@@ -381,6 +381,8 @@ crypto_libbitcoin_crypto_base_a_SOURCES = \
   crypto/Lyra2Z/sph_types.h \
   crypto/Lyra2Z/Sponge.c \
   crypto/Lyra2Z/Sponge.h \
+  crypto/poly1305.h \
+  crypto/poly1305.cpp \
   crypto/ripemd160.cpp \
   crypto/ripemd160.h \
   crypto/scrypt.cpp \
