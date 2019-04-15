@@ -13,39 +13,6 @@
 #include <list>
 #include <vector>
 
-<<<<<<< HEAD
-static std::shared_ptr<CBlock> PrepareBlock(const CScript& coinbase_scriptPubKey)
-{
-    auto block = std::make_shared<CBlock>(
-        BlockAssembler{Params()}
-            .CreateNewBlock(coinbase_scriptPubKey)
-            ->block);
-
-    block->nTime = ::chainActive.Tip()->GetMedianTimePast() + 1;
-    block->hashMerkleRoot = BlockMerkleRoot(*block);
-
-    return block;
-}
-
-
-static CTxIn MineBlock(const CScript& coinbase_scriptPubKey)
-{
-    auto block = PrepareBlock(coinbase_scriptPubKey);
-
-    while (!CheckProofOfWork(block->GetPoWHash(), block->nBits, Params().GetConsensus())) {
-        ++block->nNonce;
-        assert(block->nNonce);
-    }
-
-    bool processed{ProcessNewBlock(Params(), block, true, nullptr)};
-    assert(processed);
-
-    return CTxIn{block->vtx[0]->GetHash(), 0};
-}
-
-
-=======
->>>>>>> 78295e97b8d38ecf6628b5d8ce1efd3900a5c345
 static void AssembleBlock(benchmark::State& state)
 {
     const std::vector<unsigned char> op_true{OP_TRUE};
