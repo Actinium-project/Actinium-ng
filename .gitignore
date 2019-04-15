@@ -67,6 +67,7 @@ src/qt/Actinium-qt.includes
 *.a
 *.pb.cc
 *.pb.h
+*.dat
 
 *.log
 *.trs
@@ -124,3 +125,5 @@ db4/
 
 .vscode
 src/tor.timestamp
+# clang-check
+*.plist
