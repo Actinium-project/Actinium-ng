@@ -87,6 +87,8 @@ Actinium Core is now available at `./src/bitcoind`
 
 Before running, you may create an empty configuration file:
 
+    mkdir -p "/Users/${USER}/Library/Application Support/Actinium"
+
     touch "/Users/${USER}/Library/Application Support/Actinium/Actinium.conf"
 
     chmod 600 "/Users/${USER}/Library/Application Support/Actinium/Actinium.conf"
