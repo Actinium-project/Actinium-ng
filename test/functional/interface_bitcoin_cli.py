@@ -16,11 +16,7 @@ class TestBitcoinCli(BitcoinTestFramework):
         """Main test logic"""
 
         cli_response = self.nodes[0].cli("-version").send_cli()
-<<<<<<< HEAD
-        assert "Actinium RPC client version" in cli_response
-=======
         assert "{} RPC client version".format(self.config['environment']['PACKAGE_NAME']) in cli_response
->>>>>>> 5873e9a3e83361c7e4654a7b5d623d75298996e8
 
         self.log.info("Compare responses from getwalletinfo RPC and `Actinium-cli getwalletinfo`")
         if self.is_wallet_compiled():
