@@ -2,7 +2,7 @@
 # Distributed under the MIT software license, see the accompanying
 # file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-DIST_SUBDIRS = secp256k1 univalue ../tor
+DIST_SUBDIRS = secp256k1 univalue tor
 
 AM_LDFLAGS = $(PTHREAD_CFLAGS) $(LIBTOOL_LDFLAGS) $(HARDENED_LDFLAGS) $(GPROF_LDFLAGS) $(SANITIZER_LDFLAGS)
 AM_CXXFLAGS = $(DEBUG_CXXFLAGS) $(HARDENED_CXXFLAGS) $(WARN_CXXFLAGS) $(NOWARN_CXXFLAGS) $(ERROR_CXXFLAGS) $(GPROF_CXXFLAGS) $(SANITIZER_CXXFLAGS)
@@ -19,31 +19,53 @@ else
 LIBUNIVALUE = $(UNIVALUE_LIBS)
 endif
 
-TOR_LIBS = ../tor/src/or/libtor.a \
-	../tor/src/common/libor.a \
-	../tor/src/common/libor-ctime.a \
-	../tor/src/common/libor-crypto.a \
-	../tor/src/common/libor-event.a \
-	../tor/src/trunnel/libor-trunnel.a \
-	../tor/src/common/libcurve25519_donna.a \
-	../tor/src/ext/ed25519/donna/libed25519_donna.a \
-	../tor/src/ext/ed25519/ref10/libed25519_ref10.a \
-	../tor/src/ext/keccak-tiny/libkeccak-tiny.a
+TOR_UTIL_LIBS = \
+  tor/src/lib/libtor-geoip.a \
+	tor/src/lib/libtor-process.a \
+	tor/src/lib/libtor-time.a \
+	tor/src/lib/libtor-fs.a \
+	tor/src/lib/libtor-encoding.a \
+	tor/src/lib/libtor-sandbox.a \
+	tor/src/lib/libtor-container.a \
+	tor/src/lib/libtor-net.a \
+	tor/src/lib/libtor-thread.a \
+	tor/src/lib/libtor-memarea.a \
+	tor/src/lib/libtor-math.a \
+	tor/src/lib/libtor-meminfo.a \
+	tor/src/lib/libtor-osinfo.a \
+	tor/src/lib/libtor-log.a \
+	tor/src/lib/libtor-lock.a \
+	tor/src/lib/libtor-fdio.a \
+	tor/src/lib/libtor-string.a \
+	tor/src/lib/libtor-term.a \
+	tor/src/lib/libtor-smartlist-core.a \
+	tor/src/lib/libtor-malloc.a \
+	tor/src/lib/libtor-wallclock.a \
+	tor/src/lib/libtor-err.a \
+	tor/src/lib/libtor-intmath.a \
+	tor/src/lib/libtor-ctime.a
 
-tor.timestamp: $(wildcard ../tor/src/or/*.c) $(wildcard ../tor/src/or/*.h) \
-		$(wildcard ../tor/src/common/*.c) $(wildcard ../tor/src/common/*.h) \
-		$(wildcard ../tor/src/trunnel/*.c) $(wildcard ../tor/src/trunnel/*.h) \
-		$(wildcard ../tor/src/ext/*.c) $(wildcard ../tor/src/ext/*.h)
-	@rm -f tor.timestamp.tmp
-	@touch tor.timestamp.tmp
-	$(AM_V_at)$(MAKE) $(AM_MAKEFLAGS) -C ../tor
-	@mv -f tor.timestamp.tmp tor.timestamp
+LIBED25519_REF10 = tor/src/ext/ed25519/ref10/libed25519_ref10.a
+LIBED25519_DONNA = tor/src/ext/ed25519/donna/libed25519_donna.a
+LIBKECCAK_TINY = tor/src/ext/keccak-tiny/libkeccak-tiny.a
+LIBDONNA = tor/src/lib/libcurve25519_donna.a \
+  $(LIBED25519_REF10) \
+  $(LIBED25519_DONNA)
 
-$(TOR_LIBS): tor.timestamp
-	@if test -f $@; then :; else \
-		rm -f tor.timestamp; \
-		$(MAKE) $(AM_MAKEFLAGS) tor.timestamp; \
-	fi
+TOR_CRYPTO_LIBS = \
+	tor/src/lib/libtor-tls.a \
+	tor/src/lib/libtor-crypt-ops.a \
+	$(LIBKECCAK_TINY) \
+	$(LIBDONNA)
+
+TOR_LIBS = \
+	tor/src/core/libtor-app.a \
+	tor/src/lib/libtor-compress.a \
+	tor/src/lib/libtor-evloop.a \
+	$(TOR_CRYPTO_LIBS) \
+	$(TOR_UTIL_LIBS) \
+	tor/src/trunnel/libor-trunnel.a \
+	tor/src/lib/libtor-trace.a
 
 BITCOIN_INCLUDES=-I$(builddir) $(BDB_CPPFLAGS) $(BOOST_CPPFLAGS) $(LEVELDB_CPPFLAGS) $(CRYPTO_CFLAGS) $(SSL_CFLAGS)
 
