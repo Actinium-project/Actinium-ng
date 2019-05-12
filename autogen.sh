@@ -6,7 +6,7 @@
 export LC_ALL=C
 
 set -e
-git submodule update --init --recursive
+git submodule update --init --recursive --remote
 
 srcdir="$(dirname $0)"
 cd "$srcdir"
