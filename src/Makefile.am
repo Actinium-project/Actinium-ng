@@ -801,7 +801,10 @@ include Makefile.test.include
 endif
 
 if ENABLE_BENCH
-# include Makefile.bench.include
+if TARGET_WINDOWS
+else
+include Makefile.bench.include
+endif
 endif
 
 if ENABLE_QT
