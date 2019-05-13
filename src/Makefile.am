@@ -706,7 +706,6 @@ Actinium_wallet_LDADD = \
   $(LIBMEMENV) \
   $(LIBSECP256K1) \
   $(LIBUNIVALUE) \
-  $(TOR_LIBS) \
   $(SSL_LIBS) \
   $(ZLIB_LIBS)
 
