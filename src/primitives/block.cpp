@@ -7,7 +7,6 @@
 
 #include <hash.h>
 #include <tinyformat.h>
-#include <util/strencodings.h>
 #include <crypto/common.h>
 #include <crypto/scrypt.h>
 #include <crypto/Lyra2Z/Lyra2Z.h>
