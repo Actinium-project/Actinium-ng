@@ -77,7 +77,7 @@ bool CBlockIndexWorkComparator::operator()(const CBlockIndex *pa, const CBlockIn
     return false;
 }
 
-CChainState g_chainstate;
+static CChainState g_chainstate;
 
 CChainState& ChainstateActive() { return g_chainstate; }
 
@@ -1053,7 +1053,7 @@ bool CChainState::IsInitialBlockDownload() const
     return false;
 }
 
-CBlockIndex *pindexBestForkTip = nullptr, *pindexBestForkBase = nullptr;
+static CBlockIndex *pindexBestForkTip = nullptr, *pindexBestForkBase = nullptr;
 
 static void AlertNotify(const std::string& strMessage)
 {
@@ -4776,4 +4776,5 @@ public:
             delete (*it1).second;
         mapBlockIndex.clear();
     }
-} instance_of_cmaincleanup;
+};
+static CMainCleanup instance_of_cmaincleanup;
