@@ -19,14 +19,15 @@ Options for installing the dependencies in a Visual Studio compatible manner are
 
 The external dependencies required for the Visual Studio build are (see the [dependencies doc](https://github.com/Actinium-project/Actinium-ng/blob/master/doc/dependencies.md) for versions):
 
-- Berkeley DB,
-- OpenSSL,
-- Boost,
-- libevent,
+- Berkeley DB
+- OpenSSL
+- Boost
+- libevent
 - ZeroMQ
+- RapidCheck
 
-Additional dependencies required from the [bitcoin-core](https://github.com/bitcoin-core) github repository are:
-- SECP256K1,
+Additional dependencies required from the [bitcoin-core](https://github.com/bitcoin-core) GitHub repository are:
+- libsecp256k1
 - LevelDB
 
 Building
@@ -37,7 +38,7 @@ The instructions below use `vcpkg` to install the dependencies.
 - Install the required packages (replace x64 with x86 as required):
 
 ```
-    PS >.\vcpkg install --triplet x64-windows-static boost-filesystem boost-signals2 boost-test libevent openssl zeromq berkeleydb secp256k1 leveldb
+    PS >.\vcpkg install --triplet x64-windows-static boost-filesystem boost-signals2 boost-test libevent openssl zeromq berkeleydb secp256k1 leveldb rapidcheck
 ```
 
 - Use Python to generate *.vcxproj from Makefile
