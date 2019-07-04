@@ -5,6 +5,7 @@
 
 #include <primitives/block.h>
 
+#include <util/strencodings.h>
 #include <hash.h>
 #include <tinyformat.h>
 #include <crypto/common.h>
