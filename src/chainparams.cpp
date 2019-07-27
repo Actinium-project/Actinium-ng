@@ -180,9 +180,6 @@ public:
                         //   (the tx=... number in the SetBestChain debug.log lines)
             0.01        // * estimated number of transactions per second after that timestamp
         };
-
-        /* disable fallback fee on mainnet */
-        m_fallback_fee_enabled = false;
     }
 };
 
@@ -273,9 +270,6 @@ public:
             0,
             0
         };
-
-        /* enable fallback fee on testnet */
-        m_fallback_fee_enabled = true;
     }
 };
 
@@ -359,9 +353,6 @@ public:
         base58Prefixes[EXT_SECRET_KEY] = {0x04, 0x35, 0x83, 0x94};
 
         bech32_hrp = "racm";
-
-        /* enable fallback fee on regtest */
-        m_fallback_fee_enabled = true;
     }
 
     /**
