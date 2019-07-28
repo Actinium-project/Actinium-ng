@@ -86,7 +86,9 @@ src/qt/Actinium-qt.includes
 # Compilation and Qt preprocessor part
 *.qm
 Makefile
+!depends/Makefile
 Actinium-qt
+Actinium-Qt
 Actinium-Qt.app
 background.tiff*
 
