@@ -50,13 +50,13 @@ std::vector<std::shared_ptr<CWallet>> GetWallets();
 std::shared_ptr<CWallet> GetWallet(const std::string& name);
 std::shared_ptr<CWallet> LoadWallet(interfaces::Chain& chain, const WalletLocation& location, std::string& error, std::string& warning);
 
-enum WalletCreationStatus {
+enum class WalletCreationStatus {
     SUCCESS,
     CREATION_FAILED,
     ENCRYPTION_FAILED
 };
 
-std::shared_ptr<CWallet> CreateWallet(interfaces::Chain& chain, const std::string& name, std::string& error, std::string& warning, WalletCreationStatus& status, const SecureString& passphrase, uint64_t wallet_creation_flags);
+WalletCreationStatus CreateWallet(interfaces::Chain& chain, const SecureString& passphrase, uint64_t wallet_creation_flags, const std::string& name, std::string& error, std::string& warning, std::shared_ptr<CWallet>& result);
 
 //! Default for -keypool
 static const unsigned int DEFAULT_KEYPOOL_SIZE = 1000;
@@ -676,23 +676,18 @@ public:
     }
 };
 
-/** Private key that includes an expiration date in case it never gets used. */
-class CWalletKey
-{
-public:
+/** Private key that was serialized by an old wallet (only used for deserialization) */
+struct OldKey {
     CPrivKey vchPrivKey;
-    int64_t nTimeCreated;
-    int64_t nTimeExpires;
-    std::string strComment;
-    // todo: add something to note what created it (user, getnewaddress, change)
-    //   maybe should have a map<string, string> property map
-
-    explicit CWalletKey(int64_t nExpires=0);
-
     ADD_SERIALIZE_METHODS;
 
     template <typename Stream, typename Operation>
     inline void SerializationOp(Stream& s, Operation ser_action) {
+        // no longer used by the wallet, thus dropped after deserialization:
+        int64_t nTimeCreated;
+        int64_t nTimeExpires;
+        std::string strComment;
+
         int nVersion = s.GetVersion();
         if (!(s.GetType() & SER_GETHASH))
             READWRITE(nVersion);
