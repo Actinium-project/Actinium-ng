@@ -577,8 +577,6 @@ std::string LicenseInfo()
            strprintf(_("The source code is available from %s.").translated,
                URL_SOURCE_CODE) +
            "\n" +
-           strprintf(_("Join us on Discord:  %s \n\n"),
-               URL_DISCORD) +
            "\n" +
            _("This is experimental software.").translated + "\n" +
            strprintf(_("Distributed under the MIT software license, see the accompanying file %s or %s").translated, "COPYING", "<https://opensource.org/licenses/MIT>") + "\n" +
