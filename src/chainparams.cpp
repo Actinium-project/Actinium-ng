@@ -73,8 +73,8 @@ public:
         consensus.powLimit = uint256S("00000fffffffffffffffffffffffffffffffffffffffffffffffffffffffffff");
         consensus.nPowTargetTimespan = 3.5 * 24 * 60 * 60; // 3.5 days
         consensus.nPowTargetSpacing = 2.5 * 60;
-        consensus.CSVHeight = 64512; // 000000000000000004a1b34462cb8aeebd5799177f7a29cf28f2d1961716b5b5
-        consensus.SegwitHeight = 64512; // 0000000000000000001c8018d9cb3b742ef25114f27563e3fc4a1902167f9893
+        consensus.CSVHeight = 64512; // 13a64a7c0b2be12a28422e881c2cc6b0502ae814bd1e7097f51ac28f095be907
+        consensus.SegwitHeight = 64512; // 13a64a7c0b2be12a28422e881c2cc6b0502ae814bd1e7097f51ac28f095be907
         consensus.fPowAllowMinDifficultyBlocks = false;
         consensus.fPowNoRetargeting = false;
         consensus.nRuleChangeActivationThreshold = 6048; // 75% of 8064
@@ -158,7 +158,8 @@ public:
                 {140174, uint256S("0x8a80f31eec86c4303b8076e7d29e0cee95568d5b045568fde283723a964bfc35")},
                 {151165, uint256S("0x43342321907e9c88c9beb3e235771d4f3f3049dd2cd92d016ce9df56365b3edd")},
                 {170520, uint256S("0x8816236b6a91806a4d8826fbe4ae400e6a9d594062d225ad074e03f235a6c6ef")},
-                {213300, uint256S("0xf133710ecd8dc720fce00f930d0b09ff5db4af5428d2e572765664f609012dd0")}
+                {213300, uint256S("0xf133710ecd8dc720fce00f930d0b09ff5db4af5428d2e572765664f609012dd0")},
+                {264335, uint256S("0x3297ead9298553af279c88346de586cbac9d670e26035d228f5e37f7f52d0722")}
             }
         };
 
