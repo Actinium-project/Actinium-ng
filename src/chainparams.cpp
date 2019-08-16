@@ -73,6 +73,9 @@ public:
         consensus.powLimit = uint256S("00000fffffffffffffffffffffffffffffffffffffffffffffffffffffffffff");
         consensus.nPowTargetTimespan = 3.5 * 24 * 60 * 60; // 3.5 days
         consensus.nPowTargetSpacing = 2.5 * 60;
+        consensus.nSubsidyHalvingInterval = 210000;
+        consensus.CSVHeight = 64512; // 000000000000000004a1b34462cb8aeebd5799177f7a29cf28f2d1961716b5b5
+        consensus.SegwitHeight = 64512; // 0000000000000000001c8018d9cb3b742ef25114f27563e3fc4a1902167f9893
         consensus.fPowAllowMinDifficultyBlocks = false;
         consensus.fPowNoRetargeting = false;
         consensus.nRuleChangeActivationThreshold = 6048; // 75% of 8064
@@ -82,24 +85,10 @@ public:
         consensus.vDeployments[Consensus::DEPLOYMENT_TESTDUMMY].nStartTime = 1199145601; // January 1, 2008
         consensus.vDeployments[Consensus::DEPLOYMENT_TESTDUMMY].nTimeout = 1230767999; // December 31, 2008
 
-        // Deployment of BIP68, BIP112, and BIP113.
-        consensus.vDeployments[Consensus::DEPLOYMENT_CSV].bit = 0;
-        consensus.vDeployments[Consensus::DEPLOYMENT_CSV].nStartTime = 0;
-        consensus.vDeployments[Consensus::DEPLOYMENT_CSV].nTimeout = Consensus::BIP9Deployment::NO_TIMEOUT;
-
-        // Deployment of SegWit (BIP141, BIP143, and BIP147)
-        consensus.vDeployments[Consensus::DEPLOYMENT_SEGWIT].bit = 1;
-        consensus.vDeployments[Consensus::DEPLOYMENT_SEGWIT].nStartTime = 0;
-        consensus.vDeployments[Consensus::DEPLOYMENT_SEGWIT].nTimeout = Consensus::BIP9Deployment::NO_TIMEOUT;
-
-
         // The best chain should have at least this much work.
         consensus.nMinimumChainWork = uint256S("0x000000000000000000000000000000000000000000000000154cd2767f42b00d");
-
         // By default assume that the signatures in ancestors of this block are valid.
         consensus.defaultAssumeValid = uint256S("0xf133710ecd8dc720fce00f930d0b09ff5db4af5428d2e572765664f609012dd0"); //block 170520
-
-
         /**
          * The message start string is designed to be unlikely to occur in normal data.
          * The characters are rarely used upper ASCII, not valid as UTF-8, and produce
@@ -200,6 +189,9 @@ public:
         consensus.powLimit = uint256S("00000fffffffffffffffffffffffffffffffffffffffffffffffffffffffffff");
         consensus.nPowTargetTimespan = 3.5 * 24 * 60 * 60; // 3.5 days
         consensus.nPowTargetSpacing = 2.5 * 60;
+        strNetworkID = "test";
+        consensus.CSVHeight = 0; // 00000000025e930139bac5c6c31a403776da130831ab85be56578f3fa75369bb
+        consensus.SegwitHeight = 0; // 00000000002b980fcd729daaa248fd9316a5200e9b367f4ff2c42453e84201ca
         consensus.fPowAllowMinDifficultyBlocks = true;
         consensus.fPowNoRetargeting = false;
         consensus.nRuleChangeActivationThreshold = 1512; // 75% for testchains
@@ -209,19 +201,8 @@ public:
         consensus.vDeployments[Consensus::DEPLOYMENT_TESTDUMMY].nStartTime = 1199145601; // January 1, 2008
         consensus.vDeployments[Consensus::DEPLOYMENT_TESTDUMMY].nTimeout = 1230767999; // December 31, 2008
 
-        // Deployment of BIP68, BIP112, and BIP113.
-        consensus.vDeployments[Consensus::DEPLOYMENT_CSV].bit = 0;
-        consensus.vDeployments[Consensus::DEPLOYMENT_CSV].nStartTime = Consensus::BIP9Deployment::ALWAYS_ACTIVE;
-        consensus.vDeployments[Consensus::DEPLOYMENT_CSV].nTimeout = Consensus::BIP9Deployment::NO_TIMEOUT;
-
-        // Deployment of SegWit (BIP141, BIP143, and BIP147)
-        consensus.vDeployments[Consensus::DEPLOYMENT_SEGWIT].bit = 1;
-        consensus.vDeployments[Consensus::DEPLOYMENT_SEGWIT].nStartTime = Consensus::BIP9Deployment::ALWAYS_ACTIVE;
-        consensus.vDeployments[Consensus::DEPLOYMENT_SEGWIT].nTimeout = Consensus::BIP9Deployment::NO_TIMEOUT;
-
         // The best chain should have at least this much work.
         consensus.nMinimumChainWork = uint256S("0x00");
-
         // By default assume that the signatures in ancestors of this block are valid.
         consensus.defaultAssumeValid = uint256S("0x00");
 
@@ -286,6 +267,8 @@ public:
         consensus.BIP34Hash = uint256();
         consensus.BIP65Height = 1351; // BIP65 activated on regtest (Used in functional tests)
         consensus.BIP66Height = 1251; // BIP66 activated on regtest (Used in functional tests)
+        consensus.CSVHeight = 432; // CSV activated on regtest (Used in rpc activation tests)
+        consensus.SegwitHeight = 0; // SEGWIT is always activated on regtest unless overridden
         consensus.powLimit = uint256S("7fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff");
         consensus.GPUSupportHeight = 2;
         consensus.ACMZawyLWMAHeight = 5;
@@ -298,13 +281,7 @@ public:
         consensus.nZawyLwmaAveragingWindow = 60;
         consensus.vDeployments[Consensus::DEPLOYMENT_TESTDUMMY].bit = 28;
         consensus.vDeployments[Consensus::DEPLOYMENT_TESTDUMMY].nStartTime = 0;
-        consensus.vDeployments[Consensus::DEPLOYMENT_TESTDUMMY].nTimeout = 999999999999ULL;
-        consensus.vDeployments[Consensus::DEPLOYMENT_CSV].bit = 0;
-        consensus.vDeployments[Consensus::DEPLOYMENT_CSV].nStartTime = Consensus::BIP9Deployment::ALWAYS_ACTIVE;
-        consensus.vDeployments[Consensus::DEPLOYMENT_CSV].nTimeout = Consensus::BIP9Deployment::NO_TIMEOUT;
-        consensus.vDeployments[Consensus::DEPLOYMENT_SEGWIT].bit = 1;
-        consensus.vDeployments[Consensus::DEPLOYMENT_SEGWIT].nStartTime = Consensus::BIP9Deployment::ALWAYS_ACTIVE;
-        consensus.vDeployments[Consensus::DEPLOYMENT_SEGWIT].nTimeout = Consensus::BIP9Deployment::NO_TIMEOUT;
+        consensus.vDeployments[Consensus::DEPLOYMENT_TESTDUMMY].nTimeout = Consensus::BIP9Deployment::NO_TIMEOUT;
 
         // The best chain should have at least this much work.
         consensus.nMinimumChainWork = uint256S("0x00");
@@ -321,7 +298,9 @@ public:
         m_assumed_blockchain_size = 0;
         m_assumed_chain_state_size = 0;
 
+        UpdateActivationParametersFromArgs(args);
         genesis = CreateGenesisBlock(1524650028, 771587, 0x1e0ffff0, 1, 50 * COIN);
+        
         consensus.hashGenesisBlock = genesis.GetHash();
         assert(consensus.hashGenesisBlock == uint256S("0xf05cd14f31c18d661efb3dc152ddbdf0da1305c73beac0a9e348013c3b3f8ad2"));
         assert(genesis.hashMerkleRoot == uint256S("0xec55b10e2f22adf88cb40df86df4d912687c13e6a4d6289513883adaef2c9191"));
@@ -363,11 +342,22 @@ public:
         consensus.vDeployments[d].nStartTime = nStartTime;
         consensus.vDeployments[d].nTimeout = nTimeout;
     }
-    void UpdateVersionBitsParametersFromArgs(const ArgsManager& args);
+    void UpdateActivationParametersFromArgs(const ArgsManager& args);
 };
 
-void CRegTestParams::UpdateVersionBitsParametersFromArgs(const ArgsManager& args)
+void CRegTestParams::UpdateActivationParametersFromArgs(const ArgsManager& args)
 {
+    if (gArgs.IsArgSet("-segwitheight")) {
+        int64_t height = gArgs.GetArg("-segwitheight", consensus.SegwitHeight);
+        if (height < -1 || height >= std::numeric_limits<int>::max()) {
+            throw std::runtime_error(strprintf("Activation height %ld for segwit is out of valid range. Use -1 to disable segwit.", height));
+        } else if (height == -1) {
+            LogPrintf("Segwit disabled for testing\n");
+            height = std::numeric_limits<int>::max();
+        }
+        consensus.SegwitHeight = static_cast<int>(height);
+    }
+
     if (!args.IsArgSet("-vbparams")) return;
 
     for (const std::string& strDeployment : args.GetArgs("-vbparams")) {
