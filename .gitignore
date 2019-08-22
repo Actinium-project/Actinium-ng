@@ -136,3 +136,7 @@ db4/
 src/tor.timestamp
 # clang-check
 *.plist
+
+osx_volname
+dist/
+*.background.tiff
