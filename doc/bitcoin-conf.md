@@ -50,3 +50,13 @@ rpcport=4000
 The configuration file is not automatically created; you can create it using your favorite text editor. By default, the configuration file name is `Actinium.conf` and it is located in the Actinium data directory, but both the Actinium data directory and the configuration file path may be changed using the `-datadir` and `-conf` command-line options.
 
 The `includeconf=<file>` option in the `Actinium.conf` file can be used to include additional configuration files.
+
+### Default configuration file locations
+
+Operating System | Data Directory | Example Path
+-- | -- | --
+Windows | `%APPDATA%\Actinium\` | `C:\Users\username\AppData\Roaming\Actinium\Actinium.conf`
+Linux | `$HOME/.actinium/` | `/home/username/.actinium/Actinium.conf`
+macOS | `$HOME/Library/Application Support/Actinium/` | `/Users/username/Library/Application Support/Actinium/Actinium.conf`
+
+You can find an example Actinium.conf file in [share/examples/Actinium.conf](../share/examples/Actinium.conf).
