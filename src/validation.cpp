@@ -2196,12 +2196,12 @@ void CChainState::PruneAndFlush() {
 
 static void DoWarning(const std::string& strWarning)
 {
-    static bool fWarned = false;
+    /*static bool fWarned = false;
     SetMiscWarning(strWarning);
     if (!fWarned) {
         AlertNotify(strWarning);
         fWarned = true;
-    }
+    }*/
 }
 
 /** Private helper function that concatenates warning messages. */
