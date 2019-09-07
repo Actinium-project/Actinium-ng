@@ -43,7 +43,13 @@ TOR_UTIL_LIBS = \
 	tor/src/lib/libtor-wallclock.a \
 	tor/src/lib/libtor-err.a \
 	tor/src/lib/libtor-intmath.a \
-	tor/src/lib/libtor-ctime.a
+	tor/src/lib/libtor-ctime.a \
+	tor/src/lib/libtor-ctime.a \
+	tor/src/lib/libtor-version.a \
+	tor/src/lib/libtor-buf.a \
+	tor/src/lib/libtor-pubsub.a \
+	tor/src/lib/libtor-dispatch.a \
+	tor/src/lib/libtor-container.a
 
 LIBED25519_REF10 = tor/src/ext/ed25519/ref10/libed25519_ref10.a
 LIBED25519_DONNA = tor/src/ext/ed25519/donna/libed25519_donna.a
