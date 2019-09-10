@@ -162,7 +162,11 @@ UniValue stop(const JSONRPCRequest& jsonRequest)
     if (jsonRequest.fHelp || jsonRequest.params.size() > 1)
         throw std::runtime_error(
             RPCHelpMan{"stop",
+<<<<<<< HEAD
                 "\nStop Actinium server.",
+=======
+                "\nRequest a graceful shutdown of " PACKAGE_NAME ".",
+>>>>>>> 59681beb899e6912e0490b9588dbdf40ff39b043
                 {},
                 RPCResults{},
                 RPCExamples{""},
@@ -173,7 +177,11 @@ UniValue stop(const JSONRPCRequest& jsonRequest)
     if (jsonRequest.params[0].isNum()) {
         MilliSleep(jsonRequest.params[0].get_int());
     }
+<<<<<<< HEAD
     return "Actinium server stopping";
+=======
+    return PACKAGE_NAME " stopping";
+>>>>>>> 59681beb899e6912e0490b9588dbdf40ff39b043
 }
 
 static UniValue uptime(const JSONRPCRequest& jsonRequest)
