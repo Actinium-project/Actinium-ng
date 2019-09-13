@@ -196,6 +196,7 @@ BASE_SCRIPTS = [
     'p2p_fingerprint.py',
     'feature_uacomment.py',
     'feature_filelock.py',
+    'p2p_dos_header_tree.py',
     'p2p_unrequested_blocks.py',
     'feature_includeconf.py',
     'rpc_deriveaddresses.py',
