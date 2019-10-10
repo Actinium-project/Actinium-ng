@@ -193,16 +193,6 @@ extern const char *FILTERADD;
  */
 extern const char *FILTERCLEAR;
 /**
-<<<<<<< HEAD
- * The reject message informs the receiving node that one of its previous
- * messages has been rejected.
- * @since protocol version 70002 as described by BIP61.
- * @see https://actinium.org/en/developer-reference#reject
- */
-extern const char *REJECT;
-/**
-=======
->>>>>>> 1c11e53bb604835afd838f4520d3fdba25521c5b
  * Indicates that a node prefers to receive new block announcements via a
  * "headers" message rather than an "inv".
  * @since protocol version 70012 as described by BIP130.
