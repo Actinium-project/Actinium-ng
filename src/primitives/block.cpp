@@ -8,10 +8,13 @@
 #include <util/strencodings.h>
 #include <hash.h>
 #include <tinyformat.h>
+<<<<<<< HEAD
 #include <crypto/common.h>
 #include <crypto/scrypt.h>
 #include <crypto/Lyra2Z/Lyra2Z.h>
 #include <versionbits.h>
+=======
+>>>>>>> b9b58f8f687e1c718ed48274345baeaa3d9d08d4
 
 uint256 CBlockHeader::GetHash() const
 {
