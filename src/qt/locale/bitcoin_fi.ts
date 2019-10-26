@@ -1345,8 +1345,8 @@
         <translation>URI käsittely</translation>
     </message>
     <message>
-        <source>'bitcoin://' is not a valid URI. Use 'bitcoin:' instead.</source>
-        <translation>'bitcoin://' ei ole kelvollinen URI. Käytä 'bitcoin:' sen sijaan.</translation>
+        <source>'actinium://' is not a valid URI. Use 'actinium:' instead.</source>
+        <translation>'actinium://' ei ole kelvollinen URI. Käytä 'actinium:' sen sijaan.</translation>
     </message>
     <message>
         <source>You are using a BIP70 URL which will be unsupported in the future.</source>

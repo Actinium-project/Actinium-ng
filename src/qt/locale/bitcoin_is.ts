@@ -378,8 +378,8 @@
         <translation>Tólaborð flipa</translation>
     </message>
     <message>
-        <source>Request payments (generates QR codes and bitcoin: URIs)</source>
-        <translation>Óska eftir greiðslum (býr til QR kóða og bitcoin: URI)</translation>
+        <source>Request payments (generates QR codes and actinium: URIs)</source>
+        <translation>Óska eftir greiðslum (býr til QR kóða og actinium: URI)</translation>
     </message>
     <message>
         <source>Show the list of used sending addresses and labels</source>
@@ -390,8 +390,8 @@
         <translation>Sýna færslugildi sem notuð hafa verið til að taka við mynt og merkingar þeirra</translation>
     </message>
     <message>
-        <source>Open a bitcoin: URI or payment request</source>
-        <translation>Opna bitcoin: URI eða greiðslubeiðni</translation>
+        <source>Open a actinium: URI or payment request</source>
+        <translation>Opna actinium: URI eða greiðslubeiðni</translation>
     </message>
     <message>
         <source>&amp;Command-line options</source>

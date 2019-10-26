@@ -430,8 +430,8 @@
         <translation>Wys die lys van gebruikte ontvangsadresse en etikette</translation>
     </message>
     <message>
-        <source>Open a bitcoin: URI or payment request</source>
-        <translation>Open 'n bitcoin: URI of betalingsversoek</translation>
+        <source>Open a actinium: URI or payment request</source>
+        <translation>Open 'n actinium: URI of betalingsversoek</translation>
     </message>
     <message>
         <source>&amp;Command-line options</source>

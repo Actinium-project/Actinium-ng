@@ -430,7 +430,7 @@
         <translation>Панель вкладок</translation>
     </message>
     <message>
-        <source>Request payments (generates QR codes and bitcoin: URIs)</source>
+        <source>Request payments (generates QR codes and actinium: URIs)</source>
         <translation>Запросить платеж</translation>
     </message>
     <message>
@@ -1148,8 +1148,8 @@
         <translation>Ошибка запроса платежа</translation>
     </message>
     <message>
-        <source>'bitcoin://' is not a valid URI. Use 'bitcoin:' instead.</source>
-        <translation>'bitcoin://' не верный URI. Используйте 'bitcoin:' вместо этого.</translation>
+        <source>'actinium://' is not a valid URI. Use 'actinium:' instead.</source>
+        <translation>'actinium://' не верный URI. Используйте 'actinium:' вместо этого.</translation>
     </message>
     <message>
         <source>Invalid payment address %1</source>

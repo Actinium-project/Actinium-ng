@@ -430,8 +430,8 @@
         <translation>Panel nástrojov</translation>
     </message>
     <message>
-        <source>Request payments (generates QR codes and bitcoin: URIs)</source>
-        <translation>Vyžiadať platby (vygeneruje sa QR kód a bitcoin: URI)</translation>
+        <source>Request payments (generates QR codes and actinium: URIs)</source>
+        <translation>Vyžiadať platby (vygeneruje sa QR kód a actinium: URI)</translation>
     </message>
     <message>
         <source>Show the list of used sending addresses and labels</source>
@@ -442,7 +442,7 @@
         <translation>Ukázať zoznam použitých prijímacích adries a štítkov</translation>
     </message>
     <message>
-        <source>Open a bitcoin: URI or payment request</source>
+        <source>Open a actinium: URI or payment request</source>
         <translation>Otvoriť Bitcoin: URI alebo vyžiadanie platby</translation>
     </message>
     <message>
@@ -1320,7 +1320,7 @@
         <translation>Chyba pri žiadosti o platbu</translation>
     </message>
     <message>
-        <source>Cannot start bitcoin: click-to-pay handler</source>
+        <source>Cannot start actinium: click-to-pay handler</source>
         <translation>Nemôžem spustiť Bitcoin: click-to-pay handler</translation>
     </message>
     <message>
@@ -1328,8 +1328,8 @@
         <translation>Narábanie s URI</translation>
     </message>
     <message>
-        <source>'bitcoin://' is not a valid URI. Use 'bitcoin:' instead.</source>
-        <translation>'bitcoin://' je nesprávna URI. Namiesto toho použite 'bitcoin'.</translation>
+        <source>'actinium://' is not a valid URI. Use 'actinium:' instead.</source>
+        <translation>'actinium://' je nesprávna URI. Namiesto toho použite 'bitcoin'.</translation>
     </message>
     <message>
         <source>Payment request fetch URL is invalid: %1</source>
@@ -2406,7 +2406,7 @@ Zapamätajte si: Keďže cena poplatku je počítaná za bajt, tak poplatok o ho
         <translation>Zadajte štítok pre túto adresu aby ste ju pridali do zoznamu použitých adries.</translation>
     </message>
     <message>
-        <source>A message that was attached to the bitcoin: URI which will be stored with the transaction for your reference. Note: This message will not be sent over the Bitcoin network.</source>
+        <source>A message that was attached to the actinium: URI which will be stored with the transaction for your reference. Note: This message will not be sent over the Bitcoin network.</source>
         <translation>Správa pripojená k Bitcoin URI ktorá bude uložená spolu s transakciou pre vašu referenciu. Poznámka: Táto správa nebude odoslaná cez Bitcoin sieť.</translation>
     </message>
     <message>

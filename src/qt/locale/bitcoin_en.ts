@@ -546,7 +546,7 @@
     </message>
     <message>
         <location line="-256"/>
-        <source>Request payments (generates QR codes and bitcoin: URIs)</source>
+        <source>Request payments (generates QR codes and actinium: URIs)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1861,7 +1861,7 @@
     </message>
     <message>
         <location line="-531"/>
-        <source>Cannot start bitcoin: click-to-pay handler</source>
+        <source>Cannot start actinium: click-to-pay handler</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1876,7 +1876,7 @@
     </message>
     <message>
         <location line="-55"/>
-        <source>&apos;bitcoin://&apos; is not a valid URI. Use &apos;bitcoin:&apos; instead.</source>
+        <source>&apos;actinium://&apos; is not a valid URI. Use &apos;actinium:&apos; instead.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>

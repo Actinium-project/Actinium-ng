@@ -250,8 +250,8 @@
         <translation>Barra de ferramentas</translation>
     </message>
     <message>
-        <source>Request payments (generates QR codes and bitcoin: URIs)</source>
-        <translation>Solicitar pagamentos (xera códigos QR e bitcoin: URIs)</translation>
+        <source>Request payments (generates QR codes and actinium: URIs)</source>
+        <translation>Solicitar pagamentos (xera códigos QR e actinium: URIs)</translation>
     </message>
     <message>
         <source>Show the list of used sending addresses and labels</source>
@@ -262,8 +262,8 @@
         <translation>Amosar a listaxe de etiquetas e enderezos usadas para recibir</translation>
     </message>
     <message>
-        <source>Open a bitcoin: URI or payment request</source>
-        <translation>Abrir un bitcoin: URI ou solicitude de pagamento</translation>
+        <source>Open a actinium: URI or payment request</source>
+        <translation>Abrir un actinium: URI ou solicitude de pagamento</translation>
     </message>
     <message>
         <source>&amp;Command-line options</source>
