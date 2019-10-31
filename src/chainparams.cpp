@@ -62,7 +62,7 @@ static CBlock CreateGenesisBlock(uint32_t nTime, uint32_t nNonce, uint32_t nBits
 class CMainParams : public CChainParams {
 public:
     CMainParams() {
-        strNetworkID = "main";
+        strNetworkID = CBaseChainParams::MAIN;
         consensus.nSubsidyHalvingInterval = 840000;
         consensus.BIP34Height = 1000;
         consensus.BIP34Hash = uint256S("f1d584601e77187e22daa8d551d8307295474a49a54055a0e3feb182223da7ee");
@@ -160,7 +160,8 @@ public:
                 {151165, uint256S("0x43342321907e9c88c9beb3e235771d4f3f3049dd2cd92d016ce9df56365b3edd")},
                 {170520, uint256S("0x8816236b6a91806a4d8826fbe4ae400e6a9d594062d225ad074e03f235a6c6ef")},
                 {213300, uint256S("0xf133710ecd8dc720fce00f930d0b09ff5db4af5428d2e572765664f609012dd0")},
-                {264335, uint256S("0x3297ead9298553af279c88346de586cbac9d670e26035d228f5e37f7f52d0722")}
+                {264335, uint256S("0x3297ead9298553af279c88346de586cbac9d670e26035d228f5e37f7f52d0722")},
+                {307797, uint256S("0xb8af5361f689ccbd35f51618d100805bffbfb05abae905350234d0701b91565e")}
             }
         };
 
@@ -179,7 +180,7 @@ public:
 class CTestNetParams : public CChainParams {
 public:
     CTestNetParams() {
-       strNetworkID = "test";
+        strNetworkID = CBaseChainParams::TESTNET;
         consensus.nSubsidyHalvingInterval = 840000;
         consensus.BIP34Height = 0;
         consensus.BIP34Hash = uint256S("7c617cc84dc2bff1497836216d6b850cc4e871359ab1afc2d19ef099f9f81f1b");
@@ -190,7 +191,6 @@ public:
         consensus.powLimit = uint256S("00000fffffffffffffffffffffffffffffffffffffffffffffffffffffffffff");
         consensus.nPowTargetTimespan = 3.5 * 24 * 60 * 60; // 3.5 days
         consensus.nPowTargetSpacing = 2.5 * 60;
-        strNetworkID = "test";
         consensus.CSVHeight = 0; // 00000000025e930139bac5c6c31a403776da130831ab85be56578f3fa75369bb
         consensus.SegwitHeight = 0; // 00000000002b980fcd729daaa248fd9316a5200e9b367f4ff2c42453e84201ca
         consensus.fPowAllowMinDifficultyBlocks = true;
@@ -262,7 +262,7 @@ public:
 class CRegTestParams : public CChainParams {
 public:
     explicit CRegTestParams(const ArgsManager& args) {
-        strNetworkID = "regtest";
+        strNetworkID =  CBaseChainParams::REGTEST;
         consensus.nSubsidyHalvingInterval = 150;
         consensus.BIP16Exception = uint256();
         consensus.BIP34Height = 500; // BIP34 activated on regtest (Used in functional tests)
