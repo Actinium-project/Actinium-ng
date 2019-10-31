@@ -1041,6 +1041,12 @@ static bool MaybePunishNodeForBlock(NodeId nodeid, const BlockValidationState& s
             Misbehaving(nodeid, 10, message);
         }
         return true;
+    case BlockValidationResult::BLOCK_GPU_FORK:
+        {
+            LOCK(cs_main);
+            Misbehaving(nodeid, 100, message);
+        }
+        return true;
     case BlockValidationResult::BLOCK_RECENT_CONSENSUS_CHANGE:
     case BlockValidationResult::BLOCK_TIME_FUTURE:
         break;
