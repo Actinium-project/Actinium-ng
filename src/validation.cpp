@@ -3246,13 +3246,8 @@ static bool FindUndoPos(BlockValidationState &state, int nFile, FlatFilePos &pos
 static bool CheckBlockHeader(const CBlockHeader& block, BlockValidationState& state, const Consensus::Params& consensusParams, bool fCheckPOW = true)
 {
     // Check proof of work matches claimed amount
-<<<<<<< HEAD
     if (fCheckPOW && !CheckProofOfWork(block.GetPoWHash(), block.nBits, consensusParams))
-        return state.Invalid(ValidationInvalidReason::BLOCK_INVALID_HEADER, false, "high-hash", "proof of work failed");
-=======
-    if (fCheckPOW && !CheckProofOfWork(block.GetHash(), block.nBits, consensusParams))
         return state.Invalid(BlockValidationResult::BLOCK_INVALID_HEADER, "high-hash", "proof of work failed");
->>>>>>> 08e29473126d5cc4df6d2b3f368c6f6f641c0bd8
 
     return true;
 }
@@ -3445,14 +3440,9 @@ static bool ContextualCheckBlockHeader(const CBlockHeader& block, BlockValidatio
     // check for version 2, 3 and 4 upgrades
     if((block.nVersion < 2 && nHeight >= consensusParams.BIP34Height) ||
        (block.nVersion < 3 && nHeight >= consensusParams.BIP66Height) ||
-<<<<<<< HEAD
        (block.nVersion < 4 && nHeight >= consensusParams.BIP65Height) ||
        (!(block.nVersion  & VERSIONBITS_FORK_GPU_SUPPORT) && nHeight >= consensusParams.GPUSupportHeight))
-            return state.Invalid(ValidationInvalidReason::BLOCK_INVALID_HEADER, false, strprintf("bad-version(0x%08x)", block.nVersion),
-=======
-       (block.nVersion < 4 && nHeight >= consensusParams.BIP65Height))
             return state.Invalid(BlockValidationResult::BLOCK_INVALID_HEADER, strprintf("bad-version(0x%08x)", block.nVersion),
->>>>>>> 08e29473126d5cc4df6d2b3f368c6f6f641c0bd8
                                  strprintf("rejected nVersion=0x%08x block", block.nVersion));
 
     return true;
