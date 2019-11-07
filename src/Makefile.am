@@ -200,6 +200,7 @@ BITCOIN_CORE_H = \
   dbwrapper.h \
   limitedmap.h \
   logging.h \
+  logging/timer.h \
   memusage.h \
   merkleblock.h \
   miner.h \
@@ -215,6 +216,7 @@ BITCOIN_CORE_H = \
   node/context.h \
   node/psbt.h \
   node/transaction.h \
+  node/utxo_snapshot.h \
   noui.h \
   optional.h \
   outputtype.h \
