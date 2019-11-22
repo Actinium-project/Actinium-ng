@@ -828,6 +828,8 @@ if EMBEDDED_LEVELDB
 include Makefile.leveldb.include
 endif
 
+include Makefile.test_util.include
+
 if ENABLE_TESTS
 include Makefile.test.include
 endif

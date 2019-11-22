@@ -9,9 +9,7 @@
 #include <config/bitcoin-config.h>
 #endif
 
-#include <amount.h>
 #include <key.h>
-#include <serialize.h>
 #include <script/standard.h>
 
 #include <qt/walletmodeltransaction.h>
@@ -29,6 +27,7 @@ class AddressTableModel;
 class OptionsModel;
 class PlatformStyle;
 class RecentRequestsTableModel;
+class SendCoinsRecipient;
 class TransactionTableModel;
 class WalletModelTransaction;
 
@@ -47,6 +46,7 @@ QT_BEGIN_NAMESPACE
 class QTimer;
 QT_END_NAMESPACE
 
+<<<<<<< HEAD
 class SendCoinsRecipient
 {
 public:
@@ -103,6 +103,9 @@ public:
 };
 
 /** Interface to Actinium wallet from Qt view code. */
+=======
+/** Interface to Bitcoin wallet from Qt view code. */
+>>>>>>> b983e7e1721fa68cc04c05b1249d5871d66debe5
 class WalletModel : public QObject
 {
     Q_OBJECT
