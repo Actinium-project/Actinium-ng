@@ -16,9 +16,9 @@ These are the dependencies currently used by Actinium Core. You can find instruc
 | libevent | [2.1.11-stable](https://github.com/libevent/libevent/releases) | 2.0.22 | No |  |  |
 | libpng |  |  |  |  | [Yes](https://github.com/bitcoin/bitcoin/blob/master/depends/packages/qt.mk) |
 | librsvg | |  |  |  |  |
-| MiniUPnPc | [2.0.20180203](http://miniupnp.free.fr/files) |  | No |  |  |
-| OpenSSL | [1.0.1k](https://www.openssl.org/source) |  | Yes |  |  |
+| MiniUPnPc | [2.0.20180203](https://miniupnp.tuxfamily.org/files) |  | No |  |  |
 | PCRE |  |  |  |  | [Yes](https://github.com/bitcoin/bitcoin/blob/master/depends/packages/qt.mk) |
+| OpenSSL | [1.0.1k](https://www.openssl.org/source) |  | Yes |  |  |
 | Python (tests) |  | [3.5](https://www.python.org/downloads) |  |  |  |
 | qrencode | [3.4.4](https://fukuchi.org/works/qrencode) |  | No |  |  |
 | Qt | [5.9.7](https://download.qt.io/official_releases/qt/) | [5.5.1](https://github.com/bitcoin/bitcoin/issues/13478) | No |  |  |
