@@ -528,7 +528,7 @@ static UniValue getrawmempool(const JSONRPCRequest& request)
     if (!request.params[0].isNull())
         fVerbose = request.params[0].get_bool();
 
-    return MempoolToJSON(::mempool, fVerbose);
+    return MempoolToJSON(EnsureMemPool(), fVerbose);
 }
 
 static UniValue getmempoolancestors(const JSONRPCRequest& request)
@@ -566,6 +566,7 @@ static UniValue getmempoolancestors(const JSONRPCRequest& request)
 
     uint256 hash = ParseHashV(request.params[0], "parameter 1");
 
+    const CTxMemPool& mempool = EnsureMemPool();
     LOCK(mempool.cs);
 
     CTxMemPool::txiter it = mempool.mapTx.find(hash);
@@ -591,7 +592,7 @@ static UniValue getmempoolancestors(const JSONRPCRequest& request)
             const CTxMemPoolEntry &e = *ancestorIt;
             const uint256& _hash = e.GetTx().GetHash();
             UniValue info(UniValue::VOBJ);
-            entryToJSON(::mempool, info, e);
+            entryToJSON(mempool, info, e);
             o.pushKV(_hash.ToString(), info);
         }
         return o;
@@ -633,6 +634,7 @@ static UniValue getmempooldescendants(const JSONRPCRequest& request)
 
     uint256 hash = ParseHashV(request.params[0], "parameter 1");
 
+    const CTxMemPool& mempool = EnsureMemPool();
     LOCK(mempool.cs);
 
     CTxMemPool::txiter it = mempool.mapTx.find(hash);
@@ -658,7 +660,7 @@ static UniValue getmempooldescendants(const JSONRPCRequest& request)
             const CTxMemPoolEntry &e = *descendantIt;
             const uint256& _hash = e.GetTx().GetHash();
             UniValue info(UniValue::VOBJ);
-            entryToJSON(::mempool, info, e);
+            entryToJSON(mempool, info, e);
             o.pushKV(_hash.ToString(), info);
         }
         return o;
@@ -685,6 +687,7 @@ static UniValue getmempoolentry(const JSONRPCRequest& request)
 
     uint256 hash = ParseHashV(request.params[0], "parameter 1");
 
+    const CTxMemPool& mempool = EnsureMemPool();
     LOCK(mempool.cs);
 
     CTxMemPool::txiter it = mempool.mapTx.find(hash);
@@ -694,7 +697,7 @@ static UniValue getmempoolentry(const JSONRPCRequest& request)
 
     const CTxMemPoolEntry &e = *it;
     UniValue info(UniValue::VOBJ);
-    entryToJSON(::mempool, info, e);
+    entryToJSON(mempool, info, e);
     return info;
 }
 
@@ -1070,6 +1073,7 @@ UniValue gettxout(const JSONRPCRequest& request)
     CCoinsViewCache* coins_view = &::ChainstateActive().CoinsTip();
 
     if (fMempool) {
+        const CTxMemPool& mempool = EnsureMemPool();
         LOCK(mempool.cs);
         CCoinsViewMemPool view(coins_view, mempool);
         if (!view.GetCoin(out, coin) || mempool.isSpent(out)) {
@@ -1286,7 +1290,7 @@ UniValue getblockchaininfo(const JSONRPCRequest& request)
     BIP9SoftForkDescPushBack(softforks, "testdummy", consensusParams, Consensus::DEPLOYMENT_TESTDUMMY);
     obj.pushKV("softforks",             softforks);
 
-    obj.pushKV("warnings", GetWarnings("statusbar"));
+    obj.pushKV("warnings", GetWarnings(false));
     return obj;
 }
 
@@ -1448,7 +1452,7 @@ static UniValue getmempoolinfo(const JSONRPCRequest& request)
                 },
             }.Check(request);
 
-    return MempoolInfoToJSON(::mempool);
+    return MempoolInfoToJSON(EnsureMemPool());
 }
 
 static UniValue preciousblock(const JSONRPCRequest& request)
@@ -1964,11 +1968,13 @@ static UniValue savemempool(const JSONRPCRequest& request)
                 },
             }.Check(request);
 
-    if (!::mempool.IsLoaded()) {
+    const CTxMemPool& mempool = EnsureMemPool();
+
+    if (!mempool.IsLoaded()) {
         throw JSONRPCError(RPC_MISC_ERROR, "The mempool was not loaded yet");
     }
 
-    if (!DumpMempool(::mempool)) {
+    if (!DumpMempool(mempool)) {
         throw JSONRPCError(RPC_MISC_ERROR, "Unable to dump mempool to disk");
     }
 
@@ -2055,7 +2061,7 @@ UniValue scantxoutset(const JSONRPCRequest& request)
             "                                      \"start\" for starting a scan\n"
             "                                      \"abort\" for aborting the current scan (returns true when abort was successful)\n"
             "                                      \"status\" for progress report (in %) of the current scan"},
-                    {"scanobjects", RPCArg::Type::ARR, RPCArg::Optional::NO, "Array of scan objects\n"
+                    {"scanobjects", RPCArg::Type::ARR, RPCArg::Optional::OMITTED, "Array of scan objects. Required for \"start\" action\n"
             "                                  Every scan object is either a string descriptor or an object:",
                         {
                             {"descriptor", RPCArg::Type::STR, RPCArg::Optional::OMITTED, "An output descriptor"},
@@ -2115,6 +2121,11 @@ UniValue scantxoutset(const JSONRPCRequest& request)
         if (!reserver.reserve()) {
             throw JSONRPCError(RPC_INVALID_PARAMETER, "Scan already in progress, use action \"abort\" or \"status\"");
         }
+
+        if (request.params.size() < 2) {
+            throw JSONRPCError(RPC_MISC_ERROR, "scanobjects argument is required for the start action");
+        }
+
         std::set<CScript> needles;
         std::map<CScript, std::string> descriptors;
         CAmount total_in = 0;
