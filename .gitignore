@@ -7,8 +7,9 @@ src/Actinium-cli
 src/Actinium-tx
 src/Actinium-wallet
 *.pdb
+src/test/fuzz
+!src/test/fuzz/*.*
 src/test/test_bitcoin
-src/test/test_bitcoin_fuzzy
 src/qt/test/test_bitcoin-qt
 
 # autoreconf
