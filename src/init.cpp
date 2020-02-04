@@ -117,6 +117,16 @@ static const char* FEE_ESTIMATES_FILENAME="fee_estimates.dat";
 
 static const char* DEFAULT_ASMAP_FILENAME="ip_asn.map";
 
+extern "C" {
+  int tor_main(int argc, char *argv[]);
+  void tor_cleanup(void);
+}
+static char *convert_str(const std::string &s) {
+  char *pc = new char[s.size()+1];
+  std::strcpy(pc, s.c_str());
+  return pc;
+}
+
 /**
  * The PID file facilities.
  */
