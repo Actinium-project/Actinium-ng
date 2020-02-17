@@ -90,8 +90,7 @@ src/qt/Actinium-qt.includes
 *.qm
 Makefile
 !depends/Makefile
-Actinium-qt
-Actinium-Qt
+src/qt/Actinium-qt
 Actinium-Qt.app
 background.tiff*
 
@@ -100,7 +99,7 @@ Makefile.am.user
 
 # Unit-tests
 Makefile.test
-bitcoin-qt_test
+Actinium-qt_test
 
 # Resources cpp
 qrc_*.cpp
