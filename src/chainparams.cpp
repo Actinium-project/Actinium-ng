@@ -132,6 +132,7 @@ public:
         fDefaultConsistencyChecks = false;
         fRequireStandard = true;
         m_is_test_chain = false;
+        m_is_mockable_chain = false;
 
         checkpointData = {
             {
@@ -242,8 +243,9 @@ public:
         fDefaultConsistencyChecks = false;
         fRequireStandard = false;
         m_is_test_chain = true;
+        m_is_mockable_chain = false;
 
-        checkpointData = (CCheckpointData) {
+        checkpointData = {
             {
                 {0, uint256S("0x7c617cc84dc2bff1497836216d6b850cc4e871359ab1afc2d19ef099f9f81f1b") },
             }
@@ -315,6 +317,7 @@ public:
         fDefaultConsistencyChecks = true;
         fRequireStandard = true;
         m_is_test_chain = true;
+        m_is_mockable_chain = true;
 
         checkpointData = (CCheckpointData) {
             {
