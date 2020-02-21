@@ -3346,7 +3346,7 @@ static UniValue bumpfee(const JSONRPCRequest& request)
             "                         the dust threshold."},
                             {"fee_rate", RPCArg::Type::NUM, /* default */ "fallback to 'confTarget'", "FeeRate (NOT total fee) to pay, in " + CURRENCY_UNIT + " per kB\n"
             "                         Specify a fee rate instead of relying on the built-in fee estimator.\n"
-            "                         Must be at least 0.0001 BTC per kB higher than the current transaction fee rate.\n"},
+            "                         Must be at least 0.0001 ACM per kB higher than the current transaction fee rate.\n"},
                             {"replaceable", RPCArg::Type::BOOL, /* default */ "true", "Whether the new transaction should still be\n"
             "                         marked bip-125 replaceable. If true, the sequence numbers in the transaction will\n"
             "                         be left unchanged from the original. If false, any input sequence numbers in the\n"
@@ -3724,8 +3724,6 @@ UniValue getaddressinfo(const JSONRPCRequest& request)
         return NullUniValue;
     }
 
-    const std::string example_address = "\"acm1q09vm5lfy0j5reeulh4x5752q25uqqvz34hufdl\"";
-
             RPCHelpMan{"getaddressinfo",
                 "\nReturn information about the given actinium address.\n"
                 "Some of the information will only be present if the address is in the active wallet.\n",
@@ -3778,8 +3776,8 @@ UniValue getaddressinfo(const JSONRPCRequest& request)
             "}\n"
                 },
                 RPCExamples{
-                    HelpExampleCli("getaddressinfo", example_address) +
-                    HelpExampleRpc("getaddressinfo", example_address)
+                    HelpExampleCli("getaddressinfo", EXAMPLE_ADDRESS) +
+                    HelpExampleRpc("getaddressinfo", EXAMPLE_ADDRESS)
                 },
             }.Check(request);
 
