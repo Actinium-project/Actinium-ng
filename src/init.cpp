@@ -1515,7 +1515,7 @@ bool AppInitMain(NodeContext& node)
 
     // Start Tor
     if(gArgs.GetBoolArg("-torenabled", false)){
-        StartTorEnabled(threadGroup, scheduler);
+        StartTorEnabled(threadGroup, *node.scheduler);
         SetReachable(NET_ONION, false);
         SetReachable(NET_IPV4, false);
         SetReachable(NET_IPV6, false);
