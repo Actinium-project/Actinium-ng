@@ -1688,8 +1688,7 @@ if test x$need_bundled_univalue = xyes; then
 fi
 
 AX_SUBDIRS_CONFIGURE([src/secp256k1], [[--disable-shared], [--with-pic], [--with-bignum=no], [--enable-module-recovery], [--enable-experimental], [--enable-module-ecdh]])
-ac_configure_args="${ac_configure_args} --disable-shared --with-pic --with-bignum=no --enable-module-recovery --disable-jni --disable-system-torrc --disable-systemd --disable-lzma --disable-zstd --disable-asciidoc"
-AC_CONFIG_SUBDIRS([src/tor])
+AX_SUBDIRS_CONFIGURE([src/tor], [[--disable-unittests], [--disable-zstd], [--disable-system-torrc], [--disable-systemd], [--disable-lzma], [--disable-asciidoc], [--with-openssl-dir=$($PKG_CONFIG --variable=libdir openssl)], [CFLAGS=$($PKG_CONFIG --cflags openssl) -O2]])
 
 AC_OUTPUT
 
