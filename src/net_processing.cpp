@@ -26,7 +26,6 @@
 #include <txmempool.h>
 #include <util/system.h>
 #include <util/strencodings.h>
-#include <util/validation.h>
 
 #include <memory>
 #include <typeinfo>
@@ -1438,7 +1437,7 @@ void static ProcessGetBlockData(CNode* pfrom, const CChainParams& chainparams, c
     if (need_activate_chain) {
         BlockValidationState state;
         if (!ActivateBestChain(state, Params(), a_recent_block)) {
-            LogPrint(BCLog::NET, "failed to activate chain (%s)\n", FormatStateMessage(state));
+            LogPrint(BCLog::NET, "failed to activate chain (%s)\n", state.ToString());
         }
     }
 
@@ -2348,7 +2347,7 @@ bool static ProcessMessage(CNode* pfrom, const std::string& strCommand, CDataStr
             }
             BlockValidationState state;
             if (!ActivateBestChain(state, Params(), a_recent_block)) {
-                LogPrint(BCLog::NET, "failed to activate chain (%s)\n", FormatStateMessage(state));
+                LogPrint(BCLog::NET, "failed to activate chain (%s)\n", state.ToString());
             }
         }
 
@@ -2642,7 +2641,7 @@ bool static ProcessMessage(CNode* pfrom, const std::string& strCommand, CDataStr
         {
             LogPrint(BCLog::MEMPOOLREJ, "%s from peer=%d was not accepted: %s\n", tx.GetHash().ToString(),
                 pfrom->GetId(),
-                FormatStateMessage(state));
+                state.ToString());
             MaybePunishNodeForTx(pfrom->GetId(), state);
         }
         return true;
