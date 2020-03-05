@@ -3626,7 +3626,7 @@ bool BlockManager::AcceptBlockHeader(const CBlockHeader& block, BlockValidationS
 
         if  (!(block.nVersion & VERSIONBITS_FORK_GPU_SUPPORT) && pindexPrev->nHeight + 1 >= chainparams.GetConsensus().GPUSupportHeight) {
         	state.Invalid(BlockValidationResult::BLOCK_GPU_FORK, "not-following-gpu-support");
-        	return error("%s: Reject Old nVersion After Fork: %s, %s", __func__, hash.ToString(), FormatStateMessage(state));
+        	return error("%s: Reject Old nVersion After Fork: %s, %s", __func__, hash.ToString(), state.ToString());
         }
 
         if (pindexPrev->nStatus & BLOCK_FAILED_MASK) {
