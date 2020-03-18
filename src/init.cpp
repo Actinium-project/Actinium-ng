@@ -99,10 +99,6 @@ static const bool DEFAULT_PROXYRANDOMIZE = true;
 static const bool DEFAULT_REST_ENABLE = false;
 static const bool DEFAULT_STOPAFTERBLOCKIMPORT = false;
 
-// Dump addresses to banlist.dat every 15 minutes (900s)
-static constexpr int DUMP_BANS_INTERVAL = 60 * 15;
-
-
 #ifdef WIN32
 // Win32 LevelDB doesn't use filedescriptors, and the ones used for
 // accessing block files don't count towards the fd_set size limit
@@ -1427,7 +1423,7 @@ bool AppInitMain(NodeContext& node)
     // Gather some entropy once per minute.
     node.scheduler->scheduleEvery([]{
         RandAddPeriodic();
-    }, 60000);
+    }, std::chrono::minutes{1});
 
     GetMainSignals().RegisterBackgroundSignalScheduler(*node.scheduler);
 
@@ -1478,8 +1474,12 @@ bool AppInitMain(NodeContext& node)
     node.banman = MakeUnique<BanMan>(GetDataDir() / "banlist.dat", &uiInterface, gArgs.GetArg("-bantime", DEFAULT_MISBEHAVING_BANTIME));
     assert(!node.connman);
     node.connman = std::unique_ptr<CConnman>(new CConnman(GetRand(std::numeric_limits<uint64_t>::max()), GetRand(std::numeric_limits<uint64_t>::max())));
+    // Make mempool generally available in the node context. For example the connection manager, wallet, or RPC threads,
+    // which are all started after this, may use it from the node context.
+    assert(!node.mempool);
+    node.mempool = &::mempool;
 
-    node.peer_logic.reset(new PeerLogicValidation(node.connman.get(), node.banman.get(), *node.scheduler));
+    node.peer_logic.reset(new PeerLogicValidation(node.connman.get(), node.banman.get(), *node.scheduler, *node.mempool));
     RegisterValidationInterface(node.peer_logic.get());
 
     // sanitize comments per BIP-0014, format user agent and check total size
@@ -1842,11 +1842,6 @@ bool AppInitMain(NodeContext& node)
         return false;
     }
 
-    // Now that the chain state is loaded, make mempool generally available in the node context. For example the
-    // connection manager, wallet, or RPC threads, which are all started after this, may use it from the node context.
-    assert(!node.mempool);
-    node.mempool = &::mempool;
-
     fs::path est_path = GetDataDir() / FEE_ESTIMATES_FILENAME;
     CAutoFile est_filein(fsbridge::fopen(est_path, "rb"), SER_DISK, CLIENT_VERSION);
     // Allowed to fail as this file IS missing on first startup.
@@ -2027,7 +2022,7 @@ bool AppInitMain(NodeContext& node)
     BanMan* banman = node.banman.get();
     node.scheduler->scheduleEvery([banman]{
         banman->DumpBanlist();
-    }, DUMP_BANS_INTERVAL * 1000);
+    }, DUMP_BANS_INTERVAL);
 
     return true;
 }
