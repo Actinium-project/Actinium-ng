@@ -637,7 +637,7 @@
     </message>
     <message>
         <location line="+4"/>
-        <source>Open a actinium: URI</source>
+        <source>Open an actinium: URI</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
