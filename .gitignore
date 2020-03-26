@@ -144,3 +144,4 @@ src/tor.timestamp
 osx_volname
 dist/
 *.background.tiff
+.history
