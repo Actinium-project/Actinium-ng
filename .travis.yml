@@ -71,7 +71,7 @@ jobs:
     - stage: lint
       name: 'lint'
       env:
-      cache: false
+      cache: pip
       language: python
       python: '3.5' # Oldest supported version according to doc/dependencies.md
       install:
@@ -157,11 +157,6 @@ jobs:
       name: 'x86_64 Linux  [GOAL: install]  [focal]  [no depends, only system libs, fuzzers under valgrind]'
       env: >-
         FILE_ENV="./ci/test/00_setup_env_native_fuzz_with_valgrind.sh"
-
-    - stage: test
-      name: 'x86_64 Linux [GOAL: install]  [bionic]  [multiprocess]'
-      env: >-
-        FILE_ENV="./ci/test/00_setup_env_native_multiprocess.sh"
 
     - stage: test
       name: 'x86_64 Linux  [GOAL: install]  [bionic]  [no wallet]'

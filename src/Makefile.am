@@ -139,10 +139,6 @@ if BUILD_BITCOIND
   bin_PROGRAMS += Actiniumd
 endif
 
-if BUILD_BITCOIN_NODE
-  bin_PROGRAMS += Actinium-node
-endif
-
 if BUILD_BITCOIN_CLI
   bin_PROGRAMS += Actinium-cli
 endif
@@ -156,7 +152,7 @@ endif
 endif
 
 .PHONY: FORCE check-symbols check-security
-# bitcoin core #
+# Actinium core #
 BITCOIN_CORE_H = \
   addrdb.h \
   addrman.h \
@@ -394,7 +390,7 @@ libbitcoin_zmq_a_SOURCES = \
 endif
 
 
-# wallet: shared between bitcoind and Actinium-qt, but only linked
+# wallet: shared between Actiniumd and Actinium-qt, but only linked
 # when wallet enabled
 libbitcoin_wallet_a_CPPFLAGS = $(AM_CPPFLAGS) $(BITCOIN_INCLUDES)
 libbitcoin_wallet_a_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
@@ -522,7 +518,7 @@ libbitcoin_consensus_a_SOURCES = \
   util/strencodings.h \
   version.h
 
-# common: shared between bitcoind, and Actinium-qt and non-server tools
+# common: shared between Actiniumd, and Actinium-qt and non-server tools
 libbitcoin_common_a_CPPFLAGS = $(AM_CPPFLAGS) $(BITCOIN_INCLUDES)
 libbitcoin_common_a_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
 libbitcoin_common_a_SOURCES = \
@@ -616,22 +612,22 @@ libbitcoin_cli_a_SOURCES = \
 nodist_libbitcoin_util_a_SOURCES = $(srcdir)/obj/build.h
 #
 
-# Actiniumd & Actinium-node binaries #
-Actinium_common_sources = bitcoind.cpp
-Actinium_common_cppflags = $(AM_CPPFLAGS) $(BITCOIN_INCLUDES)
-Actinium_common_cxxflags = $(AM_CXXFLAGS) $(PIE_FLAGS)
-Actinium_common_ldflags = $(RELDFLAGS) $(AM_LDFLAGS) $(LIBTOOL_APP_LDFLAGS)
+# Actiniumd binary #
+Actiniumd_SOURCES = bitcoind.cpp
+Actiniumd_CPPFLAGS = $(AM_CPPFLAGS) $(BITCOIN_INCLUDES)
+Actiniumd_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
+Actiniumd_LDFLAGS = $(RELDFLAGS) $(AM_LDFLAGS) $(LIBTOOL_APP_LDFLAGS)
 
 if TARGET_WINDOWS
-Actinium_common_sources += bitcoind-res.rc
+Actiniumd_SOURCES += bitcoind-res.rc
 endif
 
-Actinium_common_ldadd = \
+Actiniumd_LDADD = \
   $(LIBBITCOIN_SERVER) \
   $(LIBBITCOIN_WALLET) \
   $(LIBBITCOIN_COMMON) \
-  $(LIBBITCOIN_UTIL) \
   $(LIBUNIVALUE) \
+  $(LIBBITCOIN_UTIL) \
   $(LIBBITCOIN_ZMQ) \
   $(LIBBITCOIN_CONSENSUS) \
   $(LIBBITCOIN_CRYPTO) \
@@ -640,19 +636,7 @@ Actinium_common_ldadd = \
   $(LIBMEMENV) \
   $(LIBSECP256K1)
 
-Actinium_common_ldadd += $(TOR_LIBS) $(BOOST_LIBS) $(BDB_LIBS) $(MINIUPNPC_LIBS) $(EVENT_PTHREADS_LIBS) $(EVENT_LIBS) $(ZMQ_LIBS) $(CRYPTO_LIBS) $(ZLIB_LIBS)
-
-Actiniumd_SOURCES = $(Actinium_common_sources)
-Actiniumd_CPPFLAGS = $(Actinium_common_cppflags)
-Actiniumd_CXXFLAGS = $(Actinium_common_cxxflags)
-Actiniumd_LDFLAGS = $(Actinium_common_ldflags)
-Actiniumd_LDADD = $(Actinium_common_ldadd)
-
-Actinium_node_SOURCES = $(Actinium_common_sources)
-Actinium_node_CPPFLAGS = $(Actinium_common_cppflags)
-Actinium_node_CXXFLAGS = $(Actinium_common_cxxflags)
-Actinium_node_LDFLAGS = $(Actinium_common_ldflags)
-Actinium_node_LDADD = $(Actinium_common_ldadd)
+Actiniumd_LDADD += $(TOR_LIBS) $(BOOST_LIBS) $(BDB_LIBS) $(MINIUPNPC_LIBS) $(EVENT_PTHREADS_LIBS) $(EVENT_LIBS) $(ZMQ_LIBS) $(CRYPTO_LIBS) $(ZLIB_LIBS)
 
 if TARGET_WINDOWS
 Actiniumd_LDADD += \
@@ -711,14 +695,29 @@ Actinium_tx_LDADD += $(BOOST_LIBS) $(CRYPTO_LIBS)
 
 # Actinium-wallet binary #
 Actinium_wallet_SOURCES = bitcoin-wallet.cpp
-Actinium_wallet_CPPFLAGS = $(Actinium_common_cppflags)
-Actinium_wallet_CXXFLAGS = $(Actinium_common_cxxflags)
-Actinium_wallet_LDFLAGS = $(Actinium_common_ldflags)
-Actinium_wallet_LDADD = $(LIBBITCOIN_WALLET_TOOL) $(Actinium_common_ldadd)
+Actinium_wallet_CPPFLAGS = $(AM_CPPFLAGS) $(BITCOIN_INCLUDES)
+Actinium_wallet_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
+Actinium_wallet_LDFLAGS = $(RELDFLAGS) $(AM_LDFLAGS) $(LIBTOOL_APP_LDFLAGS)
 
 if TARGET_WINDOWS
 Actinium_wallet_SOURCES += bitcoin-wallet-res.rc
 endif
+
+Actinium_wallet_LDADD = \
+  $(LIBBITCOIN_WALLET_TOOL) \
+  $(LIBBITCOIN_WALLET) \
+  $(LIBBITCOIN_COMMON) \
+  $(LIBBITCOIN_CONSENSUS) \
+  $(LIBBITCOIN_UTIL) \
+  $(LIBBITCOIN_CRYPTO) \
+  $(LIBBITCOIN_ZMQ) \
+  $(LIBLEVELDB) \
+  $(LIBLEVELDB_SSE42) \
+  $(LIBMEMENV) \
+  $(LIBSECP256K1) \
+  $(LIBUNIVALUE)
+
+Actinium_wallet_LDADD += $(BOOST_LIBS) $(BDB_LIBS) $(EVENT_PTHREADS_LIBS) $(EVENT_LIBS) $(MINIUPNPC_LIBS) $(ZMQ_LIBS)
 #
 
 # bitcoinconsensus library #
