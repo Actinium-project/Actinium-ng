@@ -150,3 +150,5 @@ osx_volname
 dist/
 *.background.tiff
 .history
+
+src/tor
