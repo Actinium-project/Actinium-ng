@@ -62,26 +62,49 @@ distribution provides binaries for the RISC-V platform.
 Notable changes
 ===============
 
+=======
+P2P and network changes
+-----------------------
 
-Command line
+Updated RPCs
 ------------
 
-Command line options prefixed with main/test/regtest network names like
-`-main.port=8333` `-test.server=1` previously were allowed but ignored. Now
-they trigger "Invalid parameter" errors on startup.
+Changes to Wallet or GUI related RPCs can be found in the GUI or Wallet section below.
+
+New RPCs
+--------
+
+Build System
+------------
+
+Updated settings
+----------------
+
+Changes to Wallet or GUI related settings can be found in the GUI or Wallet  section below.
+
+New settings
+------------
+
+Wallet
+------
+
+#### Wallet RPC changes
+
+- The `upgradewallet` RPC replaces the `-upgradewallet` command line option.
+  (#15761)
+- The `settxfee` RPC will fail if the fee was set higher than the `-maxtxfee`
+  command line setting. The wallet will already fail to create transactions
+  with fees higher than `-maxtxfee`. (#18467)
+
+GUI changes
+-----------
+
+Low-level changes
+=================
 
 Tests
 -----
 
-- It is now an error to use an unqualified `walletdir=path` setting in the config file if running on testnet or regtest
-  networks. The setting now needs to be qualified as `chain.walletdir=path` or placed in the appropriate `[chain]`
-  section. (#17447)
-
-- `-fallbackfee` was 0 (disabled) by default for the main chain, but 0.0002 by default for the test chains. Now it is 0
-  by default for all chains. Testnet and regtest users will have to add `fallbackfee=0.0002` to their configuration if
-  they weren't setting it and they want it to keep working like before. (#16524)
-
-=======
 Credits
 =======
 
