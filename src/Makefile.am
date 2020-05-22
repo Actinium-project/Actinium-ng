@@ -139,6 +139,10 @@ if BUILD_BITCOIND
   bin_PROGRAMS += Actiniumd
 endif
 
+if BUILD_BITCOIN_NODE
+  bin_PROGRAMS += bitcoin-node
+endif
+
 if BUILD_BITCOIN_CLI
   bin_PROGRAMS += Actinium-cli
 endif
@@ -277,6 +281,7 @@ BITCOIN_CORE_H = \
   util/message.h \
   util/moneystr.h \
   util/rbf.h \
+  util/ref.h \
   util/settings.h \
   util/string.h \
   util/threadnames.h \
@@ -612,22 +617,21 @@ libbitcoin_cli_a_SOURCES = \
 nodist_libbitcoin_util_a_SOURCES = $(srcdir)/obj/build.h
 #
 
-# Actiniumd binary #
-Actiniumd_SOURCES = bitcoind.cpp
-Actiniumd_CPPFLAGS = $(AM_CPPFLAGS) $(BITCOIN_INCLUDES)
-Actiniumd_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
-Actiniumd_LDFLAGS = $(RELDFLAGS) $(AM_LDFLAGS) $(LIBTOOL_APP_LDFLAGS)
+# bitcoind & bitcoin-node binaries #
+Actinium_daemon_sources = bitcoind.cpp
+Actinium_bin_cppflags = $(AM_CPPFLAGS) $(BITCOIN_INCLUDES)
+Actinium_bin_cxxflags = $(AM_CXXFLAGS) $(PIE_FLAGS)
+Actinium_bin_ldflags = $(RELDFLAGS) $(AM_LDFLAGS) $(LIBTOOL_APP_LDFLAGS)
 
 if TARGET_WINDOWS
-Actiniumd_SOURCES += bitcoind-res.rc
+Actinium_daemon_sources += bitcoind-res.rc
 endif
 
-Actiniumd_LDADD = \
-  $(LIBBITCOIN_SERVER) \
+Actinium_bin_ldadd = \
   $(LIBBITCOIN_WALLET) \
   $(LIBBITCOIN_COMMON) \
-  $(LIBUNIVALUE) \
   $(LIBBITCOIN_UTIL) \
+  $(LIBUNIVALUE) \
   $(LIBBITCOIN_ZMQ) \
   $(LIBBITCOIN_CONSENSUS) \
   $(LIBBITCOIN_CRYPTO) \
@@ -636,7 +640,16 @@ Actiniumd_LDADD = \
   $(LIBMEMENV) \
   $(LIBSECP256K1)
 
-Actiniumd_LDADD += $(TOR_LIBS) $(BOOST_LIBS) $(BDB_LIBS) $(MINIUPNPC_LIBS) $(EVENT_PTHREADS_LIBS) $(EVENT_LIBS) $(ZMQ_LIBS) $(CRYPTO_LIBS) $(ZLIB_LIBS)
+Actinium_bin_ldadd += $(BOOST_LIBS) $(BDB_LIBS) $(MINIUPNPC_LIBS) $(EVENT_PTHREADS_LIBS) $(EVENT_LIBS) $(ZMQ_LIBS) $(TOR_LIBS) $(ZLIB_LIBS) $(CRYPTO_LIBS)
+
+Actiniumd_SOURCES = $(bitcoin_daemon_sources)
+Actiniumd_CPPFLAGS = $(bitcoin_bin_cppflags)
+Actiniumd_CXXFLAGS = $(bitcoin_bin_cxxflags)
+Actiniumd_LDFLAGS = $(bitcoin_bin_ldflags)
+Actiniumd_LDADD = $(LIBBITCOIN_SERVER) $(bitcoin_bin_ldadd)
+
+Actinium_node_CPPFLAGS = $(bitcoin_bin_cppflags)
+Actinium_node_CXXFLAGS = $(bitcoin_bin_cxxflags)
 
 if TARGET_WINDOWS
 Actiniumd_LDADD += \
@@ -693,31 +706,16 @@ Actinium_tx_LDADD = \
 Actinium_tx_LDADD += $(BOOST_LIBS) $(CRYPTO_LIBS)
 #
 
-# Actinium-wallet binary #
+# bitcoin-wallet binary #
 Actinium_wallet_SOURCES = bitcoin-wallet.cpp
-Actinium_wallet_CPPFLAGS = $(AM_CPPFLAGS) $(BITCOIN_INCLUDES)
-Actinium_wallet_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
-Actinium_wallet_LDFLAGS = $(RELDFLAGS) $(AM_LDFLAGS) $(LIBTOOL_APP_LDFLAGS)
+Actinium_wallet_CPPFLAGS = $(bitcoin_bin_cppflags)
+Actinium_wallet_CXXFLAGS = $(bitcoin_bin_cxxflags)
+Actinium_wallet_LDFLAGS = $(bitcoin_bin_ldflags)
+Actinium_wallet_LDADD = $(LIBBITCOIN_WALLET_TOOL) $(bitcoin_bin_ldadd)
 
 if TARGET_WINDOWS
 Actinium_wallet_SOURCES += bitcoin-wallet-res.rc
 endif
-
-Actinium_wallet_LDADD = \
-  $(LIBBITCOIN_WALLET_TOOL) \
-  $(LIBBITCOIN_WALLET) \
-  $(LIBBITCOIN_COMMON) \
-  $(LIBBITCOIN_CONSENSUS) \
-  $(LIBBITCOIN_UTIL) \
-  $(LIBBITCOIN_CRYPTO) \
-  $(LIBBITCOIN_ZMQ) \
-  $(LIBLEVELDB) \
-  $(LIBLEVELDB_SSE42) \
-  $(LIBMEMENV) \
-  $(LIBSECP256K1) \
-  $(LIBUNIVALUE)
-
-Actinium_wallet_LDADD += $(BOOST_LIBS) $(BDB_LIBS) $(EVENT_PTHREADS_LIBS) $(EVENT_LIBS) $(MINIUPNPC_LIBS) $(ZMQ_LIBS)
 #
 
 # bitcoinconsensus library #

@@ -1,21 +1,19 @@
 *.tar.gz
 
 *.exe
-src/Actinium
-src/Actiniumd
-src/Actinium-cli
-src/Actinium-tx
-src/Actinium-wallet
 *.pdb
 src/Actinium
 src/Actiniumd
 src/Actinium-cli
+src/Actinium-gui
+src/Actinium-node
 src/Actinium-tx
 src/Actinium-wallet
 src/test/fuzz
 !src/test/fuzz/*.*
 src/test/test_bitcoin
 src/qt/test/test_bitcoin-qt
+src/tor
 
 # autoreconf
 Makefile.in
