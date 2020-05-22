@@ -299,9 +299,9 @@ QT_FORMS_H=$(join $(dir $(QT_FORMS_UI)),$(addprefix ui_, $(notdir $(QT_FORMS_UI:
 # Most files will depend on the forms and moc files as includes. Generate them
 # before anything else.
 $(QT_MOC): $(QT_FORMS_H)
-$(qt_libbitcoinqt_a_OBJECTS) $(qt_bitcoin_qt_OBJECTS) $(bitcoin_gui_OBJECTS) : | $(QT_MOC)
+$(qt_libbitcoinqt_a_OBJECTS) $(qt_Actinium_qt_OBJECTS) $(Actinium_gui_OBJECTS) : | $(QT_MOC)
 
-# bitcoin-qt and bitcoin-gui binaries #
+# Actinium-qt and Actinium-gui binaries #
 Actinium_qt_cppflags = $(AM_CPPFLAGS) $(BITCOIN_INCLUDES) $(BITCOIN_QT_INCLUDES) \
   $(QT_INCLUDES) $(QR_CFLAGS)
 Actinium_qt_cxxflags = $(AM_CXXFLAGS) $(QT_PIE_FLAGS)
@@ -323,16 +323,19 @@ Actinium_qt_ldadd += $(LIBBITCOIN_CLI) $(LIBBITCOIN_COMMON) $(LIBBITCOIN_UTIL) $
 Actinium_qt_ldflags = $(RELDFLAGS) $(AM_LDFLAGS) $(QT_LDFLAGS) $(LIBTOOL_APP_LDFLAGS)
 Actinium_qt_libtoolflags = $(AM_LIBTOOLFLAGS) --tag CXX
 
-qt_bitcoin_qt_CPPFLAGS = $(bitcoin_qt_cppflags)
-qt_bitcoin_qt_CXXFLAGS = $(bitcoin_qt_cxxflags)
-qt_bitcoin_qt_LIBTOOLFLAGS = $(bitcoin_qt_libtoolflags)
+qt_Actinium_qt_CPPFLAGS = $(Actinium_qt_cppflags)
+qt_Actinium_qt_CXXFLAGS = $(Actinium_qt_cxxflags)
+qt_Actinium_qt_SOURCES = $(Actinium_qt_sources)
+qt_Actinium_qt_LDADD = $(Actinium_qt_ldadd)
+qt_Actinium_qt_LDFLAGS = $(Actinium_qt_ldflags)
+qt_Actinium_qt_LIBTOOLFLAGS = $(Actinium_qt_libtoolflags)
 
-Actinium_gui_CPPFLAGS = $(bitcoin_qt_cppflags)
-Actinium_gui_CXXFLAGS = $(bitcoin_qt_cxxflags)
-Actinium_gui_SOURCES = $(bitcoin_qt_sources)
-Actinium_gui_LDADD = $(bitcoin_qt_ldadd)
-Actinium_gui_LDFLAGS = $(bitcoin_qt_ldflags)
-Actinium_gui_LIBTOOLFLAGS = $(bitcoin_qt_libtoolflags)
+Actinium_gui_CPPFLAGS = $(Actinium_qt_cppflags)
+Actinium_gui_CXXFLAGS = $(Actinium_qt_cxxflags)
+Actinium_gui_SOURCES = $(Actinium_qt_sources)
+Actinium_gui_LDADD = $(Actinium_qt_ldadd)
+Actinium_gui_LDFLAGS = $(Actinium_qt_ldflags)
+Actinium_gui_LIBTOOLFLAGS = $(Actinium_qt_libtoolflags)
 
 #locale/foo.ts -> locale/foo.qm
 QT_QM=$(QT_TS:.ts=.qm)
