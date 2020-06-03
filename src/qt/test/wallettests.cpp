@@ -229,17 +229,6 @@ void TestGUI(interfaces::Node& node)
     for (QWidget* widget : QApplication::topLevelWidgets()) {
         if (widget->inherits("ReceiveRequestDialog")) {
             ReceiveRequestDialog* receiveRequestDialog = qobject_cast<ReceiveRequestDialog*>(widget);
-<<<<<<< HEAD
-            QTextEdit* rlist = receiveRequestDialog->QObject::findChild<QTextEdit*>("outUri");
-            QString paymentText = rlist->toPlainText();
-            QStringList paymentTextList = paymentText.split('\n');
-            QCOMPARE(paymentTextList.at(0), QString("Payment information"));
-            QVERIFY(paymentTextList.at(1).indexOf(QString("URI: actinium:")) != -1);
-            QVERIFY(paymentTextList.at(2).indexOf(QString("Address:")) != -1);
-            QCOMPARE(paymentTextList.at(3), QString("Amount: 0.00000001 ") + QString::fromStdString(CURRENCY_UNIT));
-            QCOMPARE(paymentTextList.at(4), QString("Label: TEST_LABEL_1"));
-            QCOMPARE(paymentTextList.at(5), QString("Message: TEST_MESSAGE_1"));
-=======
             QCOMPARE(receiveRequestDialog->QObject::findChild<QLabel*>("payment_header")->text(), QString("Payment information"));
             QCOMPARE(receiveRequestDialog->QObject::findChild<QLabel*>("uri_tag")->text(), QString("URI:"));
             QString uri = receiveRequestDialog->QObject::findChild<QLabel*>("uri_content")->text();
@@ -257,7 +246,6 @@ void TestGUI(interfaces::Node& node)
             QCOMPARE(uri.count("message=TEST_MESSAGE_1"), 2);
             QCOMPARE(receiveRequestDialog->QObject::findChild<QLabel*>("message_tag")->text(), QString("Message:"));
             QCOMPARE(receiveRequestDialog->QObject::findChild<QLabel*>("message_content")->text(), QString("TEST_MESSAGE_1"));
->>>>>>> 9e8bd217cd2a3437ce7c8fc7f04a61a3aee5268c
         }
     }
 
