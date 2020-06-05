@@ -392,6 +392,7 @@ if test "x$enable_werror" = "xyes"; then
   dnl https://gcc.gnu.org/bugzilla/show_bug.cgi?id=78010
   AX_CHECK_COMPILE_FLAG([-Werror=suggest-override],[ERROR_CXXFLAGS="$ERROR_CXXFLAGS -Werror=suggest-override"],,[[$CXXFLAG_WERROR]],
                         [AC_LANG_SOURCE([[struct A { virtual void f(); }; struct B : A { void f() final; };]])])
+  AX_CHECK_COMPILE_FLAG([-Werror=unreachable-code-loop-increment],[ERROR_CXXFLAGS="$ERROR_CXXFLAGS -Werror=unreachable-code-loop-increment"],,[[$CXXFLAG_WERROR]])
 fi
 
 if test "x$CXXFLAGS_overridden" = "xno"; then
@@ -411,6 +412,7 @@ if test "x$CXXFLAGS_overridden" = "xno"; then
   AX_CHECK_COMPILE_FLAG([-Wsign-compare],[WARN_CXXFLAGS="$WARN_CXXFLAGS -Wsign-compare"],,[[$CXXFLAG_WERROR]])
   AX_CHECK_COMPILE_FLAG([-Wsuggest-override],[WARN_CXXFLAGS="$WARN_CXXFLAGS -Wsuggest-override"],,[[$CXXFLAG_WERROR]],
                         [AC_LANG_SOURCE([[struct A { virtual void f(); }; struct B : A { void f() final; };]])])
+  AX_CHECK_COMPILE_FLAG([-Wunreachable-code-loop-increment],[WARN_CXXFLAGS="$WARN_CXXFLAGS -Wunreachable-code-loop-increment"],,[[$CXXFLAG_WERROR]])
 
   dnl Some compilers (gcc) ignore unknown -Wno-* options, but warn about all
   dnl unknown options if any other warning is produced. Test the -Wfoo case, and
@@ -1766,7 +1768,7 @@ echo "  gprof enabled = $enable_gprof"
 echo "  werror        = $enable_werror"
 echo
 echo "  target os     = $TARGET_OS"
-echo "  build os      = $BUILD_OS"
+echo "  build os      = $build_os"
 echo
 echo "  CC            = $CC"
 echo "  CFLAGS        = $CFLAGS"
