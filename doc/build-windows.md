@@ -68,8 +68,8 @@ See also: [dependencies.md](dependencies.md).
 
 Acquire the source in the usual way:
 
-    git clone https://github.com/bitcoin/bitcoin.git
-    cd bitcoin
+    git clone https://github.com/Actinium-project/Actinium-ng.git
+    cd Actinium-ng
 
 ## Building for 64-bit Windows
 
