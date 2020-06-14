@@ -67,7 +67,7 @@ TEST_EXIT_PASSED = 0
 TEST_EXIT_SKIPPED = 77
 
 TEST_FRAMEWORK_MODULES = [
-    "base58",
+    "address",
     "blocktools",
     "script",
 ]
@@ -164,7 +164,7 @@ BASE_SCRIPTS = [
     'wallet_keypool.py',
     'wallet_keypool.py --descriptors',
     'wallet_descriptor.py',
-    'p2p_mempool.py',
+    'p2p_nobloomfilter_messages.py',
     'p2p_filter.py',
     'rpc_setban.py',
     'p2p_blocksonly.py',
@@ -190,6 +190,7 @@ BASE_SCRIPTS = [
     'rpc_preciousblock.py',
     'wallet_importprunedfunds.py',
     'p2p_leak_tx.py',
+    'p2p_eviction.py',
     'rpc_signmessage.py',
     'rpc_generateblock.py',
     'wallet_balance.py',

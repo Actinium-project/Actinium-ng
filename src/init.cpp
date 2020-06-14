@@ -883,11 +883,6 @@ void InitParameterInteraction()
     }
 }
 
-static std::string ResolveErrMsg(const char * const optname, const std::string& strBind)
-{
-    return strprintf(_("Cannot resolve -%s address: '%s'").translated, optname, strBind);
-}
-
 void SetupPluggableTransport(boost::optional<std::string> &plugin, struct stat *sb)
 {
     std::string torPlugin = gArgs.GetArg("-torplugin", "");
