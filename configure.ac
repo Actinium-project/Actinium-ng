@@ -625,8 +625,13 @@ case $host in
          dnl It's safe to add these paths even if the functionality is disabled by
          dnl the user (--without-wallet or --without-gui for example).
 
+         openssl_prefix=`$BREW --prefix openssl 2>/dev/null`
          bdb_prefix=$($BREW --prefix berkeley-db4 2>/dev/null)
          qt5_prefix=$($BREW --prefix qt5 2>/dev/null)
+         if test x$openssl_prefix != x; then	
+           PKG_CONFIG_PATH="$openssl_prefix/lib/pkgconfig:$PKG_CONFIG_PATH"	
+           export PKG_CONFIG_PATH	
+         fi
          if test x$bdb_prefix != x && test "x$BDB_CFLAGS" = "x" && test "x$BDB_LIBS" = "x"; then
            dnl This must precede the call to BITCOIN_FIND_BDB48 below.
            BDB_CFLAGS="-I$bdb_prefix/include"
@@ -1295,39 +1300,6 @@ CPPFLAGS="$TEMP_CPPFLAGS"
 
 fi
 
-if test x$use_pkgconfig = xyes; then
-  : dnl
-  m4_ifdef(
-    [PKG_CHECK_MODULES],
-    [
-      PKG_CHECK_MODULES([CRYPTO], [libcrypto],,[AC_MSG_ERROR(libcrypto not found.)])
-      if test x$use_qr != xno; then
-        BITCOIN_QT_CHECK([PKG_CHECK_MODULES([QR], [libqrencode], [have_qrencode=yes], [have_qrencode=no])])
-      fi
-      if test x$build_bitcoin_cli$build_bitcoind$bitcoin_enable_qt$use_tests$use_bench != xnonononono; then
-        PKG_CHECK_MODULES([EVENT], [libevent >= 2.0.21], [use_libevent=yes], [AC_MSG_ERROR(libevent version 2.0.21 or greater not found.)])
-        if test x$TARGET_OS != xwindows; then
-          PKG_CHECK_MODULES([EVENT_PTHREADS], [libevent_pthreads >= 2.0.21],, [AC_MSG_ERROR(libevent_pthreads version 2.0.21 or greater not found.)])
-        fi
-      fi
-
-      if test "x$use_zmq" = "xyes"; then
-        PKG_CHECK_MODULES([ZMQ],[libzmq >= 4],
-          [AC_DEFINE([ENABLE_ZMQ],[1],[Define to 1 to enable ZMQ functions])],
-          [AC_DEFINE([ENABLE_ZMQ],[0],[Define to 1 to enable ZMQ functions])
-           AC_MSG_WARN([libzmq version 4.x or greater not found, disabling])
-           use_zmq=no])
-      else
-          AC_DEFINE_UNQUOTED([ENABLE_ZMQ],[0],[Define to 1 to enable ZMQ functions])
-      fi
-    ]
-  )
-else
-  AC_CHECK_HEADER([openssl/crypto.h],,AC_MSG_ERROR(libcrypto headers missing))	
-  AC_CHECK_LIB([crypto],      [main],CRYPTO_LIBS=-lcrypto, AC_MSG_ERROR(libcrypto missing))
-
-  AC_CHECK_HEADER([openssl/ssl.h],, AC_MSG_ERROR(libssl headers missing),)
-  AC_CHECK_LIB([ssl],         [main],SSL_LIBS=-lssl, AC_MSG_ERROR(libssl missing))
 dnl libevent check
 
 if test x$build_bitcoin_cli$build_bitcoind$bitcoin_enable_qt$use_tests$use_bench != xnonononono; then
@@ -1336,6 +1308,12 @@ if test x$build_bitcoin_cli$build_bitcoind$bitcoin_enable_qt$use_tests$use_bench
     PKG_CHECK_MODULES([EVENT_PTHREADS], [libevent_pthreads >= 2.0.21],, [AC_MSG_ERROR([libevent_pthreads version 2.0.21 or greater not found.])])
   fi
 fi
+
+AC_CHECK_HEADER([openssl/crypto.h],,AC_MSG_ERROR(libcrypto headers missing))	
+AC_CHECK_LIB([crypto],[main],CRYPTO_LIBS=-lcrypto, AC_MSG_ERROR(libcrypto missing))
+
+AC_CHECK_HEADER([openssl/ssl.h],,AC_MSG_ERROR(libssl headers missing),)
+AC_CHECK_LIB([ssl],[main],SSL_LIBS=-lssl, AC_MSG_ERROR(libssl missing))
 
 dnl QR Code encoding library check
 
