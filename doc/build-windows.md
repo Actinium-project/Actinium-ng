@@ -87,19 +87,11 @@ Note that for WSL the Actinium Core source path MUST be somewhere in the default
 example /usr/src/bitcoin, AND not under /mnt/d/. If this is not the case the dependency autoconf scripts will fail.
 This means you cannot use a directory that is located directly on the host Windows file system to perform the build.
 
-<<<<<<< HEAD
-Acquire the source in the usual way:
-
-    git clone https://github.com/Actinium-project/Actinium-ng.git
-
-Once the source code is ready the build steps are below:
-=======
 Additional WSL Note: WSL support for [launching Win32 applications](https://docs.microsoft.com/en-us/archive/blogs/wsl/windows-and-ubuntu-interoperability#launching-win32-applications-from-within-wsl)
 results in `Autoconf` configure scripts being able to execute Windows Portable Executable files. This can cause
 unexpected behaviour during the build, such as Win32 error dialogs for missing libraries. The recommended approach
 is to temporarily disable WSL support for Win32 applications.
 
->>>>>>> b52e25cc1be3771cad26c6c3cdbc0b81f96597ec
 Build using:
 
     PATH=$(echo "$PATH" | sed -e 's/:\/mnt.*//g') # strip out problematic Windows %PATH% imported var
