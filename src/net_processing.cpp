@@ -33,13 +33,6 @@
 #include <memory>
 #include <typeinfo>
 
-<<<<<<< HEAD
-#if defined(NDEBUG)
-# error "Actinium cannot be compiled without assertions."
-#endif
-
-=======
->>>>>>> b52e25cc1be3771cad26c6c3cdbc0b81f96597ec
 /** Expiration time for orphan transactions in seconds */
 static constexpr int64_t ORPHAN_TX_EXPIRE_TIME = 20 * 60;
 /** Minimum time between orphan transactions expire time checks in seconds */
