@@ -235,6 +235,7 @@ BASE_SCRIPTS = [
     'mempool_compatibility.py',
     'rpc_deriveaddresses.py',
     'rpc_deriveaddresses.py --usecli',
+    'p2p_ping.py',
     'rpc_scantxoutset.py',
     'feature_logging.py',
     'p2p_node_network_limited.py',
@@ -242,9 +243,11 @@ BASE_SCRIPTS = [
     'feature_blocksdir.py',
     'feature_config_args.py',
     'rpc_getdescriptorinfo.py',
+    'rpc_getpeerinfo_banscore_deprecation.py',
     'rpc_help.py',
     'feature_help.py',
     'feature_shutdown.py',
+    'p2p_ibd_txrelay.py',
     # Don't append tests at the end to avoid merge conflicts
     # Put them in a random line within the section that fits their approximate run-time
 ]

@@ -3,6 +3,7 @@
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
+#include <cstdint>
 #include <netaddress.h>
 #include <hash.h>
 #include <util/strencodings.h>
@@ -627,15 +628,15 @@ CService::CService() : port(0)
 {
 }
 
-CService::CService(const CNetAddr& cip, unsigned short portIn) : CNetAddr(cip), port(portIn)
+CService::CService(const CNetAddr& cip, uint16_t portIn) : CNetAddr(cip), port(portIn)
 {
 }
 
-CService::CService(const struct in_addr& ipv4Addr, unsigned short portIn) : CNetAddr(ipv4Addr), port(portIn)
+CService::CService(const struct in_addr& ipv4Addr, uint16_t portIn) : CNetAddr(ipv4Addr), port(portIn)
 {
 }
 
-CService::CService(const struct in6_addr& ipv6Addr, unsigned short portIn) : CNetAddr(ipv6Addr), port(portIn)
+CService::CService(const struct in6_addr& ipv6Addr, uint16_t portIn) : CNetAddr(ipv6Addr), port(portIn)
 {
 }
 
@@ -663,7 +664,7 @@ bool CService::SetSockAddr(const struct sockaddr *paddr)
     }
 }
 
-unsigned short CService::GetPort() const
+uint16_t CService::GetPort() const
 {
     return port;
 }
@@ -725,12 +726,10 @@ bool CService::GetSockAddr(struct sockaddr* paddr, socklen_t *addrlen) const
  */
 std::vector<unsigned char> CService::GetKey() const
 {
-     std::vector<unsigned char> vKey;
-     vKey.resize(18);
-     memcpy(vKey.data(), ip, 16);
-     vKey[16] = port / 0x100; // most significant byte of our port
-     vKey[17] = port & 0x0FF; // least significant byte of our port
-     return vKey;
+    auto key = GetAddrBytes();
+    key.push_back(port / 0x100); // most significant byte of our port
+    key.push_back(port & 0x0FF); // least significant byte of our port
+    return key;
 }
 
 std::string CService::ToStringPort() const

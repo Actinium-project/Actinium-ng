@@ -467,6 +467,7 @@ RPCConsole::RPCConsole(interfaces::Node& node, const PlatformStyle *_platformSty
 
     // Install event filter for up and down arrow
     ui->lineEdit->installEventFilter(this);
+    ui->lineEdit->setMaxLength(16 * 1024 * 1024);
     ui->messagesWidget->installEventFilter(this);
 
     connect(ui->clearButton, &QPushButton::clicked, this, &RPCConsole::clear);
@@ -1119,15 +1120,20 @@ void RPCConsole::updateNodeDetail(const CNodeCombinedStats *stats)
     ui->peerSubversion->setText(QString::fromStdString(stats->nodeStats.cleanSubVer));
     ui->peerDirection->setText(stats->nodeStats.fInbound ? tr("Inbound") : tr("Outbound"));
     ui->peerHeight->setText(QString::number(stats->nodeStats.nStartingHeight));
-    ui->peerWhitelisted->setText(stats->nodeStats.m_legacyWhitelisted ? tr("Yes") : tr("No"));
+    if (stats->nodeStats.m_permissionFlags == PF_NONE) {
+        ui->peerPermissions->setText(tr("N/A"));
+    } else {
+        QStringList permissions;
+        for (const auto& permission : NetPermissions::ToStrings(stats->nodeStats.m_permissionFlags)) {
+            permissions.append(QString::fromStdString(permission));
+        }
+        ui->peerPermissions->setText(permissions.join(" & "));
+    }
     ui->peerMappedAS->setText(stats->nodeStats.m_mapped_as != 0 ? QString::number(stats->nodeStats.m_mapped_as) : tr("N/A"));
 
     // This check fails for example if the lock was busy and
     // nodeStateStats couldn't be fetched.
     if (stats->fNodeStateStatsAvailable) {
-        // Ban score is init to 0
-        ui->peerBanScore->setText(QString("%1").arg(stats->nodeStateStats.nMisbehavior));
-
         // Sync height is init to -1
         if (stats->nodeStateStats.nSyncHeight > -1)
             ui->peerSyncHeight->setText(QString("%1").arg(stats->nodeStateStats.nSyncHeight));
@@ -1218,7 +1224,7 @@ void RPCConsole::banSelectedNode(int bantime)
         // Find possible nodes, ban it and clear the selected node
         const CNodeCombinedStats *stats = clientModel->getPeerTableModel()->getNodeStats(detailNodeRow);
         if (stats) {
-            m_node.ban(stats->nodeStats.addr, BanReasonManuallyAdded, bantime);
+            m_node.ban(stats->nodeStats.addr, bantime);
             m_node.disconnectByAddress(stats->nodeStats.addr);
         }
     }
