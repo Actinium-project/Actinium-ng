@@ -151,6 +151,7 @@ static const CRPCConvertParam vRPCConvertParams[] =
     { "getmempoolancestors", 1, "verbose" },
     { "getmempooldescendants", 1, "verbose" },
     { "bumpfee", 1, "options" },
+    { "psbtbumpfee", 1, "options" },
     { "logging", 0, "include" },
     { "logging", 1, "exclude" },
     { "disconnectnode", 1, "nodeid" },
@@ -173,6 +174,7 @@ static const CRPCConvertParam vRPCConvertParams[] =
     { "createwallet", 4, "avoid_reuse"},
     { "createwallet", 5, "descriptors"},
     { "getnodeaddresses", 0, "count"},
+    { "addpeeraddress", 1, "port"},
     { "stop", 0, "wait" },
 };
 // clang-format on
