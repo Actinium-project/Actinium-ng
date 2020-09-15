@@ -4,11 +4,7 @@
 # Copyright (c) 2010-2020 The Bitcoin Core developers
 # Distributed under the MIT software license, see the accompanying
 # file COPYING or http://www.opensource.org/licenses/mit-license.php.
-<<<<<<< HEAD:test/functional/test_framework/mininode.py
-"""Actinium P2P network half-a-node.
-=======
 """Test objects for interacting with a bitcoind node over the p2p protocol.
->>>>>>> 862fde88be706adb20a211178253636442c3ae00:test/functional/test_framework/p2p.py
 
 The P2PInterface objects interact with the bitcoind nodes under test using the
 node's p2p interface. They can be used to send messages to the node, and

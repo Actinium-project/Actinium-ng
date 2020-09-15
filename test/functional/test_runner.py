@@ -69,7 +69,9 @@ TEST_EXIT_SKIPPED = 77
 TEST_FRAMEWORK_MODULES = [
     "address",
     "blocktools",
+    "muhash",
     "script",
+    "util",
 ]
 
 EXTENDED_SCRIPTS = [
@@ -105,7 +107,6 @@ BASE_SCRIPTS = [
     'wallet_listtransactions.py',
     # vv Tests less than 60s vv
     'p2p_sendheaders.py',
-    'wallet_zapwallettxes.py',
     'wallet_importmulti.py',
     'mempool_limit.py',
     'rpc_txoutproof.py',
@@ -224,6 +225,7 @@ BASE_SCRIPTS = [
     'rpc_estimatefee.py',
     'rpc_getblockstats.py',
     'wallet_create_tx.py',
+    'wallet_send.py',
     'p2p_fingerprint.py',
     'feature_uacomment.py',
     'feature_filelock.py',

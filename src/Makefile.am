@@ -4,10 +4,11 @@
 
 DIST_SUBDIRS = secp256k1 univalue tor
 
-AM_LDFLAGS = $(PTHREAD_CFLAGS) $(LIBTOOL_LDFLAGS) $(HARDENED_LDFLAGS) $(GPROF_LDFLAGS) $(SANITIZER_LDFLAGS)
+AM_LDFLAGS = $(LIBTOOL_LDFLAGS) $(HARDENED_LDFLAGS) $(GPROF_LDFLAGS) $(SANITIZER_LDFLAGS)
 AM_CXXFLAGS = $(DEBUG_CXXFLAGS) $(HARDENED_CXXFLAGS) $(WARN_CXXFLAGS) $(NOWARN_CXXFLAGS) $(ERROR_CXXFLAGS) $(GPROF_CXXFLAGS) $(SANITIZER_CXXFLAGS)
 AM_CPPFLAGS = $(DEBUG_CPPFLAGS) $(HARDENED_CPPFLAGS)
 AM_LIBTOOLFLAGS = --preserve-dup-deps
+PTHREAD_FLAGS = $(PTHREAD_CFLAGS) $(PTHREAD_LIBS)
 EXTRA_LIBRARIES =
 
 if EMBEDDED_UNIVALUE
@@ -469,6 +470,8 @@ crypto_libbitcoin_crypto_base_a_SOURCES = \
   crypto/sha1.h \
   crypto/sha256.cpp \
   crypto/sha256.h \
+  crypto/sha3.cpp \
+  crypto/sha3.h \
   crypto/sha512.cpp \
   crypto/sha512.h \
   crypto/siphash.cpp \
@@ -630,7 +633,7 @@ nodist_libbitcoin_util_a_SOURCES = $(srcdir)/obj/build.h
 Actinium_daemon_sources = bitcoind.cpp
 Actinium_bin_cppflags = $(AM_CPPFLAGS) $(BITCOIN_INCLUDES)
 Actinium_bin_cxxflags = $(AM_CXXFLAGS) $(PIE_FLAGS)
-Actinium_bin_ldflags = $(RELDFLAGS) $(AM_LDFLAGS) $(LIBTOOL_APP_LDFLAGS)
+Actinium_bin_ldflags = $(RELDFLAGS) $(AM_LDFLAGS) $(LIBTOOL_APP_LDFLAGS) $(PTHREAD_FLAGS)
 
 if TARGET_WINDOWS
 Actinium_daemon_sources += bitcoind-res.rc
@@ -657,9 +660,6 @@ Actiniumd_CXXFLAGS = $(Actinium_bin_cxxflags)
 Actiniumd_LDFLAGS = $(Actinium_bin_ldflags)
 Actiniumd_LDADD = $(LIBBITCOIN_SERVER) $(Actinium_bin_ldadd)
 
-Actinium_node_CPPFLAGS = $(Actinium_bin_cppflags)
-Actinium_node_CXXFLAGS = $(Actinium_bin_cxxflags)
-
 if TARGET_WINDOWS
 Actiniumd_LDADD += \
    -lz
@@ -675,11 +675,14 @@ Actiniumd_LDADD += \
    -lz
 endif
 
-# Actinium-cli binary #
+Actinium_node_CPPFLAGS = $(Actinium_bin_cppflags)
+Actinium_node_CXXFLAGS = $(Actinium_bin_cxxflags)
+
+# bitcoin-cli binary #
 Actinium_cli_SOURCES = bitcoin-cli.cpp
 Actinium_cli_CPPFLAGS = $(AM_CPPFLAGS) $(BITCOIN_INCLUDES) $(EVENT_CFLAGS)
 Actinium_cli_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
-Actinium_cli_LDFLAGS = $(RELDFLAGS) $(AM_LDFLAGS) $(LIBTOOL_APP_LDFLAGS)
+Actinium_cli_LDFLAGS = $(RELDFLAGS) $(AM_LDFLAGS) $(LIBTOOL_APP_LDFLAGS) $(PTHREAD_FLAGS)
 
 if TARGET_WINDOWS
 Actinium_cli_SOURCES += bitcoin-cli-res.rc
@@ -694,11 +697,11 @@ Actinium_cli_LDADD = \
 Actinium_cli_LDADD += $(BOOST_LIBS) $(CRYPTO_LIBS) $(EVENT_LIBS)
 #
 
-# Actinium-tx binary #
+# bitcoin-tx binary #
 Actinium_tx_SOURCES = bitcoin-tx.cpp
 Actinium_tx_CPPFLAGS = $(AM_CPPFLAGS) $(BITCOIN_INCLUDES)
 Actinium_tx_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
-Actinium_tx_LDFLAGS = $(RELDFLAGS) $(AM_LDFLAGS) $(LIBTOOL_APP_LDFLAGS)
+Actinium_tx_LDFLAGS = $(RELDFLAGS) $(AM_LDFLAGS) $(LIBTOOL_APP_LDFLAGS) $(PTHREAD_FLAGS)
 
 if TARGET_WINDOWS
 Actinium_tx_SOURCES += bitcoin-tx-res.rc

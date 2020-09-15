@@ -801,6 +801,14 @@ if test x$use_hardening != xno; then
   AX_CHECK_COMPILE_FLAG([-Wstack-protector],[HARDENED_CXXFLAGS="$HARDENED_CXXFLAGS -Wstack-protector"])
   AX_CHECK_COMPILE_FLAG([-fstack-protector-all],[HARDENED_CXXFLAGS="$HARDENED_CXXFLAGS -fstack-protector-all"])
 
+  AX_CHECK_COMPILE_FLAG([-fcf-protection=full],[HARDENED_CXXFLAGS="$HARDENED_CXXFLAGS -fcf-protection=full"])
+
+  dnl stack-clash-protection does not work properly when building for Windows.
+  dnl We use the test case from https://gcc.gnu.org/bugzilla/show_bug.cgi?id=90458
+  dnl to determine if it can be enabled.
+  AX_CHECK_COMPILE_FLAG([-fstack-clash-protection],[HARDENED_CXXFLAGS="$HARDENED_CXXFLAGS -fstack-clash-protection"],[],["-O0"],
+    [AC_LANG_SOURCE([[class D {public: unsigned char buf[32768];}; int main() {D d; return 0;}]])])
+
   dnl When enable_debug is yes, all optimizations are disabled.
   dnl However, FORTIFY_SOURCE requires that there is some level of optimization, otherwise it does nothing and just creates a compiler warning.
   dnl Since FORTIFY_SOURCE is a no-op without optimizations, do not enable it when enable_debug is yes.
@@ -1045,13 +1053,13 @@ AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[#include <stdint.h>
  [ AC_MSG_RESULT(no)]
 )
 
-dnl LevelDB platform checks
 AC_MSG_CHECKING(for fdatasync)
 AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[#include <unistd.h>]],
  [[ fdatasync(0); ]])],
  [ AC_MSG_RESULT(yes); HAVE_FDATASYNC=1 ],
  [ AC_MSG_RESULT(no); HAVE_FDATASYNC=0 ]
 )
+AC_DEFINE_UNQUOTED([HAVE_FDATASYNC], [$HAVE_FDATASYNC], [Define to 1 if fdatasync is available.])
 
 AC_MSG_CHECKING(for F_FULLFSYNC)
 AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[#include <fcntl.h>]],
@@ -1691,11 +1699,11 @@ echo "  target os     = $TARGET_OS"
 echo "  build os      = $build_os"
 echo
 echo "  CC            = $CC"
-echo "  CFLAGS        = $CFLAGS"
+echo "  CFLAGS        = $PTHREAD_CFLAGS $CFLAGS"
 echo "  CPPFLAGS      = $DEBUG_CPPFLAGS $HARDENED_CPPFLAGS $CPPFLAGS"
 echo "  CXX           = $CXX"
 echo "  CXXFLAGS      = $DEBUG_CXXFLAGS $HARDENED_CXXFLAGS $WARN_CXXFLAGS $NOWARN_CXXFLAGS $ERROR_CXXFLAGS $GPROF_CXXFLAGS $CXXFLAGS"
-echo "  LDFLAGS       = $PTHREAD_CFLAGS $HARDENED_LDFLAGS $GPROF_LDFLAGS $LDFLAGS"
+echo "  LDFLAGS       = $PTHREAD_LIBS $HARDENED_LDFLAGS $GPROF_LDFLAGS $LDFLAGS"
 echo "  ARFLAGS       = $ARFLAGS"
 echo
 

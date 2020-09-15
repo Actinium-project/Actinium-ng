@@ -210,7 +210,7 @@ void Shutdown(NodeContext& node)
     /// Be sure that anything that writes files or flushes caches only does this if the respective
     /// module was initialized.
     util::ThreadRename("shutoff");
-    mempool.AddTransactionsUpdated(1);
+    if (node.mempool) node.mempool->AddTransactionsUpdated(1);
 
     StopHTTPRPC();
     StopREST();
@@ -223,7 +223,7 @@ void Shutdown(NodeContext& node)
 
     // Because these depend on each-other, we make sure that neither can be
     // using the other before destroying them.
-    if (node.peer_logic) UnregisterValidationInterface(node.peer_logic.get());
+    if (node.peerman) UnregisterValidationInterface(node.peerman.get());
     // Follow the lock order requirements:
     // * CheckForStaleTipAndEvictPeers locks cs_main before indirectly calling GetExtraOutboundCount
     //   which locks cs_vNodes.
@@ -250,12 +250,12 @@ void Shutdown(NodeContext& node)
 
     // After the threads that potentially access these pointers have been stopped,
     // destruct and reset all to nullptr.
-    node.peer_logic.reset();
+    node.peerman.reset();
     node.connman.reset();
     node.banman.reset();
 
-    if (::mempool.IsLoaded() && node.args->GetArg("-persistmempool", DEFAULT_PERSIST_MEMPOOL)) {
-        DumpMempool(::mempool);
+    if (node.mempool && node.mempool->IsLoaded() && node.args->GetArg("-persistmempool", DEFAULT_PERSIST_MEMPOOL)) {
+        DumpMempool(*node.mempool);
     }
 
     if (fFeeEstimatesInitialized)
@@ -325,7 +325,7 @@ void Shutdown(NodeContext& node)
     GetMainSignals().UnregisterBackgroundSignalScheduler();
     globalVerifyHandle.reset();
     ECC_Stop();
-    node.mempool = nullptr;
+    node.mempool.reset();
     node.chainman = nullptr;
     node.scheduler.reset();
 
@@ -536,7 +536,7 @@ void SetupServerArgs(NodeContext& node)
     argsman.AddArg("-checklevel=<n>", strprintf("How thorough the block verification of -checkblocks is: %s (0-4, default: %u)", Join(CHECKLEVEL_DOC, ", "), DEFAULT_CHECKLEVEL), ArgsManager::ALLOW_ANY | ArgsManager::DEBUG_ONLY, OptionsCategory::DEBUG_TEST);
     argsman.AddArg("-checkblockindex", strprintf("Do a consistency check for the block tree, chainstate, and other validation data structures occasionally. (default: %u, regtest: %u)", defaultChainParams->DefaultConsistencyChecks(), regtestChainParams->DefaultConsistencyChecks()), ArgsManager::ALLOW_ANY | ArgsManager::DEBUG_ONLY, OptionsCategory::DEBUG_TEST);
     argsman.AddArg("-checkmempool=<n>", strprintf("Run checks every <n> transactions (default: %u, regtest: %u)", defaultChainParams->DefaultConsistencyChecks(), regtestChainParams->DefaultConsistencyChecks()), ArgsManager::ALLOW_ANY | ArgsManager::DEBUG_ONLY, OptionsCategory::DEBUG_TEST);
-    argsman.AddArg("-checkpoints", strprintf("Enable rejection of any forks from the known historical chain until block 295000 (default: %u)", DEFAULT_CHECKPOINTS_ENABLED), ArgsManager::ALLOW_ANY | ArgsManager::DEBUG_ONLY, OptionsCategory::DEBUG_TEST);
+    argsman.AddArg("-checkpoints", strprintf("Enable rejection of any forks from the known historical chain until block %s (default: %u)", defaultChainParams->Checkpoints().GetHeight(), DEFAULT_CHECKPOINTS_ENABLED), ArgsManager::ALLOW_ANY | ArgsManager::DEBUG_ONLY, OptionsCategory::DEBUG_TEST);
     argsman.AddArg("-deprecatedrpc=<method>", "Allows deprecated RPC method(s) to be used", ArgsManager::ALLOW_ANY | ArgsManager::DEBUG_ONLY, OptionsCategory::DEBUG_TEST);
     argsman.AddArg("-dropmessagestest=<n>", "Randomly drop 1 of every <n> network messages", ArgsManager::ALLOW_ANY | ArgsManager::DEBUG_ONLY, OptionsCategory::DEBUG_TEST);
     argsman.AddArg("-stopafterblockimport", strprintf("Stop running after importing blocks from disk (default: %u)", DEFAULT_STOPAFTERBLOCKIMPORT), ArgsManager::ALLOW_ANY | ArgsManager::DEBUG_ONLY, OptionsCategory::DEBUG_TEST);
@@ -771,10 +771,7 @@ static void ThreadImport(ChainstateManager& chainman, std::vector<fs::path> vImp
         return;
     }
     } // End scope of CImportingNow
-    if (args.GetArg("-persistmempool", DEFAULT_PERSIST_MEMPOOL)) {
-        LoadMempool(::mempool);
-    }
-    ::mempool.SetIsLoaded(!ShutdownRequested());
+    chainman.ActiveChainstate().LoadMempool(args);
 }
 
 /** Sanity checks
@@ -1199,11 +1196,6 @@ bool AppInitParameterInteraction(const ArgsManager& args)
         }
     }
 
-    // Checkmempool and checkblockindex default to true in regtest mode
-    int ratio = std::min<int>(std::max<int>(args.GetArg("-checkmempool", chainparams.DefaultConsistencyChecks() ? 1 : 0), 0), 1000000);
-    if (ratio != 0) {
-        mempool.setSanityCheck(1.0 / ratio);
-    }
     fCheckBlockIndex = args.GetBoolArg("-checkblockindex", chainparams.DefaultConsistencyChecks());
     fCheckpointsEnabled = args.GetBoolArg("-checkpoints", DEFAULT_CHECKPOINTS_ENABLED);
 
@@ -1374,6 +1366,17 @@ bool AppInitLockDataDirectory()
     return true;
 }
 
+bool AppInitInterfaces(NodeContext& node)
+{
+    node.chain = interfaces::MakeChain(node);
+    // Create client interfaces for wallets that are supposed to be loaded
+    // according to -wallet and -disablewallet options. This only constructs
+    // the interfaces, it doesn't load wallet data. Wallets actually get loaded
+    // when load() and start() interface methods are called below.
+    g_wallet_init_interface.Construct(node);
+    return true;
+}
+
 bool AppInitMain(const util::Ref& context, NodeContext& node, interfaces::BlockAndHeaderTipInfo* tip_info)
 {
     const ArgsManager& args = *Assert(node.args);
@@ -1463,12 +1466,6 @@ bool AppInitMain(const util::Ref& context, NodeContext& node, interfaces::BlockA
 
     GetMainSignals().RegisterBackgroundSignalScheduler(*node.scheduler);
 
-    // Create client interfaces for wallets that are supposed to be loaded
-    // according to -wallet and -disablewallet options. This only constructs
-    // the interfaces, it doesn't load wallet data. Wallets actually get loaded
-    // when load() and start() interface methods are called below.
-    g_wallet_init_interface.Construct(node);
-
     /* Register RPC commands regardless of -server setting so they will be
      * available in the GUI RPC console even if external calls are disabled.
      */
@@ -1508,16 +1505,24 @@ bool AppInitMain(const util::Ref& context, NodeContext& node, interfaces::BlockA
     node.banman = MakeUnique<BanMan>(GetDataDir() / "banlist.dat", &uiInterface, args.GetArg("-bantime", DEFAULT_MISBEHAVING_BANTIME));
     assert(!node.connman);
     node.connman = MakeUnique<CConnman>(GetRand(std::numeric_limits<uint64_t>::max()), GetRand(std::numeric_limits<uint64_t>::max()), args.GetBoolArg("-networkactive", true));
+
     // Make mempool generally available in the node context. For example the connection manager, wallet, or RPC threads,
     // which are all started after this, may use it from the node context.
     assert(!node.mempool);
-    node.mempool = &::mempool;
+    node.mempool = MakeUnique<CTxMemPool>(&::feeEstimator);
+    if (node.mempool) {
+        int ratio = std::min<int>(std::max<int>(args.GetArg("-checkmempool", chainparams.DefaultConsistencyChecks() ? 1 : 0), 0), 1000000);
+        if (ratio != 0) {
+            node.mempool->setSanityCheck(1.0 / ratio);
+        }
+    }
+
     assert(!node.chainman);
     node.chainman = &g_chainman;
     ChainstateManager& chainman = *Assert(node.chainman);
 
-    node.peer_logic.reset(new PeerLogicValidation(*node.connman, node.banman.get(), *node.scheduler, chainman, *node.mempool));
-    RegisterValidationInterface(node.peer_logic.get());
+    node.peerman.reset(new PeerManager(chainparams, *node.connman, node.banman.get(), *node.scheduler, chainman, *node.mempool));
+    RegisterValidationInterface(node.peerman.get());
 
     // sanitize comments per BIP-0014, format user agent and check total size
     std::vector<std::string> uacomments;
@@ -1709,11 +1714,11 @@ bool AppInitMain(const util::Ref& context, NodeContext& node, interfaces::BlockA
             const int64_t load_block_index_start_time = GetTimeMillis();
             try {
                 LOCK(cs_main);
-                chainman.InitializeChainstate();
+                chainman.InitializeChainstate(*Assert(node.mempool));
                 chainman.m_total_coinstip_cache = nCoinCacheUsage;
                 chainman.m_total_coinsdb_cache = nCoinDBCache;
 
-                UnloadBlockIndex(node.mempool);
+                UnloadBlockIndex(node.mempool.get());
 
                 // new CBlockTreeDB tries to delete the existing file, which
                 // fails if it's still open from the previous loop. Close it first:
@@ -1987,20 +1992,15 @@ bool AppInitMain(const util::Ref& context, NodeContext& node, interfaces::BlockA
     }
 
 #if HAVE_SYSTEM
-    if (args.IsArgSet("-blocknotify")) {
-        const std::string block_notify = args.GetArg("-blocknotify", "");
-        const auto BlockNotifyCallback = [block_notify](SynchronizationState sync_state, const CBlockIndex* pBlockIndex) {
-            if (sync_state != SynchronizationState::POST_INIT || !pBlockIndex)
-                return;
-
-            std::string strCmd = block_notify;
-            if (!strCmd.empty()) {
-                boost::replace_all(strCmd, "%s", pBlockIndex->GetBlockHash().GetHex());
-                std::thread t(runCommand, strCmd);
-                t.detach(); // thread runs free
-            }
-        };
-        uiInterface.NotifyBlockTip_connect(BlockNotifyCallback);
+    const std::string block_notify = args.GetArg("-blocknotify", "");
+    if (!block_notify.empty()) {
+        uiInterface.NotifyBlockTip_connect([block_notify](SynchronizationState sync_state, const CBlockIndex* pBlockIndex) {
+            if (sync_state != SynchronizationState::POST_INIT || !pBlockIndex) return;
+            std::string command = block_notify;
+            boost::replace_all(command, "%s", pBlockIndex->GetBlockHash().GetHex());
+            std::thread t(runCommand, command);
+            t.detach(); // thread runs free
+        });
     }
 #endif
 
@@ -2070,7 +2070,7 @@ bool AppInitMain(const util::Ref& context, NodeContext& node, interfaces::BlockA
     connOptions.nBestHeight = chain_active_height;
     connOptions.uiInterface = &uiInterface;
     connOptions.m_banman = node.banman.get();
-    connOptions.m_msgproc = node.peer_logic.get();
+    connOptions.m_msgproc = node.peerman.get();
     connOptions.nSendBufferMaxSize = 1000 * args.GetArg("-maxsendbuffer", DEFAULT_MAXSENDBUFFER);
     connOptions.nReceiveFloodSize = 1000 * args.GetArg("-maxreceivebuffer", DEFAULT_MAXRECEIVEBUFFER);
     connOptions.m_added_nodes = args.GetArgs("-addnode");

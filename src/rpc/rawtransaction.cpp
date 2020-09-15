@@ -191,7 +191,7 @@ static UniValue getrawtransaction(const JSONRPCRequest& request)
     }
 
     uint256 hash_block;
-    const CTransactionRef tx = GetTransaction(blockindex, node.mempool, hash, Params().GetConsensus(), hash_block);
+    const CTransactionRef tx = GetTransaction(blockindex, node.mempool.get(), hash, Params().GetConsensus(), hash_block);
     if (!tx) {
         std::string errmsg;
         if (blockindex) {
@@ -627,7 +627,7 @@ static UniValue combinerawtransaction(const JSONRPCRequest& request)
                 {
                     {"txs", RPCArg::Type::ARR, RPCArg::Optional::NO, "The hex strings of partially signed transactions",
                         {
-                            {"hexstring", RPCArg::Type::STR_HEX, RPCArg::Optional::OMITTED, "A transaction hash"},
+                            {"hexstring", RPCArg::Type::STR_HEX, RPCArg::Optional::OMITTED, "A hex-encoded raw transaction"},
                         },
                         },
                 },

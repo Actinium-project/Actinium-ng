@@ -181,6 +181,7 @@ $(BITCOIN_WALLET_BIN): FORCE
 
 if USE_LCOV
 LCOV_FILTER_PATTERN = \
+	-p "/usr/local/" \
 	-p "/usr/include/" \
 	-p "/usr/lib/" \
 	-p "/usr/lib64/" \
@@ -192,6 +193,8 @@ LCOV_FILTER_PATTERN = \
 	-p "src/secp256k1" \
 	-p "src/tor" \
 	-p "depends"
+
+DIR_FUZZ_SEED_CORPUS ?= qa-assets/fuzz_seed_corpus
 
 $(COV_TOOL_WRAPPER):
 	@echo 'exec $(COV_TOOL) "$$@"' > $(COV_TOOL_WRAPPER)
@@ -205,7 +208,7 @@ baseline_filtered.info: baseline.info
 	$(LCOV) -a $@ $(LCOV_OPTS) -o $@
 
 fuzz.info: baseline_filtered.info
-	@TIMEOUT=15 test/fuzz/test_runner.py qa-assets/fuzz_seed_corpus -l DEBUG
+	@TIMEOUT=15 test/fuzz/test_runner.py $(DIR_FUZZ_SEED_CORPUS) -l DEBUG
 	$(LCOV) -c $(LCOV_OPTS) -d $(abs_builddir)/src --t fuzz-tests -o $@
 	$(LCOV) -z $(LCOV_OPTS) -d $(abs_builddir)/src
 
