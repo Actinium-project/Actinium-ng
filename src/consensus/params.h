@@ -85,6 +85,13 @@ struct Params {
     uint256 nMinimumChainWork;
     uint256 defaultAssumeValid;
     int64_t nZawyLwmaAveragingWindow;  // N
+
+    /**
+     * If true, witness commitments contain a payload equal to a Bitcoin Script solution
+     * to the signet challenge. See BIP325.
+     */
+    bool signet_blocks{false};
+    std::vector<uint8_t> signet_challenge;
 };
 } // namespace Consensus
 

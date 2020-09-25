@@ -258,8 +258,8 @@ public:
 
     void PushMessage(CNode* pnode, CSerializedNetMsg&& msg);
 
-    template<typename Callable>
-    void ForEachNode(Callable&& func)
+    using NodeFn = std::function<void(CNode*)>;
+    void ForEachNode(const NodeFn& func)
     {
         LOCK(cs_vNodes);
         for (auto&& node : vNodes) {
@@ -268,8 +268,7 @@ public:
         }
     };
 
-    template<typename Callable>
-    void ForEachNode(Callable&& func) const
+    void ForEachNode(const NodeFn& func) const
     {
         LOCK(cs_vNodes);
         for (auto&& node : vNodes) {
@@ -311,7 +310,7 @@ public:
      * A non-malicious call (from RPC or a peer with addr permission) should
      * call the function without a parameter to avoid using the cache.
      */
-    std::vector<CAddress> GetAddresses(Network requestor_network, size_t max_addresses, size_t max_pct);
+    std::vector<CAddress> GetAddresses(CNode& requestor, size_t max_addresses, size_t max_pct);
 
     // This allows temporarily exceeding m_max_outbound_full_relay, with the goal of finding
     // a peer that is better than all our current peers.
@@ -484,20 +483,24 @@ private:
      */
     struct CachedAddrResponse {
         std::vector<CAddress> m_addrs_response_cache;
-        std::chrono::microseconds m_update_addr_response{0};
+        std::chrono::microseconds m_cache_entry_expiration{0};
     };
 
     /**
      * Addr responses stored in different caches
-     * per network prevent cross-network node identification.
+     * per (network, local socket) prevent cross-network node identification.
      * If a node for example is multi-homed under Tor and IPv6,
      * a single cache (or no cache at all) would let an attacker
      * to easily detect that it is the same node by comparing responses.
-     * The used memory equals to 1000 CAddress records (or around 32 bytes) per
+     * Indexing by local socket prevents leakage when a node has multiple
+     * listening addresses on the same network.
+     *
+     * The used memory equals to 1000 CAddress records (or around 40 bytes) per
      * distinct Network (up to 5) we have/had an inbound peer from,
-     * resulting in at most ~160 KB.
+     * resulting in at most ~196 KB. Every separate local socket may
+     * add up to ~196 KB extra.
      */
-    std::map<Network, CachedAddrResponse> m_addr_response_caches;
+    std::map<uint64_t, CachedAddrResponse> m_addr_response_caches;
 
     /**
      * Services this instance offers.
@@ -827,7 +830,6 @@ public:
 
     std::deque<CInv> vRecvGetData;
     uint64_t nRecvBytes GUARDED_BY(cs_vRecv){0};
-    std::atomic<int> nRecvVersion{INIT_PROTO_VERSION};
 
     std::atomic<int64_t> nLastSend{0};
     std::atomic<int64_t> nLastRecv{0};
@@ -1014,6 +1016,7 @@ private:
     const NodeId id;
     const uint64_t nLocalHostNonce;
     const ConnectionType m_conn_type;
+    std::atomic<int> m_greatest_common_version{INIT_PROTO_VERSION};
 
     //! Services offered to this peer.
     //!
@@ -1033,7 +1036,6 @@ private:
     const ServiceFlags nLocalServices;
 
     const int nMyStartingHeight;
-    int nSendVersion{0};
     NetPermissionFlags m_permissionFlags{ PF_NONE };
     std::list<CNetMessage> vRecvMsg;  // Used only by SocketHandler thread
 
@@ -1065,16 +1067,14 @@ public:
 
     bool ReceiveMsgBytes(const char *pch, unsigned int nBytes, bool& complete);
 
-    void SetRecvVersion(int nVersionIn)
+    void SetCommonVersion(int greatest_common_version)
     {
-        nRecvVersion = nVersionIn;
+        m_greatest_common_version = greatest_common_version;
     }
-    int GetRecvVersion() const
+    int GetCommonVersion() const
     {
-        return nRecvVersion;
+        return m_greatest_common_version;
     }
-    void SetSendVersion(int nVersionIn);
-    int GetSendVersion() const;
 
     CService GetAddrLocal() const;
     //! May not be called more than once

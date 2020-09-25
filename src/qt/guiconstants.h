@@ -46,6 +46,7 @@ static const int TOOLTIP_WRAP_THRESHOLD = 80;
 #define QAPP_ORG_DOMAIN "actinium.org"
 #define QAPP_APP_NAME_DEFAULT "Actinium-Qt"
 #define QAPP_APP_NAME_TESTNET "Actinium-Qt-testnet"
+#define QAPP_APP_NAME_SIGNET "Actinium-Qt-signet"
 #define QAPP_APP_NAME_REGTEST "Actinium-Qt-regtest"
 
 /* One gigabyte (GB) in bytes */

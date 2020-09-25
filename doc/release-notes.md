@@ -103,6 +103,9 @@ will trigger BIP 125 (replace-by-fee) opt-in. (#11413)
   option `-deprecatedrpc=banscore` is used. The `banscore` field will be fully
   removed in the next major release. (#19469)
 
+- The `testmempoolaccept` RPC returns `vsize` and a `fee` object with the `base` fee
+  if the transaction passes validation. (#19940)
+
 - The `walletcreatefundedpsbt` RPC call will now fail with
   `Insufficient funds` when inputs are manually selected but are not enough to cover
   the outputs and fee. Additional inputs can automatically be added through the
@@ -332,6 +335,10 @@ RPC
 
 Tests
 -----
+
+- The BIP 325 default signet can be enabled by the `-chain=signet` or `-signet`
+  setting. The settings `-signetchallenge` and `-signetseednode` allow
+  enabling a custom signet.
 
 Credits
 =======
