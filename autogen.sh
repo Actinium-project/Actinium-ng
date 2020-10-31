@@ -18,6 +18,5 @@ command -v autoreconf >/dev/null || \
   (echo "configuration failed, please install autoconf first" && exit 1)
 autoreconf --install --force --warnings=all
 
-echo "Configure subtrees (secp256k1 and tor)"
+echo "Configure secp256k1 subtree"
 (cd "${srcdir}/src/secp256k1" && ./autogen.sh)
-(cd "${srcdir}/src/tor" && ./autogen.sh)

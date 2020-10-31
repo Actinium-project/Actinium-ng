@@ -647,13 +647,6 @@ case $host in
          dnl It's safe to add these paths even if the functionality is disabled by
          dnl the user (--without-wallet or --without-gui for example).
 
-         openssl_prefix=`$BREW --prefix openssl 2>/dev/null`
-         bdb_prefix=$($BREW --prefix berkeley-db4 2>/dev/null)
-         qt5_prefix=$($BREW --prefix qt5 2>/dev/null)
-         if test x$openssl_prefix != x; then	
-           PKG_CONFIG_PATH="$openssl_prefix/lib/pkgconfig:$PKG_CONFIG_PATH"	
-           export PKG_CONFIG_PATH	
-         fi
          if test x$bdb_prefix != x && test "x$BDB_CFLAGS" = "x" && test "x$BDB_LIBS" = "x"; then
            dnl This must precede the call to BITCOIN_FIND_BDB48 below.
            BDB_CFLAGS="-I$bdb_prefix/include"
@@ -1365,12 +1358,6 @@ if test x$build_bitcoin_cli$build_bitcoind$bitcoin_enable_qt$use_tests$use_bench
   fi
 fi
 
-AC_CHECK_HEADER([openssl/crypto.h],,AC_MSG_ERROR(libcrypto headers missing))	
-AC_CHECK_LIB([crypto],[main],CRYPTO_LIBS=-lcrypto, AC_MSG_ERROR(libcrypto missing))
-
-AC_CHECK_HEADER([openssl/ssl.h],,AC_MSG_ERROR(libssl headers missing),)
-AC_CHECK_LIB([ssl],[main],SSL_LIBS=-lssl, AC_MSG_ERROR(libssl missing))
-
 dnl QR Code encoding library check
 
 if test "x$use_qr" != xno; then
@@ -1739,7 +1726,6 @@ if test x$need_bundled_univalue = xyes; then
   AC_CONFIG_SUBDIRS([src/univalue])
 fi
 
-AX_SUBDIRS_CONFIGURE([src/tor], [[--disable-unittests], [--disable-zstd], [--disable-system-torrc], [--disable-systemd], [--disable-lzma], [--disable-asciidoc], [--with-openssl-dir=$($PKG_CONFIG --variable=libdir openssl)], [CFLAGS=$($PKG_CONFIG --cflags openssl) -O2]])
 ac_configure_args="${ac_configure_args} --disable-shared --with-pic --enable-benchmark=no --with-bignum=no --enable-module-recovery --enable-module-schnorrsig --enable-experimental"
 AC_CONFIG_SUBDIRS([src/secp256k1])
 

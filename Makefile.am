@@ -7,7 +7,7 @@ print-%:
 	@echo $* = $($*)
 
 ACLOCAL_AMFLAGS = -I build-aux/m4
-SUBDIRS = src/tor src
+SUBDIRS = src
 if ENABLE_MAN
 SUBDIRS += doc/man
 endif
@@ -191,7 +191,6 @@ LCOV_FILTER_PATTERN = \
 	-p "src/univalue" \
 	-p "src/crypto/ctaes" \
 	-p "src/secp256k1" \
-	-p "src/tor" \
 	-p "depends"
 
 DIR_FUZZ_SEED_CORPUS ?= qa-assets/fuzz_seed_corpus

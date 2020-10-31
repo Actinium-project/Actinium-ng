@@ -2,7 +2,7 @@
 # Distributed under the MIT software license, see the accompanying
 # file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-DIST_SUBDIRS = secp256k1 univalue tor
+DIST_SUBDIRS = secp256k1 univalue
 
 AM_LDFLAGS = $(LIBTOOL_LDFLAGS) $(HARDENED_LDFLAGS) $(GPROF_LDFLAGS) $(SANITIZER_LDFLAGS)
 AM_CXXFLAGS = $(DEBUG_CXXFLAGS) $(HARDENED_CXXFLAGS) $(WARN_CXXFLAGS) $(NOWARN_CXXFLAGS) $(ERROR_CXXFLAGS) $(GPROF_CXXFLAGS) $(SANITIZER_CXXFLAGS)
@@ -20,61 +20,7 @@ else
 LIBUNIVALUE = $(UNIVALUE_LIBS)
 endif
 
-TOR_UTIL_LIBS = \
-  tor/src/lib/libtor-geoip.a \
-	tor/src/lib/libtor-process.a \
-	tor/src/lib/libtor-time.a \
-	tor/src/lib/libtor-fs.a \
-	tor/src/lib/libtor-encoding.a \
-	tor/src/lib/libtor-sandbox.a \
-	tor/src/lib/libtor-container.a \
-	tor/src/lib/libtor-net.a \
-	tor/src/lib/libtor-thread.a \
-	tor/src/lib/libtor-memarea.a \
-	tor/src/lib/libtor-math.a \
-	tor/src/lib/libtor-meminfo.a \
-	tor/src/lib/libtor-osinfo.a \
-	tor/src/lib/libtor-log.a \
-	tor/src/lib/libtor-lock.a \
-	tor/src/lib/libtor-fdio.a \
-	tor/src/lib/libtor-string.a \
-	tor/src/lib/libtor-term.a \
-	tor/src/lib/libtor-smartlist-core.a \
-	tor/src/lib/libtor-malloc.a \
-	tor/src/lib/libtor-wallclock.a \
-	tor/src/lib/libtor-err.a \
-	tor/src/lib/libtor-intmath.a \
-	tor/src/lib/libtor-ctime.a \
-	tor/src/lib/libtor-ctime.a \
-	tor/src/lib/libtor-version.a \
-	tor/src/lib/libtor-buf.a \
-	tor/src/lib/libtor-pubsub.a \
-	tor/src/lib/libtor-dispatch.a \
-	tor/src/lib/libtor-container.a
-
-LIBED25519_REF10 = tor/src/ext/ed25519/ref10/libed25519_ref10.a
-LIBED25519_DONNA = tor/src/ext/ed25519/donna/libed25519_donna.a
-LIBKECCAK_TINY = tor/src/ext/keccak-tiny/libkeccak-tiny.a
-LIBDONNA = tor/src/lib/libcurve25519_donna.a \
-  $(LIBED25519_REF10) \
-  $(LIBED25519_DONNA)
-
-TOR_CRYPTO_LIBS = \
-	tor/src/lib/libtor-tls.a \
-	tor/src/lib/libtor-crypt-ops.a \
-	$(LIBKECCAK_TINY) \
-	$(LIBDONNA)
-
-TOR_LIBS = \
-	tor/src/core/libtor-app.a \
-	tor/src/lib/libtor-compress.a \
-	tor/src/lib/libtor-evloop.a \
-	$(TOR_CRYPTO_LIBS) \
-	$(TOR_UTIL_LIBS) \
-	tor/src/trunnel/libor-trunnel.a \
-	tor/src/lib/libtor-trace.a
-
-BITCOIN_INCLUDES=-I$(builddir) $(BDB_CPPFLAGS) $(BOOST_CPPFLAGS) $(LEVELDB_CPPFLAGS) $(CRYPTO_CFLAGS) $(SSL_CFLAGS)
+BITCOIN_INCLUDES=-I$(builddir) $(BDB_CPPFLAGS) $(BOOST_CPPFLAGS) $(LEVELDB_CPPFLAGS) $(CRYPTO_CFLAGS)
 
 BITCOIN_INCLUDES += -I$(srcdir)/secp256k1/include
 BITCOIN_INCLUDES += $(UNIVALUE_CFLAGS)
@@ -661,7 +607,7 @@ Actinium_bin_ldadd = \
   $(LIBMEMENV) \
   $(LIBSECP256K1)
 
-Actinium_bin_ldadd += $(BOOST_LIBS) $(BDB_LIBS) $(MINIUPNPC_LIBS) $(EVENT_PTHREADS_LIBS) $(EVENT_LIBS) $(ZMQ_LIBS) $(SQLITE_LIBS) $(TOR_LIBS) $(ZLIB_LIBS) $(CRYPTO_LIBS)
+Actinium_bin_ldadd += $(BOOST_LIBS) $(BDB_LIBS) $(MINIUPNPC_LIBS) $(EVENT_PTHREADS_LIBS) $(EVENT_LIBS) $(ZMQ_LIBS) $(SQLITE_LIBS) $(ZLIB_LIBS)
 
 Actiniumd_SOURCES = $(Actinium_daemon_sources)
 Actiniumd_CPPFLAGS = $(Actinium_bin_cppflags)
@@ -703,7 +649,7 @@ Actinium_cli_LDADD = \
   $(LIBBITCOIN_UTIL) \
   $(LIBBITCOIN_CRYPTO)
 
-Actinium_cli_LDADD += $(BOOST_LIBS) $(CRYPTO_LIBS) $(EVENT_LIBS)
+Actinium_cli_LDADD += $(BOOST_LIBS) $(EVENT_LIBS)
 #
 
 # bitcoin-tx binary #
@@ -724,7 +670,7 @@ Actinium_tx_LDADD = \
   $(LIBBITCOIN_CRYPTO) \
   $(LIBSECP256K1)
 
-Actinium_tx_LDADD += $(BOOST_LIBS) $(CRYPTO_LIBS)
+Actinium_tx_LDADD += $(BOOST_LIBS)
 #
 
 # bitcoin-wallet binary #
@@ -797,7 +743,6 @@ $(top_srcdir)/$(subdir)/config/bitcoin-config.h.in:  $(am__configure_deps)
 clean-local:
 	-$(MAKE) -C secp256k1 clean
 	-$(MAKE) -C univalue clean
-	-$(MAKE) -C tor clean
 	-rm -f leveldb/*/*.gcda leveldb/*/*.gcno leveldb/helpers/memenv/*.gcda leveldb/helpers/memenv/*.gcno
 	-rm -f config.h
 	-rm -rf test/__pycache__
