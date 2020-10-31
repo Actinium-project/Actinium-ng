@@ -116,10 +116,6 @@ static const char* FEE_ESTIMATES_FILENAME="fee_estimates.dat";
 
 static const char* DEFAULT_ASMAP_FILENAME="ip_asn.map";
 
-extern "C" {
-  int tor_main(int argc, char *argv[]);
-  void tor_cleanup(void);
-}
 static char *convert_str(const std::string &s) {
   char *pc = new char[s.size()+1];
   std::strcpy(pc, s.c_str());
@@ -493,12 +489,6 @@ void SetupServerArgs(NodeContext& node)
     argsman.AddArg("-peertimeout=<n>", strprintf("Specify p2p connection timeout in seconds. This option determines the amount of time a peer may be inactive before the connection to it is dropped. (minimum: 1, default: %d)", DEFAULT_PEER_CONNECT_TIMEOUT), ArgsManager::ALLOW_ANY | ArgsManager::DEBUG_ONLY, OptionsCategory::CONNECTION);
     argsman.AddArg("-torcontrol=<ip>:<port>", strprintf("Tor control port to use if onion listening enabled (default: %s)", DEFAULT_TOR_CONTROL), ArgsManager::ALLOW_ANY, OptionsCategory::CONNECTION);
     argsman.AddArg("-torpassword=<pass>", "Tor control port password (default: empty)", ArgsManager::ALLOW_ANY | ArgsManager::SENSITIVE, OptionsCategory::CONNECTION);
-    //******************
-    //Actinium flags for Tor and Tor Plugins
-    argsman.AddArg("-torenabled", "Activate embedded Tor", ArgsManager::ALLOW_ANY, OptionsCategory::CONNECTION);
-    argsman.AddArg("-torplugin=<file>", "Use Tor Plugin", ArgsManager::ALLOW_ANY, OptionsCategory::CONNECTION);
-    argsman.AddArg("-torpluginpath=<file>", "Tor Plugin Path", ArgsManager::ALLOW_ANY, OptionsCategory::CONNECTION);
-    //******************
 #ifdef USE_UPNP
 #if USE_UPNP
     argsman.AddArg("-upnp", "Use UPnP to map the listening port (default: 1 when listening and no -proxy)", ArgsManager::ALLOW_ANY, OptionsCategory::CONNECTION);
@@ -893,118 +883,6 @@ void InitParameterInteraction(ArgsManager& args)
         if (args.SoftSetBoolArg("-whitelistrelay", true))
             LogPrintf("%s: parameter interaction: -whitelistforcerelay=1 -> setting -whitelistrelay=1\n", __func__);
     }
-}
-
-void SetupPluggableTransport(boost::optional<std::string> &plugin, struct stat *sb)
-{
-    std::string torPlugin = gArgs.GetArg("-torplugin", "");
-    std::string torPluginPath = gArgs.GetArg("-torpluginpath", "");
-    if (torPlugin == "meek")
-    {
-        LogPrintf("Running Tor with Meek\n");
-#ifdef WIN32
-        if (stat("meek-client.exe", sb) == 0 && (*sb).st_mode & S_IXUSR)
-        {
-            plugin = std::string("meek exec ") + std::string(torPluginPath);
-        }
-#else
-        if ((stat("meek-client", sb) == 0 && (*sb).st_mode & S_IXUSR) || !std::system("which meek-client"))
-        {
-            plugin = std::string("meek exec ") + std::string(torPluginPath);
-        }
-#endif
-    }
-    else if (torPlugin == "obfs4")
-    {
-        LogPrintf("Running Tor with OBFS4\n");
-#ifdef WIN32
-        if (stat("obfs4proxy.exe", sb) == 0 && (*sb).st_mode & S_IXUSR)
-        {
-            plugin = std::string("obfs4 exec ") + std::string(torPluginPath);
-        }
-#else
-        if ((stat("obfs4proxy", sb) == 0 && (*sb).st_mode & S_IXUSR) || !std::system("which obfs4proxy"))
-        {
-            plugin = std::string("obfs4 exec ") + std::string(torPluginPath);
-        }
-#endif
-    }
-}
-
-void RunTor()
-{
-    LogPrintf("Embedded Tor started.\n");
-    boost::optional <std::string> clientTransportPlugin;
-    struct stat sb;
-    SetupPluggableTransport(clientTransportPlugin, &sb);
-
-    fs::path tor_dir = GetDataDir() / "tor";
-    fs::create_directory(tor_dir);
-    fs::path log_file = tor_dir / "tor.log";
-     std::vector < std::string > argv;
-    argv.push_back("tor");
-    argv.push_back("--Log");
-    argv.push_back("notice file " + log_file.string());
-    argv.push_back("--SocksPort");
-    argv.push_back("9050");
-    argv.push_back("--ignore-missing-torrc");
-    argv.push_back("-f");
-    argv.push_back((tor_dir / "torrc").string());
-    argv.push_back("--HiddenServiceDir");
-    argv.push_back((tor_dir / "onion").string());
-    argv.push_back("--HiddenServicePort");
-    argv.push_back("8255");
-    if (clientTransportPlugin) {
-        argv.push_back("--ClientTransportPlugin");
-        argv.push_back(*clientTransportPlugin);
-        argv.push_back("--UseBridges");
-        argv.push_back("1");
-    }
-    std::vector<char *> argv_c;
-    std::transform(argv.begin(), argv.end(), std::back_inserter(argv_c), convert_str);
-    tor_main(argv_c.size(), &argv_c[0]);
-}
-
-struct event_base *baseTor;
-boost::thread torEnabledThread;
-static void TorEnabledThread()
-{
-    RunTor();
-    event_base_dispatch(baseTor);
-}
-void StartTorEnabled(boost::thread_group& threadGroup, CScheduler& scheduler) {
-    assert(!baseTor);
-#ifdef WIN32
-    evthread_use_windows_threads();
-#else
-    evthread_use_pthreads();
-#endif
-    baseTor = event_base_new();
-    if (!baseTor) {
-        LogPrintf("tor: Unable to create event_base\n");
-        return;
-    }
-    torEnabledThread = boost::thread(boost::bind(&TraceThread<void (*)()>, "torcontrol", &TorEnabledThread));
-}
-void InterruptTorEnabled()
-{
-    if (baseTor) {
-        LogPrintf("tor: Thread interrupt\n");
-        event_base_loopbreak(baseTor);
-    }
-}
-void StopTorEnabled()
-{
-    if (baseTor) {
-        torEnabledThread.join();
-        event_base_free(baseTor);
-        baseTor = 0;
-    }
-}
-
-bool IsEmbeddedTorActive()
-{
-   return torEnabledThread.joinable();
 }
 
 /**
@@ -1583,20 +1461,6 @@ bool AppInitMain(const util::Ref& context, NodeContext& node, interfaces::BlockA
     // Check for host lookup allowed before parsing any network related parameters
     fNameLookup = args.GetBoolArg("-dns", DEFAULT_NAME_LOOKUP);
 
-    // Start Tor
-    if(args.GetBoolArg("-torenabled", false)){
-        StartTorEnabled(threadGroup, *node.scheduler);
-        SetReachable(NET_ONION, false);
-        SetReachable(NET_IPV4, false);
-        SetReachable(NET_IPV6, false);
-        proxyType addrProxy = proxyType(CService(LookupNumeric("127.0.0.1", 9050)), true);
-        SetProxy(NET_IPV4, addrProxy);
-        SetProxy(NET_IPV6, addrProxy);
-        SetProxy(NET_ONION, addrProxy);
-        SetReachable(NET_IPV4, true);
-        SetReachable(NET_IPV6, true);
-        SetReachable(NET_ONION, true);
-    }
     bool proxyRandomize = args.GetBoolArg("-proxyrandomize", DEFAULT_PROXYRANDOMIZE);
     // -proxy sets a proxy for all outgoing network traffic
     // -noproxy (or -proxy=0) as well as the empty string can be used to not set a proxy, this is the default
