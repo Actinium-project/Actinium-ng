@@ -928,7 +928,6 @@ static RPCHelpMan getblock()
                             {RPCResult::Type::ELISION, "", "The transactions in the format of the getrawtransaction RPC. Different from verbosity = 1 \"tx\" result"},
                         }},
                     }},
-                    {RPCResult::Type::ELISION, "", "Same output as verbosity = 1"},
                 }},
         },
                 RPCExamples{
@@ -1355,6 +1354,7 @@ RPCHelpMan getblockchaininfo()
     BuriedForkDescPushBack(softforks, "csv", consensusParams.CSVHeight);
     BuriedForkDescPushBack(softforks, "segwit", consensusParams.SegwitHeight);
     BIP9SoftForkDescPushBack(softforks, "testdummy", consensusParams, Consensus::DEPLOYMENT_TESTDUMMY);
+    BIP9SoftForkDescPushBack(softforks, "taproot", consensusParams, Consensus::DEPLOYMENT_TAPROOT);
     obj.pushKV("softforks",             softforks);
 
     obj.pushKV("warnings", GetWarnings(false).original);

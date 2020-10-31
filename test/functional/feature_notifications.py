@@ -9,8 +9,6 @@ from test_framework.address import ADDRESS_BCRT1_UNSPENDABLE, keyhash_to_p2pkh
 from test_framework.test_framework import BitcoinTestFramework
 from test_framework.util import (
     assert_equal,
-    connect_nodes,
-    disconnect_nodes,
     hex_str_to_bytes,
 )
 
@@ -41,12 +39,13 @@ class NotificationsTest(BitcoinTestFramework):
 
         # -alertnotify and -blocknotify on node0, walletnotify on node1
         self.extra_args = [[
-                            "-alertnotify=echo > {}".format(os.path.join(self.alertnotify_dir, '%s')),
-                            "-blocknotify=echo > {}".format(os.path.join(self.blocknotify_dir, '%s'))],
-                           ["-blockversion=211",
-                            "-rescan",
-                            "-wallet={}".format(self.wallet),
-                            "-walletnotify=echo > {}".format(os.path.join(self.walletnotify_dir, notify_outputname('%w', '%s')))]]
+            "-alertnotify=echo > {}".format(os.path.join(self.alertnotify_dir, '%s')),
+            "-blocknotify=echo > {}".format(os.path.join(self.blocknotify_dir, '%s')),
+        ], [
+            "-rescan",
+            "-walletnotify=echo > {}".format(os.path.join(self.walletnotify_dir, notify_outputname('%w', '%s'))),
+        ]]
+        self.wallet_names = [self.default_wallet_name, self.wallet]
         super().setup_network()
 
     def run_test(self):
@@ -75,7 +74,7 @@ class NotificationsTest(BitcoinTestFramework):
             self.log.info("test -walletnotify after rescan")
             # restart node to rescan to force wallet notifications
             self.start_node(1)
-            connect_nodes(self.nodes[0], 1)
+            self.connect_nodes(0, 1)
 
             self.wait_until(lambda: len(os.listdir(self.walletnotify_dir)) == block_count, timeout=10)
 
@@ -126,12 +125,12 @@ class NotificationsTest(BitcoinTestFramework):
             # Bump tx2 as bump2 and generate a block on node 0 while
             # disconnected, then reconnect and check for notifications on node 1
             # about newly confirmed bump2 and newly conflicted tx2.
-            disconnect_nodes(self.nodes[0], 1)
+            self.disconnect_nodes(0, 1)
             bump2 = self.nodes[0].bumpfee(tx2)["txid"]
             self.nodes[0].generatetoaddress(1, ADDRESS_BCRT1_UNSPENDABLE)
             assert_equal(self.nodes[0].gettransaction(bump2)["confirmations"], 1)
             assert_equal(tx2 in self.nodes[1].getrawmempool(), True)
-            connect_nodes(self.nodes[0], 1)
+            self.connect_nodes(0, 1)
             self.sync_blocks()
             self.expect_wallet_notify([bump2, tx2])
             assert_equal(self.nodes[1].gettransaction(bump2)["confirmations"], 1)

@@ -12,7 +12,6 @@ from test_framework.util import (
     assert_greater_than,
     assert_greater_than_or_equal,
     assert_raises_rpc_error,
-    connect_nodes,
     count_bytes,
     find_vout_for_address,
 )
@@ -38,10 +37,10 @@ class RawTransactionsTest(BitcoinTestFramework):
     def setup_network(self):
         self.setup_nodes()
 
-        connect_nodes(self.nodes[0], 1)
-        connect_nodes(self.nodes[1], 2)
-        connect_nodes(self.nodes[0], 2)
-        connect_nodes(self.nodes[0], 3)
+        self.connect_nodes(0, 1)
+        self.connect_nodes(1, 2)
+        self.connect_nodes(0, 2)
+        self.connect_nodes(0, 3)
 
     def run_test(self):
         self.log.info("Connect nodes, set fees, generate blocks, and sync")
@@ -667,7 +666,7 @@ class RawTransactionsTest(BitcoinTestFramework):
         result = self.nodes[3].fundrawtransaction(rawtx)  # uses self.min_relay_tx_fee (set by settxfee)
         result2 = self.nodes[3].fundrawtransaction(rawtx, {"feeRate": 2 * self.min_relay_tx_fee})
         result3 = self.nodes[3].fundrawtransaction(rawtx, {"feeRate": 10 * self.min_relay_tx_fee})
-        assert_raises_rpc_error(-4, "Fee exceeds maximum configured by -maxtxfee", self.nodes[3].fundrawtransaction, rawtx, {"feeRate": 1})
+        assert_raises_rpc_error(-4, "Fee exceeds maximum configured by user (e.g. -maxtxfee, maxfeerate)", self.nodes[3].fundrawtransaction, rawtx, {"feeRate": 1})
         result_fee_rate = result['fee'] * 1000 / count_bytes(result['hex'])
         assert_fee_amount(result2['fee'], count_bytes(result2['hex']), 2 * result_fee_rate)
         assert_fee_amount(result3['fee'], count_bytes(result3['hex']), 10 * result_fee_rate)

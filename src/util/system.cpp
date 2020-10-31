@@ -427,6 +427,14 @@ bool ArgsManager::ReadSettingsFile(std::vector<std::string>* errors)
         SaveErrors(read_errors, errors);
         return false;
     }
+    for (const auto& setting : m_settings.rw_settings) {
+        std::string section;
+        std::string key = setting.first;
+        (void)InterpretOption(section, key, /* value */ {}); // Split setting key into section and argname
+        if (!GetArgFlags('-' + key)) {
+            LogPrintf("Ignoring unknown rw_settings value %s\n", setting.first);
+        }
+    }
     return true;
 }
 
@@ -523,7 +531,7 @@ void ArgsManager::AddHiddenArgs(const std::vector<std::string>& names)
 
 std::string ArgsManager::GetHelpMessage() const
 {
-    const bool show_debug = gArgs.GetBoolArg("-help-debug", false);
+    const bool show_debug = GetBoolArg("-help-debug", false);
 
     std::string usage = "";
     LOCK(cs_args);
@@ -900,7 +908,7 @@ bool ArgsManager::ReadConfigFiles(std::string& error, bool ignore_invalid_keys)
     // If datadir is changed in .conf file:
     ClearDatadirCache();
     if (!CheckDataDirOption()) {
-        error = strprintf("specified data directory \"%s\" does not exist.", gArgs.GetArg("-datadir", ""));
+        error = strprintf("specified data directory \"%s\" does not exist.", GetArg("-datadir", ""));
         return false;
     }
     return true;

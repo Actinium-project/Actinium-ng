@@ -129,6 +129,12 @@ AC_ARG_ENABLE([wallet],
   [enable_wallet=$enableval],
   [enable_wallet=yes])
 
+AC_ARG_WITH([sqlite],
+  [AS_HELP_STRING([--with-sqlite=yes|no|auto],
+  [enable sqlite wallet support (default: auto, i.e., enabled if wallet is enabled and sqlite is found)])],
+  [use_sqlite=$withval],
+  [use_sqlite=auto])
+
 AC_ARG_WITH([miniupnpc],
   [AS_HELP_STRING([--with-miniupnpc],
   [enable UPNP (default is yes if libminiupnpc is found)])],
@@ -190,6 +196,16 @@ AC_ARG_ENABLE([ccache],
   [do not use ccache for building (default is to use if found)])],
   [use_ccache=$enableval],
   [use_ccache=auto])
+
+dnl Suppress warnings from external headers (e.g. Boost, Qt).
+dnl May be useful if warnings from external headers clutter the build output
+dnl too much, so that it becomes difficult to spot Bitcoin Core warnings
+dnl or if they cause a build failure with --enable-werror.
+AC_ARG_ENABLE([suppress-external-warnings],
+  [AS_HELP_STRING([--enable-suppress-external-warnings],
+                  [Suppress warnings from external headers (default is no)])],
+  [suppress_external_warnings=$enableval],
+  [suppress_external_warnings=no])
 
 AC_ARG_ENABLE([lcov],
   [AS_HELP_STRING([--enable-lcov],
@@ -1155,6 +1171,18 @@ AC_SUBST(LEVELDB_CPPFLAGS)
 AC_SUBST(LIBLEVELDB)
 AC_SUBST(LIBMEMENV)
 
+dnl SUPPRESSED_CPPFLAGS=SUPPRESS_WARNINGS([$SOME_CPPFLAGS])
+dnl Replace -I with -isystem in $SOME_CPPFLAGS to suppress warnings from
+dnl headers from its include directories and return the result.
+dnl See -isystem documentation:
+dnl https://gcc.gnu.org/onlinedocs/gcc/Directory-Options.html
+dnl https://clang.llvm.org/docs/ClangCommandLineReference.html#cmdoption-clang-isystem-directory
+dnl Do not change "-I/usr/include" to "-isystem /usr/include" because that
+dnl is not necessary (/usr/include is already a system directory) and because
+dnl it would break GCC's #include_next.
+AC_DEFUN([SUPPRESS_WARNINGS],
+         [$(echo $1 |${SED} -E -e 's/(^| )-I/\1-isystem /g' -e 's;-isystem /usr/include([/ ]|$);-I/usr/include\1;g')])
+
 dnl enable-fuzz should disable all other targets
 if test "x$enable_fuzz" = "xyes"; then
   AC_MSG_WARN(enable-fuzz will disable all other targets)
@@ -1171,16 +1199,61 @@ if test "x$enable_fuzz" = "xyes"; then
   use_bench=no
   use_upnp=no
   use_zmq=no
+
+  AC_MSG_CHECKING([whether main function is needed])
+  AX_CHECK_LINK_FLAG(
+    [[-fsanitize=$use_sanitizers]],
+    [AC_MSG_RESULT([no])],
+    [AC_MSG_RESULT([yes])
+     CPPFLAGS="$CPPFLAGS -DPROVIDE_MAIN_FUNCTION"],
+    [],
+    [AC_LANG_PROGRAM([[
+      #include <cstdint>
+      #include <cstddef>
+      extern "C" int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) { return 0; }
+      /* unterminated comment to remove the main function ...
+    ]],[[]])])
 else
   BITCOIN_QT_INIT
 
   dnl sets $bitcoin_enable_qt, $bitcoin_enable_qt_test, $bitcoin_enable_qt_dbus
   BITCOIN_QT_CONFIGURE([5.5.1])
+
+  dnl Keep a copy of the original $QT_INCLUDES and use it when invoking qt's moc
+  QT_INCLUDES_UNSUPPRESSED=$QT_INCLUDES
+  if test x$suppress_external_warnings != xno ; then
+    QT_INCLUDES=SUPPRESS_WARNINGS($QT_INCLUDES)
+    QT_DBUS_INCLUDES=SUPPRESS_WARNINGS($QT_DBUS_INCLUDES)
+    QT_TEST_INCLUDES=SUPPRESS_WARNINGS($QT_TEST_INCLUDES)
+  fi
 fi
 
 if test x$enable_wallet != xno; then
     dnl Check for libdb_cxx only if wallet enabled
     BITCOIN_FIND_BDB48
+    if test x$suppress_external_warnings != xno ; then
+        BDB_CPPFLAGS=SUPPRESS_WARNINGS($BDB_CPPFLAGS)
+    fi
+
+    dnl Check for sqlite3
+    if test "x$use_sqlite" != "xno"; then
+      PKG_CHECK_MODULES([SQLITE], [sqlite3 >= 3.7.17], [have_sqlite=yes], [have_sqlite=no])
+    fi
+    AC_MSG_CHECKING([whether to build wallet with support for sqlite])
+    if test "x$use_sqlite" = "xno"; then
+      use_sqlite=no
+    elif test "x$have_sqlite" = "xno"; then
+      if test "x$use_sqlite" = "xyes"; then
+        AC_MSG_ERROR([sqlite support requested but cannot be built. Use --without-sqlite])
+      fi
+      use_sqlite=no
+    else
+      if test x$use_sqlite != xno; then
+        AC_DEFINE([USE_SQLITE],[1],[Define if sqlite support should be compiled in])
+        use_sqlite=yes
+      fi
+    fi
+    AC_MSG_RESULT([$use_sqlite])
 fi
 
 dnl Check for libminiupnpc (optional)
@@ -1234,6 +1307,10 @@ AX_BOOST_THREAD
 
 dnl Opt-in to boost-process
 AS_IF([ test x$with_boost_process != x ], [ AX_BOOST_PROCESS ], [ ax_cv_boost_process=no ] )
+
+if test x$suppress_external_warnings != xno; then
+    BOOST_CPPFLAGS=SUPPRESS_WARNINGS($BOOST_CPPFLAGS)
+fi
 
 dnl Boost 1.56 through 1.62 allow using std::atomic instead of its own atomic
 dnl counter implementations. In 1.63 and later the std::atomic approach is default.
@@ -1537,6 +1614,7 @@ AM_CONDITIONAL([TARGET_LINUX], [test x$TARGET_OS = xlinux])
 AM_CONDITIONAL([TARGET_WINDOWS], [test x$TARGET_OS = xwindows])
 AM_CONDITIONAL([TARGET_LINUX], [test x$TARGET_OS = xlinux])
 AM_CONDITIONAL([ENABLE_WALLET],[test x$enable_wallet = xyes])
+AM_CONDITIONAL([USE_SQLITE], [test "x$use_sqlite" = "xyes"])
 AM_CONDITIONAL([ENABLE_TESTS],[test x$BUILD_TEST = xyes])
 AM_CONDITIONAL([ENABLE_FUZZ],[test x$enable_fuzz = xyes])
 AM_CONDITIONAL([ENABLE_QT],[test x$bitcoin_enable_qt = xyes])
@@ -1602,9 +1680,11 @@ AC_SUBST(AVX2_CXXFLAGS)
 AC_SUBST(SHANI_CXXFLAGS)
 AC_SUBST(ARM_CRC_CXXFLAGS)
 AC_SUBST(LIBTOOL_APP_LDFLAGS)
+AC_SUBST(USE_SQLITE)
 AC_SUBST(USE_UPNP)
 AC_SUBST(USE_QRCODE)
 AC_SUBST(BOOST_LIBS)
+AC_SUBST(SQLITE_LIBS)
 AC_SUBST(TESTDEFS)
 AC_SUBST(MINIUPNPC_CPPFLAGS)
 AC_SUBST(MINIUPNPC_LIBS)
@@ -1660,7 +1740,7 @@ if test x$need_bundled_univalue = xyes; then
 fi
 
 AX_SUBDIRS_CONFIGURE([src/tor], [[--disable-unittests], [--disable-zstd], [--disable-system-torrc], [--disable-systemd], [--disable-lzma], [--disable-asciidoc], [--with-openssl-dir=$($PKG_CONFIG --variable=libdir openssl)], [CFLAGS=$($PKG_CONFIG --cflags openssl) -O2]])
-ac_configure_args="${ac_configure_args} --disable-shared --with-pic --enable-benchmark=no --with-bignum=no --enable-module-recovery"
+ac_configure_args="${ac_configure_args} --disable-shared --with-pic --enable-benchmark=no --with-bignum=no --enable-module-recovery --enable-module-schnorrsig --enable-experimental"
 AC_CONFIG_SUBDIRS([src/secp256k1])
 
 AC_OUTPUT
@@ -1678,6 +1758,9 @@ echo "Options used to compile and link:"
 echo "  boost process = $ax_cv_boost_process"
 echo "  multiprocess  = $build_multiprocess"
 echo "  with wallet   = $enable_wallet"
+if test "x$enable_wallet" != "xno"; then
+    echo "    with sqlite = $use_sqlite"
+fi
 echo "  with gui / qt = $bitcoin_enable_qt"
 if test x$bitcoin_enable_qt != xno; then
     echo "    with qr     = $use_qr"

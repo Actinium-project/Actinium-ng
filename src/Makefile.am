@@ -205,7 +205,6 @@ BITCOIN_CORE_H = \
   interfaces/wallet.h \
   key.h \
   key_io.h \
-  limitedmap.h \
   logging.h \
   logging/timer.h \
   memusage.h \
@@ -269,6 +268,7 @@ BITCOIN_CORE_H = \
   timedata.h \
   torcontrol.h \
   txdb.h \
+  txrequest.h \
   txmempool.h \
   undo.h \
   util/asmap.h \
@@ -311,6 +311,7 @@ BITCOIN_CORE_H = \
   wallet/rpcwallet.h \
   wallet/salvage.h \
   wallet/scriptpubkeyman.h \
+  wallet/sqlite.h \
   wallet/wallet.h \
   wallet/walletdb.h \
   wallet/wallettool.h \
@@ -381,6 +382,7 @@ libbitcoin_server_a_SOURCES = \
   timedata.cpp \
   torcontrol.cpp \
   txdb.cpp \
+  txrequest.cpp \
   txmempool.cpp \
   validation.cpp \
   validationinterface.cpp \
@@ -408,7 +410,7 @@ endif
 
 # wallet: shared between Actiniumd and Actinium-qt, but only linked
 # when wallet enabled
-libbitcoin_wallet_a_CPPFLAGS = $(AM_CPPFLAGS) $(BITCOIN_INCLUDES)
+libbitcoin_wallet_a_CPPFLAGS = $(AM_CPPFLAGS) $(BITCOIN_INCLUDES) $(SQLITE_CFLAGS)
 libbitcoin_wallet_a_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
 libbitcoin_wallet_a_SOURCES = \
   interfaces/wallet.cpp \
@@ -429,6 +431,10 @@ libbitcoin_wallet_a_SOURCES = \
   wallet/walletutil.cpp \
   wallet/coinselection.cpp \
   $(BITCOIN_CORE_H)
+
+if USE_SQLITE
+libbitcoin_wallet_a_SOURCES += wallet/sqlite.cpp
+endif
 
 libbitcoin_wallet_tool_a_CPPFLAGS = $(AM_CPPFLAGS) $(BITCOIN_INCLUDES)
 libbitcoin_wallet_tool_a_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
@@ -655,7 +661,7 @@ Actinium_bin_ldadd = \
   $(LIBMEMENV) \
   $(LIBSECP256K1)
 
-Actinium_bin_ldadd += $(BOOST_LIBS) $(BDB_LIBS) $(MINIUPNPC_LIBS) $(EVENT_PTHREADS_LIBS) $(EVENT_LIBS) $(ZMQ_LIBS) $(TOR_LIBS) $(ZLIB_LIBS) $(CRYPTO_LIBS)
+Actinium_bin_ldadd += $(BOOST_LIBS) $(BDB_LIBS) $(MINIUPNPC_LIBS) $(EVENT_PTHREADS_LIBS) $(EVENT_LIBS) $(ZMQ_LIBS) $(SQLITE_LIBS) $(TOR_LIBS) $(ZLIB_LIBS) $(CRYPTO_LIBS)
 
 Actiniumd_SOURCES = $(Actinium_daemon_sources)
 Actiniumd_CPPFLAGS = $(Actinium_bin_cppflags)

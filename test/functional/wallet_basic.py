@@ -11,7 +11,6 @@ from test_framework.util import (
     assert_equal,
     assert_fee_amount,
     assert_raises_rpc_error,
-    connect_nodes,
 )
 from test_framework.wallet_util import test_address
 
@@ -32,9 +31,9 @@ class WalletTest(BitcoinTestFramework):
         self.setup_nodes()
         # Only need nodes 0-2 running at start of test
         self.stop_node(3)
-        connect_nodes(self.nodes[0], 1)
-        connect_nodes(self.nodes[1], 2)
-        connect_nodes(self.nodes[0], 2)
+        self.connect_nodes(0, 1)
+        self.connect_nodes(1, 2)
+        self.connect_nodes(0, 2)
         self.sync_all(self.nodes[0:3])
 
     def check_fee_amount(self, curr_balance, balance_with_fee, fee_per_byte, tx_size):
@@ -281,7 +280,7 @@ class WalletTest(BitcoinTestFramework):
         assert_equal(self.nodes[0].getbalance(), node_0_bal)
 
         self.start_node(3, self.nodes[3].extra_args)
-        connect_nodes(self.nodes[0], 3)
+        self.connect_nodes(0, 3)
         self.sync_all()
 
         # check if we can list zero value tx as available coins
@@ -316,9 +315,9 @@ class WalletTest(BitcoinTestFramework):
         self.start_node(0, ["-walletbroadcast=0"])
         self.start_node(1, ["-walletbroadcast=0"])
         self.start_node(2, ["-walletbroadcast=0"])
-        connect_nodes(self.nodes[0], 1)
-        connect_nodes(self.nodes[1], 2)
-        connect_nodes(self.nodes[0], 2)
+        self.connect_nodes(0, 1)
+        self.connect_nodes(1, 2)
+        self.connect_nodes(0, 2)
         self.sync_all(self.nodes[0:3])
 
         txid_not_broadcast = self.nodes[0].sendtoaddress(self.nodes[2].getnewaddress(), 2)
@@ -343,9 +342,9 @@ class WalletTest(BitcoinTestFramework):
         self.start_node(0)
         self.start_node(1)
         self.start_node(2)
-        connect_nodes(self.nodes[0], 1)
-        connect_nodes(self.nodes[1], 2)
-        connect_nodes(self.nodes[0], 2)
+        self.connect_nodes(0, 1)
+        self.connect_nodes(1, 2)
+        self.connect_nodes(0, 2)
         self.sync_blocks(self.nodes[0:3])
 
         self.nodes[0].generate(1)
@@ -660,6 +659,18 @@ class WalletTest(BitcoinTestFramework):
         assert_equal(set([*tx]), expected_verbose_fields)
         assert_array_result(tx["details"], {"category": "receive"}, expected_receive_vout)
         assert_equal(tx[verbose_field], self.nodes[0].decoderawtransaction(tx["hex"]))
+
+        self.log.info("Test send* RPCs with verbose=True")
+        address = self.nodes[0].getnewaddress("test")
+        txid_feeReason_one = self.nodes[2].sendtoaddress(address=address, amount=5, verbose=True)
+        assert_equal(txid_feeReason_one["fee_reason"], "Fallback fee")
+        txid_feeReason_two = self.nodes[2].sendmany(dummy='', amounts={address: 5}, verbose=True)
+        assert_equal(txid_feeReason_two["fee_reason"], "Fallback fee")
+        self.log.info("Test send* RPCs with verbose=False")
+        txid_feeReason_three = self.nodes[2].sendtoaddress(address=address, amount=5, verbose=False)
+        assert_equal(self.nodes[2].gettransaction(txid_feeReason_three)['txid'], txid_feeReason_three)
+        txid_feeReason_four = self.nodes[2].sendmany(dummy='', amounts={address: 5}, verbose=False)
+        assert_equal(self.nodes[2].gettransaction(txid_feeReason_four)['txid'], txid_feeReason_four)
 
 
 if __name__ == '__main__':
