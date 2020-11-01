@@ -47,7 +47,7 @@ For macOS you may need to ignore x86 compilation checks when running `make`:
 
 ### Instrumentation
 
-To build Actinium Core using AFL instrumentation (this assumes that the
+To build Actinium using AFL instrumentation (this assumes that the
 `AFLPATH` was set as above):
 ```
 ./configure --disable-shared --enable-tests --enable-fuzz CC=${AFLPATH}/afl-gcc CXX=${AFLPATH}/afl-g++

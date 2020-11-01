@@ -1,7 +1,7 @@
 Translation Strings Policy
 ===========================
 
-This document provides guidelines for internationalization of the Actinium Core software.
+This document provides guidelines for internationalization of the Actinium software.
 
 How to translate?
 ------------------

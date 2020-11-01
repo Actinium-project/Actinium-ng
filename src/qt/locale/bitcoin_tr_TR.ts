@@ -1399,7 +1399,7 @@
 <context>
     <name>bitcoin-core</name>
     <message>
-        <source>Actinium Core</source>
+        <source>Actinium</source>
         <translation>Actinium Çekirdeği</translation>
     </message>
     <message>

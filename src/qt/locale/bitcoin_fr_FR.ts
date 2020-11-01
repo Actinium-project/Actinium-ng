@@ -2234,8 +2234,8 @@
         <translation>Impossible de démarrer le serveur HTTP. Voir le journal de débogage pour plus de détails.</translation>
     </message>
     <message>
-        <source>Actinium Core</source>
-        <translation>Actinium Core</translation>
+        <source>Actinium</source>
+        <translation>Actinium</translation>
     </message>
     <message>
         <source>Importing...</source>

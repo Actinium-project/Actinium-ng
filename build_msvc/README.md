@@ -1,4 +1,4 @@
-Building Actinium Core with Visual Studio
+Building Actinium with Visual Studio
 ========================================
 
 Introduction

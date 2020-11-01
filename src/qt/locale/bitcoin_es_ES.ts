@@ -2850,8 +2850,8 @@
         <translation>No se ha podido comenzar el servidor HTTP. Ver debug log para detalles.</translation>
     </message>
     <message>
-        <source>Actinium Core</source>
-        <translation>Actinium Core</translation>
+        <source>Actinium</source>
+        <translation>Actinium</translation>
     </message>
     <message>
         <source>The %s developers</source>

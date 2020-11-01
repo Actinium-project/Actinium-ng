@@ -22,7 +22,7 @@ public:
 class CScriptNum10
 {
 /**
- * The ScriptNum implementation from Actinium Core 0.10.0, for cross-comparison.
+ * The ScriptNum implementation from Actinium 0.10.0, for cross-comparison.
  */
 public:
 

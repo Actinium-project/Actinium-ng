@@ -2742,8 +2742,8 @@
         <translation>No s'ha pogut iniciar el servidor HTTP. Vegeu debug.log per a més detalls.</translation>
     </message>
     <message>
-        <source>Actinium Core</source>
-        <translation>Actinium Core</translation>
+        <source>Actinium</source>
+        <translation>Actinium</translation>
     </message>
     <message>
         <source>This is a pre-release test build - use at your own risk - do not use for mining or merchant applications</source>

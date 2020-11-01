@@ -1774,8 +1774,8 @@
 <context>
     <name>bitcoin-core</name>
     <message>
-        <source>Actinium Core</source>
-        <translation>Actinium Core</translation>
+        <source>Actinium</source>
+        <translation>Actinium</translation>
     </message>
     <message>
         <source>Corrupted block database detected</source>

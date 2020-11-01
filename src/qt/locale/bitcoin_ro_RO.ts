@@ -3172,7 +3172,7 @@ Nota: Cum taxa este calculata per byte, o taxa de "100 satoshi per kB" pentru o 
         <translation>Imposibil de pornit serverul HTTP. Pentru detalii vezi logul de depanare.</translation>
     </message>
     <message>
-        <source>Actinium Core</source>
+        <source>Actinium</source>
         <translation>Nucleul Actinium</translation>
     </message>
     <message>

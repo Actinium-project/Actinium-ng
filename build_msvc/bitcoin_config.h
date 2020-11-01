@@ -27,10 +27,10 @@
 #define COPYRIGHT_HOLDERS "The %s developers"
 
 /* Copyright holder(s) */
-#define COPYRIGHT_HOLDERS_FINAL "The Actinium Core developers"
+#define COPYRIGHT_HOLDERS_FINAL "The Actinium developers"
 
 /* Replacement for %s in copyright holders string */
-#define COPYRIGHT_HOLDERS_SUBSTITUTION "Actinium Core"
+#define COPYRIGHT_HOLDERS_SUBSTITUTION "Actinium"
 
 /* Copyright year */
 #define COPYRIGHT_YEAR 2019
@@ -250,10 +250,10 @@
 #define PACKAGE_BUGREPORT "https://github.com/Actinium-project/Actinium-ng/issues"
 
 /* Define to the full name of this package. */
-#define PACKAGE_NAME "Actinium Core"
+#define PACKAGE_NAME "Actinium"
 
 /* Define to the full name and version of this package. */
-#define PACKAGE_STRING "Actinium Core 0.19.99"
+#define PACKAGE_STRING "Actinium 0.19.99"
 
 /* Define to the one symbol short name of this package. */
 #define PACKAGE_TARNAME "actinium"

@@ -1,6 +1,6 @@
-# PSBT Howto for Actinium Core
+# PSBT Howto for Actinium
 
-Since Actinium Core 0.17, an RPC interface exists for Partially Signed Actinium
+Since Actinium 0.17, an RPC interface exists for Partially Signed Actinium
 Transactions (PSBTs, as specified in
 [BIP 174](https://github.com/bitcoin/bips/blob/master/bip-0174.mediawiki)).
 
@@ -46,7 +46,7 @@ The names above in bold are the names of the roles defined in BIP174. They're
 useful in understanding the underlying steps, but in practice, software and
 hardware implementations will typically implement multiple roles simultaneously.
 
-## PSBT in Actinium Core
+## PSBT in Actinium
 
 ### RPCs
 
@@ -90,10 +90,10 @@ hardware implementations will typically implement multiple roles simultaneously.
 
 ### Workflows
 
-#### Multisig with multiple Actinium Core instances
+#### Multisig with multiple Actinium instances
 
 Alice, Bob, and Carol want to create a 2-of-3 multisig address. They're all using
-Actinium Core. We assume their wallets only contain the multisig funds. In case
+Actinium. We assume their wallets only contain the multisig funds. In case
 they also have a personal wallet, this can be accomplished through the
 multiwallet feature - possibly resulting in a need to add `-rpcwallet=name` to
 the command line in case `Actinium-cli` is used.

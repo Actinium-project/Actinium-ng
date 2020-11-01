@@ -894,7 +894,7 @@
 <context>
     <name>bitcoin-core</name>
     <message>
-        <source>Actinium Core</source>
+        <source>Actinium</source>
         <translation>Биткойн ядро</translation>
     </message>
     <message>

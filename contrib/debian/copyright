@@ -7,7 +7,7 @@ Source: https://github.com/Actinium-project/Actinium-ng
 Files: *
 Copyright: 2009-2020, Bitcoin Core Developers
 License: Expat
-Comment: The Actinium Core Developers encompasses the current developers listed on actinium.org,
+Comment: The Actinium Developers encompasses the current developers listed on actinium.org,
          as well as the numerous contributors to the project.
 
 Files: debian/*
