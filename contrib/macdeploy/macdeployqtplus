@@ -247,10 +247,7 @@ def runStrip(binaryPath: str, verbose: int):
         print(" stripped", binaryPath)
     subprocess.check_call([stripbin, "-x", binaryPath])
 
-def copyFramework(framework, path, verbose):
-
-    os.system("cp contrib/Frameworks/libboost_system-mt.dylib dist/Actinium-Qt.app/Contents/Frameworks/")
-
+def copyFramework(framework: FrameworkInfo, path: str, verbose: int) -> Optional[str]:
     if framework.sourceFilePath.startswith("Qt"):
         #standard place for Nokia Qt installer's frameworks
         fromPath = "/Library/Frameworks/" + framework.sourceFilePath
@@ -593,6 +590,7 @@ if len(config.fancy) == 1:
             fancy = plistlib.load(fp, fmt=plistlib.FMT_XML)
     except:
         if verbose >= 1:
+            print(e)
             sys.stderr.write("Error: Could not parse fancy disk image plist at \"{}\"\n".format(p))
         sys.exit(1)
     
