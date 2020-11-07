@@ -94,7 +94,7 @@ public:
         consensus.vDeployments[Consensus::DEPLOYMENT_TAPROOT].nTimeout = 1230767999; // December 31, 2008
 
         // The best chain should have at least this much work.
-        consensus.nMinimumChainWork = uint256S("0x000000000000000000000000000000000000000000000000154cd2767f42b00d");
+        consensus.nMinimumChainWork = uint256S("0x00000000000000000000000000000000000000000000000071cd9c847e1f7430");
         // By default assume that the signatures in ancestors of this block are valid.
         consensus.defaultAssumeValid = uint256S("0xf133710ecd8dc720fce00f930d0b09ff5db4af5428d2e572765664f609012dd0"); //block 170520
 
@@ -292,15 +292,15 @@ public:
             vSeeds.emplace_back("2a01:7c8:d005:390::5");
             vSeeds.emplace_back("ntv3mtqw5wt63red.onion:38333");
 
-            consensus.nMinimumChainWork = uint256S("0x0000000000000000000000000000000000000000000000000000000d145533ce");
-            consensus.defaultAssumeValid = uint256S("0x00000128807d9175c494e24d805fc7854f7d79aa965cbb128342ad8b70cecfa5"); // 5348
+            consensus.nMinimumChainWork = uint256S("0x00000000000000000000000000000000000000000000000000000019fd16269a");
+            consensus.defaultAssumeValid = uint256S("0x0000002a1de0f46379358c1fd09906f7ac59adf3712323ed90eb59e4c183c020"); // 9434
             m_assumed_blockchain_size = 1;
             m_assumed_chain_state_size = 0;
             chainTxData = ChainTxData{
-                // Data from RPC: getchaintxstats 4096 00000128807d9175c494e24d805fc7854f7d79aa965cbb128342ad8b70cecfa5
-                /* nTime    */ 1601382000,
-                /* nTxCount */ 5435,
-                /* dTxRate  */ 0.001898346323372538,
+                // Data from RPC: getchaintxstats 4096 0000002a1de0f46379358c1fd09906f7ac59adf3712323ed90eb59e4c183c020
+                /* nTime    */ 1603986000,
+                /* nTxCount */ 9582,
+                /* dTxRate  */ 0.00159272030651341,
             };
         } else {
             const auto signet_challenge = args.GetArgs("-signetchallenge");
