@@ -32,7 +32,7 @@ deadlock:CConnman::ForNode
 deadlock:CConnman::GetNodeStats
 deadlock:CChainState::ConnectTip
 deadlock:UpdateTip
-deadlock:wallet_tests::CreateWalletFromFile
+deadlock:wallet_tests::CreateWallet
 
 # WalletBatch (unidentified deadlock)
 deadlock:WalletBatch
@@ -44,11 +44,7 @@ deadlock:TestPotentialDeadLockDetected
 race:src/qt/test/*
 deadlock:src/qt/test/*
 
-# WIP: Unidentified suppressions to run the functional tests
-#race:zmqpublishnotifier.cpp
-#
-#deadlock:CreateWalletFromFile
-#deadlock:importprivkey
-#deadlock:walletdb.h
-#deadlock:walletdb.cpp
-#deadlock:wallet/db.cpp
+# External libraries
+deadlock:libdb
+race:libzmq
+race:epoll_ctl  # https://github.com/bitcoin/bitcoin/pull/20218
