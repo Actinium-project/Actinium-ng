@@ -44,7 +44,6 @@ deadlock:TestPotentialDeadLockDetected
 race:src/qt/test/*
 deadlock:src/qt/test/*
 
-<<<<<<< HEAD
 # WIP: Unidentified suppressions to run the functional tests
 #race:zmqpublishnotifier.cpp
 #
@@ -53,9 +52,8 @@ deadlock:src/qt/test/*
 #deadlock:walletdb.h
 #deadlock:walletdb.cpp
 #deadlock:wallet/db.cpp
-=======
+
 # External libraries
 deadlock:libdb
 race:libzmq
 race:epoll_ctl  # https://github.com/bitcoin/bitcoin/pull/20218
->>>>>>> 0bd4929cd00e91bf4137f43b097cd62f72f503e4
