@@ -1101,15 +1101,11 @@
         <translation>حرفه‌ای</translation>
     </message>
     <message>
-<<<<<<< HEAD
-        <source>Automatically open the Actinium client port on the router. This only works when your router supports UPnP and it is enabled.</source>
-=======
         <source>Enable coin &amp;control features</source>
         <translation>فعال کردن قابلیت سکه و کنترل</translation>
     </message>
     <message>
         <source>Automatically open the Bitcoin client port on the router. This only works when your router supports UPnP and it is enabled.</source>
->>>>>>> ffd5e7a8567d666a2e9233a6a52b0fc8dfe6a035
         <translation>باز کردن خودکار درگاه شبکهٔ بیت‌کوین روی روترها. تنها زمانی کار می‌کند که روتر از پروتکل UPnP پشتیبانی کند و این پروتکل فعال باشد.</translation>
     </message>
     <message>

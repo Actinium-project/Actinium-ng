@@ -1368,13 +1368,8 @@ Solicitar pagos (genera códigos QR y bitcoin: URI)
         <translation>Use separate SOCKS&amp;5 proxy to reach peers via Tor onion services:</translation>
     </message>
     <message>
-<<<<<<< HEAD
-        <source>An optional message to attach to the payment request, which will be displayed when the request is opened. Note: The message will not be sent with the payment over the Actinium network.</source>
-        <translation>Mensaje opcional para agregar a la solicitud de pago, el cual será mostrado cuando la solicitud este abierta. Nota: El mensaje no se manda con el pago a travéz de la red de Actinium.</translation>
-=======
         <source>&amp;Third party transaction URLs</source>
         <translation>&amp;Third party transaction URLs</translation>
->>>>>>> ffd5e7a8567d666a2e9233a6a52b0fc8dfe6a035
     </message>
     <message>
         <source>Options set in this dialog are overridden by the command line or in the configuration file:</source>
