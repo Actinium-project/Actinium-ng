@@ -7,7 +7,11 @@
 #include <logging.h>
 #include <util/system.h>
 
+#ifdef USE_BDB
 bool ExistsBerkeleyDatabase(const fs::path& path);
+#else
+#   define ExistsBerkeleyDatabase(path)  (false)
+#endif
 #ifdef USE_SQLITE
 bool ExistsSQLiteDatabase(const fs::path& path);
 #else
@@ -78,4 +82,18 @@ std::vector<fs::path> ListWalletDir()
     }
 
     return paths;
+}
+
+bool IsFeatureSupported(int wallet_version, int feature_version)
+{
+    return wallet_version >= feature_version;
+}
+
+WalletFeature GetClosestWalletFeature(int version)
+{
+    const std::array<WalletFeature, 8> wallet_features{{FEATURE_LATEST, FEATURE_PRE_SPLIT_KEYPOOL, FEATURE_NO_DEFAULT_KEY, FEATURE_HD_SPLIT, FEATURE_HD, FEATURE_COMPRPUBKEY, FEATURE_WALLETCRYPT, FEATURE_BASE}};
+    for (const WalletFeature& wf : wallet_features) {
+        if (version >= wf) return wf;
+    }
+    return static_cast<WalletFeature>(0);
 }

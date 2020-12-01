@@ -171,6 +171,9 @@ class MultiWalletTest(BitcoinTestFramework):
         open(not_a_dir, 'a', encoding="utf8").close()
         self.nodes[0].assert_start_raises_init_error(['-walletdir=' + not_a_dir], 'Error: Specified -walletdir "' + not_a_dir + '" is not a directory')
 
+        self.log.info("Do not allow -upgradewallet with multiwallet")
+        self.nodes[0].assert_start_raises_init_error(['-upgradewallet'], "Error: Error parsing command line arguments: Invalid parameter -upgradewallet")
+
         # if wallets/ doesn't exist, datadir should be the default wallet dir
         wallet_dir2 = data_dir('walletdir')
         os.rename(wallet_dir(), wallet_dir2)
@@ -352,10 +355,16 @@ class MultiWalletTest(BitcoinTestFramework):
         assert_raises_rpc_error(-1, "JSON value is not a string as expected", self.nodes[0].unloadwallet)
         assert_raises_rpc_error(-18, "Requested wallet does not exist or is not loaded", self.nodes[0].unloadwallet, "dummy")
         assert_raises_rpc_error(-18, "Requested wallet does not exist or is not loaded", node.get_wallet_rpc("dummy").unloadwallet)
-        assert_raises_rpc_error(-8, "Cannot unload the requested wallet", w1.unloadwallet, "w2"),
+        assert_raises_rpc_error(-8, "RPC endpoint wallet and wallet_name parameter specify different wallets", w1.unloadwallet, "w2"),
 
         # Successfully unload the specified wallet name
         self.nodes[0].unloadwallet("w1")
+        assert 'w1' not in self.nodes[0].listwallets()
+
+        # Unload w1 again, this time providing the wallet name twice
+        self.nodes[0].loadwallet("w1")
+        assert 'w1' in self.nodes[0].listwallets()
+        w1.unloadwallet("w1")
         assert 'w1' not in self.nodes[0].listwallets()
 
         # Successfully unload the wallet referenced by the request endpoint

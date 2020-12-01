@@ -23,6 +23,7 @@
 
 #include <array>
 #include <stdint.h>
+#include <string.h>
 #include <thread>
 #include <univalue.h>
 #include <utility>
@@ -34,6 +35,8 @@
 #endif
 
 #include <boost/test/unit_test.hpp>
+
+using namespace std::literals;
 
 /* defined in logging.cpp */
 namespace BCLog {
@@ -1257,9 +1260,9 @@ BOOST_AUTO_TEST_CASE(util_ParseMoney)
     BOOST_CHECK(!ParseMoney("-1", ret));
 
     // Parsing strings with embedded NUL characters should fail
-    BOOST_CHECK(!ParseMoney(std::string("\0-1", 3), ret));
-    BOOST_CHECK(!ParseMoney(std::string("\01", 2), ret));
-    BOOST_CHECK(!ParseMoney(std::string("1\0", 2), ret));
+    BOOST_CHECK(!ParseMoney("\0-1"s, ret));
+    BOOST_CHECK(!ParseMoney("\0" "1"s, ret));
+    BOOST_CHECK(!ParseMoney("1\0"s, ret));
 }
 
 BOOST_AUTO_TEST_CASE(util_IsHex)
@@ -1420,10 +1423,18 @@ BOOST_AUTO_TEST_CASE(test_ParseInt32)
     BOOST_CHECK(ParseInt32("2147483647", &n) && n == 2147483647);
     BOOST_CHECK(ParseInt32("-2147483648", &n) && n == (-2147483647 - 1)); // (-2147483647 - 1) equals INT_MIN
     BOOST_CHECK(ParseInt32("-1234", &n) && n == -1234);
+    BOOST_CHECK(ParseInt32("00000000000000001234", &n) && n == 1234);
+    BOOST_CHECK(ParseInt32("-00000000000000001234", &n) && n == -1234);
+    BOOST_CHECK(ParseInt32("00000000000000000000", &n) && n == 0);
+    BOOST_CHECK(ParseInt32("-00000000000000000000", &n) && n == 0);
     // Invalid values
     BOOST_CHECK(!ParseInt32("", &n));
     BOOST_CHECK(!ParseInt32(" 1", &n)); // no padding inside
     BOOST_CHECK(!ParseInt32("1 ", &n));
+    BOOST_CHECK(!ParseInt32("++1", &n));
+    BOOST_CHECK(!ParseInt32("+-1", &n));
+    BOOST_CHECK(!ParseInt32("-+1", &n));
+    BOOST_CHECK(!ParseInt32("--1", &n));
     BOOST_CHECK(!ParseInt32("1a", &n));
     BOOST_CHECK(!ParseInt32("aap", &n));
     BOOST_CHECK(!ParseInt32("0x1", &n)); // no hex
@@ -1479,10 +1490,19 @@ BOOST_AUTO_TEST_CASE(test_ParseUInt32)
     BOOST_CHECK(ParseUInt32("2147483647", &n) && n == 2147483647);
     BOOST_CHECK(ParseUInt32("2147483648", &n) && n == (uint32_t)2147483648);
     BOOST_CHECK(ParseUInt32("4294967295", &n) && n == (uint32_t)4294967295);
+    BOOST_CHECK(ParseUInt32("+1234", &n) && n == 1234);
+    BOOST_CHECK(ParseUInt32("00000000000000001234", &n) && n == 1234);
+    BOOST_CHECK(ParseUInt32("00000000000000000000", &n) && n == 0);
     // Invalid values
+    BOOST_CHECK(!ParseUInt32("-00000000000000000000", &n));
     BOOST_CHECK(!ParseUInt32("", &n));
     BOOST_CHECK(!ParseUInt32(" 1", &n)); // no padding inside
     BOOST_CHECK(!ParseUInt32(" -1", &n));
+    BOOST_CHECK(!ParseUInt32("++1", &n));
+    BOOST_CHECK(!ParseUInt32("+-1", &n));
+    BOOST_CHECK(!ParseUInt32("-+1", &n));
+    BOOST_CHECK(!ParseUInt32("--1", &n));
+    BOOST_CHECK(!ParseUInt32("-1", &n));
     BOOST_CHECK(!ParseUInt32("1 ", &n));
     BOOST_CHECK(!ParseUInt32("1a", &n));
     BOOST_CHECK(!ParseUInt32("aap", &n));
@@ -1593,9 +1613,9 @@ BOOST_AUTO_TEST_CASE(test_FormatSubVersion)
     std::vector<std::string> comments2;
     comments2.push_back(std::string("comment1"));
     comments2.push_back(SanitizeString(std::string("Comment2; .,_?@-; !\"#$%&'()*+/<=>[]\\^`{|}~"), SAFE_CHARS_UA_COMMENT)); // Semicolon is discouraged but not forbidden by BIP-0014
-    BOOST_CHECK_EQUAL(FormatSubVersion("Test", 99900, std::vector<std::string>()),std::string("/Test:0.9.99/"));
-    BOOST_CHECK_EQUAL(FormatSubVersion("Test", 99900, comments),std::string("/Test:0.9.99(comment1)/"));
-    BOOST_CHECK_EQUAL(FormatSubVersion("Test", 99900, comments2),std::string("/Test:0.9.99(comment1; Comment2; .,_?@-; )/"));
+    BOOST_CHECK_EQUAL(FormatSubVersion("Test", 99900, std::vector<std::string>()),std::string("/Test:9.99.0/"));
+    BOOST_CHECK_EQUAL(FormatSubVersion("Test", 99900, comments),std::string("/Test:9.99.0(comment1)/"));
+    BOOST_CHECK_EQUAL(FormatSubVersion("Test", 99900, comments2),std::string("/Test:9.99.0(comment1; Comment2; .,_?@-; )/"));
 }
 
 BOOST_AUTO_TEST_CASE(test_ParseFixedPoint)

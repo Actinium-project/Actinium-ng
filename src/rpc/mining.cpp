@@ -242,12 +242,7 @@ static RPCHelpMan generatetodescriptor()
 static RPCHelpMan generate()
 {
     return RPCHelpMan{"generate", "has been replaced by the -generate cli option. Refer to -help for more information.", {}, {}, RPCExamples{""}, [&](const RPCHelpMan& self, const JSONRPCRequest& request) -> UniValue {
-
-    if (request.fHelp) {
-        throw std::runtime_error(self.ToString());
-    } else {
         throw JSONRPCError(RPC_METHOD_NOT_FOUND, self.ToString());
-    }
     }};
 }
 
@@ -1070,7 +1065,7 @@ static RPCHelpMan estimatesmartfee()
     if (!request.params[1].isNull()) {
         FeeEstimateMode fee_mode;
         if (!FeeModeFromString(request.params[1].get_str(), fee_mode)) {
-            throw JSONRPCError(RPC_INVALID_PARAMETER, "Invalid estimate_mode parameter");
+            throw JSONRPCError(RPC_INVALID_PARAMETER, InvalidEstimateModeErrorMessage());
         }
         if (fee_mode == FeeEstimateMode::ECONOMICAL) conservative = false;
     }

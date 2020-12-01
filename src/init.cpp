@@ -132,7 +132,7 @@ static fs::path GetPidFile(const ArgsManager& args)
     return AbsPathForConfigVal(fs::path(args.GetArg("-pid", BITCOIN_PID_FILENAME)));
 }
 
-NODISCARD static bool CreatePidFile(const ArgsManager& args)
+[[nodiscard]] static bool CreatePidFile(const ArgsManager& args)
 {
     fsbridge::ofstream file{GetPidFile(args)};
     if (file) {
@@ -1062,7 +1062,7 @@ bool AppInitParameterInteraction(const ArgsManager& args)
 
     // Trim requested connection counts, to fit into system limitations
     // <int> in std::min<int>(...) to work around FreeBSD compilation issue described in #2695
-    nFD = RaiseFileDescriptorLimit(nMaxConnections + MIN_CORE_FILEDESCRIPTORS + MAX_ADDNODE_CONNECTIONS);
+    nFD = RaiseFileDescriptorLimit(nMaxConnections + MIN_CORE_FILEDESCRIPTORS + MAX_ADDNODE_CONNECTIONS + nBind);
 #ifdef USE_POLL
     int fd_max = nFD;
 #else
