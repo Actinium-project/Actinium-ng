@@ -14,7 +14,6 @@ $(package)_patches+= fix_android_qmake_conf.patch fix_android_jni_static.patch d
 $(package)_patches+= freetype_back_compat.patch drop_lrelease_dependency.patch fix_powerpc_libpng.patch
 $(package)_patches+= fix_mingw_cross_compile.patch fix_qpainter_non_determinism.patch
 
-# Update OSX_QT_TRANSLATIONS when this is updated
 $(package)_qttranslations_file_name=qttranslations-$($(package)_suffix)
 $(package)_qttranslations_sha256_hash=fb5a47799754af73d3bf501fe513342cfe2fc37f64e80df5533f6110e804220c
 
@@ -70,7 +69,6 @@ $(package)_config_opts += -nomake examples
 $(package)_config_opts += -nomake tests
 $(package)_config_opts += -opensource
 $(package)_config_opts += -optimized-tools
-$(package)_config_opts += -pch
 $(package)_config_opts += -pkg-config
 $(package)_config_opts += -prefix $(host_prefix)
 $(package)_config_opts += -qt-libpng
@@ -117,6 +115,7 @@ $(package)_config_opts += -no-feature-xml
 
 $(package)_config_opts_darwin = -no-dbus
 $(package)_config_opts_darwin += -no-opengl
+$(package)_config_opts_darwin += -pch
 
 ifneq ($(build_os),darwin)
 $(package)_config_opts_darwin += -xplatform macx-clang-linux
@@ -127,6 +126,9 @@ $(package)_config_opts_darwin += -device-option MAC_MIN_VERSION=$(OSX_MIN_VERSIO
 $(package)_config_opts_darwin += -device-option MAC_TARGET=$(host)
 $(package)_config_opts_darwin += -device-option XCODE_VERSION=$(XCODE_VERSION)
 endif
+
+# for macOS on Apple Silicon (ARM) see https://bugreports.qt.io/browse/QTBUG-85279
+$(package)_config_opts_arm_darwin += -device-option QMAKE_APPLE_DEVICE_ARCHS=arm64
 
 $(package)_config_opts_linux  = -qt-xkbcommon-x11
 $(package)_config_opts_linux += -qt-xcb
@@ -149,6 +151,7 @@ $(package)_config_opts_mingw32 = -no-opengl
 $(package)_config_opts_mingw32 += -no-dbus
 $(package)_config_opts_mingw32 += -xplatform win32-g++
 $(package)_config_opts_mingw32 += -device-option CROSS_COMPILE="$(host)-"
+$(package)_config_opts_mingw32 += -pch
 
 $(package)_config_opts_android = -xplatform android-clang
 $(package)_config_opts_android += -android-sdk $(ANDROID_SDK)
@@ -164,6 +167,7 @@ $(package)_config_opts_android += -qt-freetype
 $(package)_config_opts_android += -no-fontconfig
 $(package)_config_opts_android += -L $(host_prefix)/lib
 $(package)_config_opts_android += -I $(host_prefix)/include
+$(package)_config_opts_android += -pch
 
 $(package)_config_opts_aarch64_android += -android-arch arm64-v8a
 $(package)_config_opts_armv7a_android += -android-arch armeabi-v7a

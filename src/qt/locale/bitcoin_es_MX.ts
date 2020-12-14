@@ -76,6 +76,12 @@ Signing is only possible with addresses of the type 'legacy'.</source>
 Signing is only possible with addresses of the type 'legacy'.</translation>
     </message>
     <message>
+        <source>These are your Bitcoin addresses for receiving payments. Use the 'Create new receiving address' button in the receive tab to create new addresses.
+Signing is only possible with addresses of the type 'legacy'.</source>
+        <translation>These are your Bitcoin addresses for receiving payments. Use the 'Create new receiving address' button in the receive tab to create new addresses.
+Signing is only possible with addresses of the type 'legacy'.</translation>
+    </message>
+    <message>
         <source>&amp;Copy Address</source>
         <translation>&amp;Copiar dirección</translation>
     </message>

@@ -1456,6 +1456,10 @@
         <translation>பரிவர்த்தனை வேண்டுதலை ஏற்க இயலாது ஏனென்றால் BIP70  ஆதரவு தரவில்லை</translation>
     </message>
     <message>
+        <source>Cannot process payment request because BIP70 is not supported.</source>
+        <translation>பரிவர்த்தனை வேண்டுதலை ஏற்க இயலாது ஏனென்றால் BIP70  ஆதரவு தரவில்லை</translation>
+    </message>
+    <message>
         <source>Due to widespread security flaws in BIP70 it's strongly recommended that any merchant instructions to switch wallets be ignored.</source>
         <translation>பிப்70 இல் உள்ள பரவலான பாதுகாப்பு குறைபாடுகள் காரணமாக, வாலட்டை மாற்றுவதற்கான எந்தவொரு வணிக அறிவுறுத்தல்களும் புறக்கணிக்கப்பட வேண்டும் என்று கடுமையாக பரிந்துரைக்கப்படுகிறது.</translation>
     </message>

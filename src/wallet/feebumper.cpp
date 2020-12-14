@@ -111,7 +111,7 @@ static feebumper::Result CheckFeeRate(const CWallet& wallet, const CWalletTx& wt
     return feebumper::Result::OK;
 }
 
-static CFeeRate EstimateFeeRate(const CWallet& wallet, const CWalletTx& wtx, const CAmount old_fee, CCoinControl& coin_control)
+static CFeeRate EstimateFeeRate(const CWallet& wallet, const CWalletTx& wtx, const CAmount old_fee, const CCoinControl& coin_control)
 {
     // Get the fee rate of the original transaction. This is calculated from
     // the tx fee/vsize, so it may have been rounded down. Add 1 satoshi to the
@@ -215,7 +215,7 @@ Result CreateRateBumpTransaction(CWallet& wallet, const uint256& txid, const CCo
     // We cannot source new unconfirmed inputs(bip125 rule 2)
     new_coin_control.m_min_depth = 1;
 
-    CTransactionRef tx_new = MakeTransactionRef();
+    CTransactionRef tx_new;
     CAmount fee_ret;
     int change_pos_in_out = -1; // No requested location for change
     bilingual_str fail_reason;

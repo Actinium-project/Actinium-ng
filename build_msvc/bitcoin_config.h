@@ -256,7 +256,11 @@
 #define PACKAGE_NAME "Actinium"
 
 /* Define to the full name and version of this package. */
+<<<<<<< HEAD
 #define PACKAGE_STRING "Actinium 0.19.99"
+=======
+#define PACKAGE_STRING "Bitcoin Core 21.99.0"
+>>>>>>> 25bc840e038f5cc3a1d70d6fbaf1dc2eb2c6e460
 
 /* Define to the one symbol short name of this package. */
 #define PACKAGE_TARNAME "actinium"
