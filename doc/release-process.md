@@ -307,9 +307,9 @@ actinium.org (see below for actinium.org update instructions).
   - First, check to see if the Actinium.org maintainers have prepared a
     release: https://github.com/bitcoin-dot-org/actinium.org/labels/Core
 
-      - If they have, it will have previously failed their Travis CI
+      - If they have, it will have previously failed their CI
         checks because the final release files weren't uploaded.
-        Trigger a Travis CI rebuild---if it passes, merge.
+        Trigger a CI rebuild---if it passes, merge.
 
   - If they have not prepared a release, follow the Actinium.org release
     instructions: https://github.com/bitcoin-dot-org/actinium.org/blob/master/docs/adding-events-release-notes-and-alerts.md#release-notes
