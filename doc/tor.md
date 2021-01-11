@@ -61,10 +61,10 @@ The directory can be different of course, but virtual port numbers should be equ
 your Actiniumd's P2P listen port (8333 by default), and target addresses and ports
 should be equal to binding address and port for inbound Tor connections (127.0.0.1:8334 by default).
 
-	-externalip=X   You can tell bitcoin about its publicly reachable addresses using
+	-externalip=X   You can tell Actinium about its publicly reachable addresses using
 	                this option, and this can be an onion address. Given the above
 	                configuration, you can find your onion address in
-	                /var/lib/tor/bitcoin-service/hostname. For connections
+	                /var/lib/tor/actinium-service/hostname. For connections
 	                coming from unroutable addresses (such as 127.0.0.1, where the
 	                Tor proxy typically runs), onion addresses are given
 	                preference for your node to advertise itself with.
