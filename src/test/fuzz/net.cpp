@@ -13,41 +13,23 @@
 #include <test/fuzz/FuzzedDataProvider.h>
 #include <test/fuzz/fuzz.h>
 #include <test/fuzz/util.h>
+#include <test/util/net.h>
 #include <test/util/setup_common.h>
 
 #include <cstdint>
 #include <string>
 #include <vector>
 
-void initialize()
+void initialize_net()
 {
     static const BasicTestingSetup basic_testing_setup;
 }
 
-void test_one_input(const std::vector<uint8_t>& buffer)
+FUZZ_TARGET_INIT(net, initialize_net)
 {
     FuzzedDataProvider fuzzed_data_provider(buffer.data(), buffer.size());
-
-    const std::optional<CAddress> address = ConsumeDeserializable<CAddress>(fuzzed_data_provider);
-    if (!address) {
-        return;
-    }
-    const std::optional<CAddress> address_bind = ConsumeDeserializable<CAddress>(fuzzed_data_provider);
-    if (!address_bind) {
-        return;
-    }
-
-    CNode node{fuzzed_data_provider.ConsumeIntegral<NodeId>(),
-               static_cast<ServiceFlags>(fuzzed_data_provider.ConsumeIntegral<uint64_t>()),
-               fuzzed_data_provider.ConsumeIntegral<int>(),
-               INVALID_SOCKET,
-               *address,
-               fuzzed_data_provider.ConsumeIntegral<uint64_t>(),
-               fuzzed_data_provider.ConsumeIntegral<uint64_t>(),
-               *address_bind,
-               fuzzed_data_provider.ConsumeRandomLengthString(32),
-               fuzzed_data_provider.PickValueInArray({ConnectionType::INBOUND, ConnectionType::OUTBOUND_FULL_RELAY, ConnectionType::MANUAL, ConnectionType::FEELER, ConnectionType::BLOCK_RELAY, ConnectionType::ADDR_FETCH}),
-               fuzzed_data_provider.ConsumeBool()};
+    SetMockTime(ConsumeTime(fuzzed_data_provider));
+    CNode node{ConsumeNode(fuzzed_data_provider)};
     node.SetCommonVersion(fuzzed_data_provider.ConsumeIntegral<int>());
     while (fuzzed_data_provider.ConsumeBool()) {
         switch (fuzzed_data_provider.ConsumeIntegralInRange<int>(0, 10)) {
@@ -136,15 +118,12 @@ void test_one_input(const std::vector<uint8_t>& buffer)
     (void)node.GetId();
     (void)node.GetLocalNonce();
     (void)node.GetLocalServices();
-    (void)node.GetMyStartingHeight();
     const int ref_count = node.GetRefCount();
     assert(ref_count >= 0);
     (void)node.GetCommonVersion();
     (void)node.RelayAddrsWithConn();
 
-    const NetPermissionFlags net_permission_flags = fuzzed_data_provider.ConsumeBool() ?
-                                                        fuzzed_data_provider.PickValueInArray<NetPermissionFlags>({NetPermissionFlags::PF_NONE, NetPermissionFlags::PF_BLOOMFILTER, NetPermissionFlags::PF_RELAY, NetPermissionFlags::PF_FORCERELAY, NetPermissionFlags::PF_NOBAN, NetPermissionFlags::PF_MEMPOOL, NetPermissionFlags::PF_ISIMPLICIT, NetPermissionFlags::PF_ALL}) :
-                                                        static_cast<NetPermissionFlags>(fuzzed_data_provider.ConsumeIntegral<uint32_t>());
+    const NetPermissionFlags net_permission_flags = ConsumeWeakEnum(fuzzed_data_provider, ALL_NET_PERMISSION_FLAGS);
     (void)node.HasPermission(net_permission_flags);
     (void)node.ConnectedThroughNetwork();
 }

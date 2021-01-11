@@ -231,7 +231,7 @@ Result CreateRateBumpTransaction(CWallet& wallet, const uint256& txid, const CCo
     // Write back transaction
     mtx = CMutableTransaction(*tx_new);
     // Mark new tx not replaceable, if requested.
-    if (!coin_control.m_signal_bip125_rbf.get_value_or(wallet.m_signal_rbf)) {
+    if (!coin_control.m_signal_bip125_rbf.value_or(wallet.m_signal_rbf)) {
         for (auto& input : mtx.vin) {
             if (input.nSequence < 0xfffffffe) input.nSequence = 0xfffffffe;
         }
@@ -256,7 +256,7 @@ Result CommitTransaction(CWallet& wallet, const uint256& txid, CMutableTransacti
         errors.push_back(Untranslated("Invalid or non-wallet transaction id"));
         return Result::MISC_ERROR;
     }
-    CWalletTx& oldWtx = it->second;
+    const CWalletTx& oldWtx = it->second;
 
     // make sure the transaction still has no descendants and hasn't been mined in the meantime
     Result result = PreconditionChecks(wallet, oldWtx, errors);
