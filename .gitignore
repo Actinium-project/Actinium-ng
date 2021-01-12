@@ -8,6 +8,7 @@ src/Actinium-cli
 src/Actinium-gui
 src/Actinium-node
 src/Actinium-tx
+src/Actinium-util
 src/Actinium-wallet
 src/test/fuzz/*
 !src/test/fuzz/*.*
