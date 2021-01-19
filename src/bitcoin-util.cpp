@@ -25,6 +25,7 @@
 #include <util/system.h>
 #include <util/translation.h>
 
+#include <atomic>
 #include <functional>
 #include <memory>
 #include <stdio.h>
@@ -39,6 +40,8 @@ const std::function<std::string(const char*)> G_TRANSLATION_FUN = nullptr;
 static void SetupBitcoinUtilArgs(ArgsManager &argsman)
 {
     SetupHelpOptions(argsman);
+
+    argsman.AddArg("-version", "Print version and exit", ArgsManager::ALLOW_ANY, OptionsCategory::OPTIONS);
 
     SetupChainParamsBaseOptions(argsman);
 }
@@ -62,12 +65,14 @@ static int AppInitUtil(int argc, char* argv[])
         return EXIT_FAILURE;
     }
 
-    if (argc < 2 || HelpRequested(gArgs)) {
+    if (argc < 2 || HelpRequested(gArgs) || gArgs.IsArgSet("-version")) {
         // First part of help message is specific to this utility
-        std::string strUsage = PACKAGE_NAME " bitcoin-util utility version " + FormatFullVersion() + "\n\n" +
-            "Usage:  bitcoin-util [options] [commands]  Do stuff\n" +
-            "\n";
-        strUsage += gArgs.GetHelpMessage();
+        std::string strUsage = PACKAGE_NAME " bitcoin-util utility version " + FormatFullVersion() + "\n";
+        if (!gArgs.IsArgSet("-version")) {
+            strUsage += "\n"
+                "Usage:  bitcoin-util [options] [commands]  Do stuff\n";
+            strUsage += "\n" + gArgs.GetHelpMessage();
+        }
 
         tfm::format(std::cout, "%s", strUsage);
 
@@ -177,7 +182,16 @@ static int CommandLineUtil(int argc, char* argv[])
     return nRet;
 }
 
+#ifdef WIN32
+// Export main() and ensure working ASLR on Windows.
+// Exporting a symbol will prevent the linker from stripping
+// the .reloc section from the binary, which is a requirement
+// for ASLR. This is a temporary workaround until a fixed
+// version of binutils is used for releases.
+__declspec(dllexport) int main(int argc, char* argv[])
+#else
 int main(int argc, char* argv[])
+#endif
 {
     SetupEnvironment();
 
