@@ -68,6 +68,8 @@
 #include <set>
 #include <stdint.h>
 #include <stdio.h>
+#include <thread>
+#include <vector>
 
 #ifndef WIN32
 #include <attributes.h>
@@ -78,7 +80,6 @@
 
 #include <boost/algorithm/string/replace.hpp>
 #include <boost/signals2/signal.hpp>
-#include <boost/thread/thread.hpp>
 
 #include <sys/stat.h>
 #include <boost/optional.hpp>
@@ -174,8 +175,6 @@ static std::unique_ptr<ECCVerifyHandle> globalVerifyHandle;
 
 static std::thread g_load_block;
 
-static boost::thread_group threadGroup;
-
 void Interrupt(NodeContext& node)
 {
     InterruptHTTPServer();
@@ -237,11 +236,9 @@ void Shutdown(NodeContext& node)
     StopTorControl();
 
     // After everything has been shut down, but before things get flushed, stop the
-    // CScheduler/checkqueue, threadGroup and load block thread.
+    // CScheduler/checkqueue, scheduler and load block thread.
     if (node.scheduler) node.scheduler->stop();
     if (g_load_block.joinable()) g_load_block.join();
-    threadGroup.interrupt_all();
-    threadGroup.join_all();
     StopScriptCheckWorkerThreads();
 
     // After the threads that potentially access these pointers have been stopped,
@@ -467,7 +464,7 @@ void SetupServerArgs(NodeContext& node)
     argsman.AddArg("-maxtimeadjustment", strprintf("Maximum allowed median peer time offset adjustment. Local perspective of time may be influenced by peers forward or backward by this amount. (default: %u seconds)", DEFAULT_MAX_TIME_ADJUSTMENT), ArgsManager::ALLOW_ANY, OptionsCategory::CONNECTION);
     argsman.AddArg("-maxuploadtarget=<n>", strprintf("Tries to keep outbound traffic under the given target (in MiB per 24h). Limit does not apply to peers with 'download' permission. 0 = no limit (default: %d)", DEFAULT_MAX_UPLOAD_TARGET), ArgsManager::ALLOW_ANY, OptionsCategory::CONNECTION);
     argsman.AddArg("-onion=<ip:port>", "Use separate SOCKS5 proxy to reach peers via Tor onion services, set -noonion to disable (default: -proxy)", ArgsManager::ALLOW_ANY, OptionsCategory::CONNECTION);
-    argsman.AddArg("-onlynet=<net>", "Make outgoing connections only through network <net> (ipv4, ipv6 or onion). Incoming connections are not affected by this option. This option can be specified multiple times to allow multiple networks.", ArgsManager::ALLOW_ANY, OptionsCategory::CONNECTION);
+    argsman.AddArg("-onlynet=<net>", "Make outgoing connections only through network <net> (ipv4, ipv6 or onion). Incoming connections are not affected by this option. This option can be specified multiple times to allow multiple networks. Warning: if it is used with ipv4 or ipv6 but not onion and the -onion or -proxy option is set, then outbound onion connections will still be made; use -noonion or -onion=0 to disable outbound onion connections in this case.", ArgsManager::ALLOW_ANY, OptionsCategory::CONNECTION);
     argsman.AddArg("-peerbloomfilters", strprintf("Support filtering of blocks and transaction with bloom filters (default: %u)", DEFAULT_PEERBLOOMFILTERS), ArgsManager::ALLOW_ANY, OptionsCategory::CONNECTION);
     argsman.AddArg("-peerblockfilters", strprintf("Serve compact block filters to peers per BIP 157 (default: %u)", DEFAULT_PEERBLOCKFILTERS), ArgsManager::ALLOW_ANY, OptionsCategory::CONNECTION);
     argsman.AddArg("-permitbaremultisig", strprintf("Relay non-P2SH multisig (default: %u)", DEFAULT_PERMIT_BAREMULTISIG), ArgsManager::ALLOW_ANY, OptionsCategory::CONNECTION);
@@ -732,7 +729,7 @@ static void ThreadImport(ChainstateManager& chainman, std::vector<fs::path> vImp
             if (!file)
                 break; // This error is logged in OpenBlockFile
             LogPrintf("Reindexing block file blk%05u.dat...\n", (unsigned int)nFile);
-            LoadExternalBlockFile(chainparams, file, &pos);
+            ::ChainstateActive().LoadExternalBlockFile(chainparams, file, &pos);
             if (ShutdownRequested()) {
                 LogPrintf("Shutdown requested. Exit %s\n", __func__);
                 return;
@@ -751,7 +748,7 @@ static void ThreadImport(ChainstateManager& chainman, std::vector<fs::path> vImp
         FILE *file = fsbridge::fopen(path, "rb");
         if (file) {
             LogPrintf("Importing blocks file %s...\n", path.string());
-            LoadExternalBlockFile(chainparams, file);
+            ::ChainstateActive().LoadExternalBlockFile(chainparams, file);
             if (ShutdownRequested()) {
                 LogPrintf("Shutdown requested. Exit %s\n", __func__);
                 return;
@@ -1369,7 +1366,7 @@ bool AppInitMain(const util::Ref& context, NodeContext& node, interfaces::BlockA
     node.scheduler = MakeUnique<CScheduler>();
 
     // Start the lightweight task scheduler thread
-    threadGroup.create_thread([&] { TraceThread("scheduler", [&] { node.scheduler->serviceQueue(); }); });
+    node.scheduler->m_service_thread = std::thread([&] { TraceThread("scheduler", [&] { node.scheduler->serviceQueue(); }); });
 
     // Gather some entropy once per minute.
     node.scheduler->scheduleEvery([]{
@@ -1638,7 +1635,7 @@ bool AppInitMain(const util::Ref& context, NodeContext& node, interfaces::BlockA
                 // If the loaded chain has a wrong genesis, bail out immediately
                 // (we're likely using a testnet datadir, or the other way around).
                 if (!chainman.BlockIndex().empty() &&
-                        !LookupBlockIndex(chainparams.GetConsensus().hashGenesisBlock)) {
+                        !g_chainman.m_blockman.LookupBlockIndex(chainparams.GetConsensus().hashGenesisBlock)) {
                     return InitError(_("Incorrect or no genesis block found. Wrong datadir for network?"));
                 }
 

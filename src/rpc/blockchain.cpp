@@ -843,7 +843,7 @@ static RPCHelpMan getblockheader()
     const CBlockIndex* tip;
     {
         LOCK(cs_main);
-        pblockindex = LookupBlockIndex(hash);
+        pblockindex = g_chainman.m_blockman.LookupBlockIndex(hash);
         tip = ::ChainActive().Tip();
     }
 
@@ -967,7 +967,7 @@ static RPCHelpMan getblock()
     const CBlockIndex* tip;
     {
         LOCK(cs_main);
-        pblockindex = LookupBlockIndex(hash);
+        pblockindex = g_chainman.m_blockman.LookupBlockIndex(hash);
         tip = ::ChainActive().Tip();
 
         if (!pblockindex) {
@@ -1164,7 +1164,7 @@ static RPCHelpMan gettxout()
         }
     }
 
-    const CBlockIndex* pindex = LookupBlockIndex(coins_view->GetBestBlock());
+    const CBlockIndex* pindex = g_chainman.m_blockman.LookupBlockIndex(coins_view->GetBestBlock());
     ret.pushKV("bestblock", pindex->GetBlockHash().GetHex());
     if (coin.nHeight == MEMPOOL_HEIGHT) {
         ret.pushKV("confirmations", 0);
@@ -1557,7 +1557,7 @@ static RPCHelpMan preciousblock()
 
     {
         LOCK(cs_main);
-        pblockindex = LookupBlockIndex(hash);
+        pblockindex = g_chainman.m_blockman.LookupBlockIndex(hash);
         if (!pblockindex) {
             throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Block not found");
         }
@@ -1595,7 +1595,7 @@ static RPCHelpMan invalidateblock()
     CBlockIndex* pblockindex;
     {
         LOCK(cs_main);
-        pblockindex = LookupBlockIndex(hash);
+        pblockindex = g_chainman.m_blockman.LookupBlockIndex(hash);
         if (!pblockindex) {
             throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Block not found");
         }
@@ -1603,7 +1603,7 @@ static RPCHelpMan invalidateblock()
     InvalidateBlock(state, Params(), pblockindex);
 
     if (state.IsValid()) {
-        ActivateBestChain(state, Params());
+        ::ChainstateActive().ActivateBestChain(state, Params());
     }
 
     if (!state.IsValid()) {
@@ -1634,7 +1634,7 @@ static RPCHelpMan reconsiderblock()
 
     {
         LOCK(cs_main);
-        CBlockIndex* pblockindex = LookupBlockIndex(hash);
+        CBlockIndex* pblockindex = g_chainman.m_blockman.LookupBlockIndex(hash);
         if (!pblockindex) {
             throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Block not found");
         }
@@ -1643,7 +1643,7 @@ static RPCHelpMan reconsiderblock()
     }
 
     BlockValidationState state;
-    ActivateBestChain(state, Params());
+    ::ChainstateActive().ActivateBestChain(state, Params());
 
     if (!state.IsValid()) {
         throw JSONRPCError(RPC_DATABASE_ERROR, state.ToString());
@@ -1689,7 +1689,7 @@ static RPCHelpMan getchaintxstats()
     } else {
         uint256 hash(ParseHashV(request.params[1], "blockhash"));
         LOCK(cs_main);
-        pindex = LookupBlockIndex(hash);
+        pindex = g_chainman.m_blockman.LookupBlockIndex(hash);
         if (!pindex) {
             throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Block not found");
         }
@@ -1867,7 +1867,7 @@ static RPCHelpMan getblockstats()
         pindex = ::ChainActive()[height];
     } else {
         const uint256 hash(ParseHashV(request.params[0], "hash_or_height"));
-        pindex = LookupBlockIndex(hash);
+        pindex = g_chainman.m_blockman.LookupBlockIndex(hash);
         if (!pindex) {
             throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Block not found");
         }
@@ -2330,7 +2330,7 @@ static RPCHelpMan getblockfilter()
     bool block_was_connected;
     {
         LOCK(cs_main);
-        block_index = LookupBlockIndex(block_hash);
+        block_index = g_chainman.m_blockman.LookupBlockIndex(block_hash);
         if (!block_index) {
             throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Block not found");
         }
@@ -2440,7 +2440,7 @@ static RPCHelpMan dumptxoutset()
         }
 
         pcursor = std::unique_ptr<CCoinsViewCursor>(::ChainstateActive().CoinsDB().Cursor());
-        tip = LookupBlockIndex(stats.hashBlock);
+        tip = g_chainman.m_blockman.LookupBlockIndex(stats.hashBlock);
         CHECK_NONFATAL(tip);
     }
 
@@ -2480,41 +2480,41 @@ void RegisterBlockchainRPCCommands(CRPCTable &t)
 {
 // clang-format off
 static const CRPCCommand commands[] =
-{ //  category              name                      actor (function)         argNames
-  //  --------------------- ------------------------  -----------------------  ----------
-    { "blockchain",         "getblockchaininfo",      &getblockchaininfo,      {} },
-    { "blockchain",         "getchaintxstats",        &getchaintxstats,        {"nblocks", "blockhash"} },
-    { "blockchain",         "getblockstats",          &getblockstats,          {"hash_or_height", "stats"} },
-    { "blockchain",         "getbestblockhash",       &getbestblockhash,       {} },
-    { "blockchain",         "getblockcount",          &getblockcount,          {} },
-    { "blockchain",         "getblock",               &getblock,               {"blockhash","verbosity|verbose"} },
-    { "blockchain",         "getblockhash",           &getblockhash,           {"height"} },
-    { "blockchain",         "getblockheader",         &getblockheader,         {"blockhash","verbose"} },
-    { "blockchain",         "getchaintips",           &getchaintips,           {} },
-    { "blockchain",         "getdifficulty",          &getdifficulty,          {} },
-    { "blockchain",         "getmempoolancestors",    &getmempoolancestors,    {"txid","verbose"} },
-    { "blockchain",         "getmempooldescendants",  &getmempooldescendants,  {"txid","verbose"} },
-    { "blockchain",         "getmempoolentry",        &getmempoolentry,        {"txid"} },
-    { "blockchain",         "getmempoolinfo",         &getmempoolinfo,         {} },
-    { "blockchain",         "getrawmempool",          &getrawmempool,          {"verbose", "mempool_sequence"} },
-    { "blockchain",         "gettxout",               &gettxout,               {"txid","n","include_mempool"} },
-    { "blockchain",         "gettxoutsetinfo",        &gettxoutsetinfo,        {"hash_type"} },
-    { "blockchain",         "pruneblockchain",        &pruneblockchain,        {"height"} },
-    { "blockchain",         "savemempool",            &savemempool,            {} },
-    { "blockchain",         "verifychain",            &verifychain,            {"checklevel","nblocks"} },
+{ //  category              actor (function)
+  //  --------------------- ------------------------
+    { "blockchain",         &getblockchaininfo,                  },
+    { "blockchain",         &getchaintxstats,                    },
+    { "blockchain",         &getblockstats,                      },
+    { "blockchain",         &getbestblockhash,                   },
+    { "blockchain",         &getblockcount,                      },
+    { "blockchain",         &getblock,                           },
+    { "blockchain",         &getblockhash,                       },
+    { "blockchain",         &getblockheader,                     },
+    { "blockchain",         &getchaintips,                       },
+    { "blockchain",         &getdifficulty,                      },
+    { "blockchain",         &getmempoolancestors,                },
+    { "blockchain",         &getmempooldescendants,              },
+    { "blockchain",         &getmempoolentry,                    },
+    { "blockchain",         &getmempoolinfo,                     },
+    { "blockchain",         &getrawmempool,                      },
+    { "blockchain",         &gettxout,                           },
+    { "blockchain",         &gettxoutsetinfo,                    },
+    { "blockchain",         &pruneblockchain,                    },
+    { "blockchain",         &savemempool,                        },
+    { "blockchain",         &verifychain,                        },
 
-    { "blockchain",         "preciousblock",          &preciousblock,          {"blockhash"} },
-    { "blockchain",         "scantxoutset",           &scantxoutset,           {"action", "scanobjects"} },
-    { "blockchain",         "getblockfilter",         &getblockfilter,         {"blockhash", "filtertype"} },
+    { "blockchain",         &preciousblock,                      },
+    { "blockchain",         &scantxoutset,                       },
+    { "blockchain",         &getblockfilter,                     },
 
     /* Not shown in help */
-    { "hidden",             "invalidateblock",        &invalidateblock,        {"blockhash"} },
-    { "hidden",             "reconsiderblock",        &reconsiderblock,        {"blockhash"} },
-    { "hidden",             "waitfornewblock",        &waitfornewblock,        {"timeout"} },
-    { "hidden",             "waitforblock",           &waitforblock,           {"blockhash","timeout"} },
-    { "hidden",             "waitforblockheight",     &waitforblockheight,     {"height","timeout"} },
-    { "hidden",             "syncwithvalidationinterfacequeue", &syncwithvalidationinterfacequeue, {} },
-    { "hidden",             "dumptxoutset",           &dumptxoutset,           {"path"} },
+    { "hidden",              &invalidateblock,                   },
+    { "hidden",              &reconsiderblock,                   },
+    { "hidden",              &waitfornewblock,                   },
+    { "hidden",              &waitforblock,                      },
+    { "hidden",              &waitforblockheight,                },
+    { "hidden",              &syncwithvalidationinterfacequeue,  },
+    { "hidden",              &dumptxoutset,                      },
 };
 // clang-format on
     for (const auto& c : commands) {
