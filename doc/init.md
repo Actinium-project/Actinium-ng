@@ -20,8 +20,8 @@ The macOS configuration assumes Actiniumd will be set up for the current user.
 Configuration
 ---------------------------------
 
-Running bitcoind as a daemon does not require any manual configuration. You may
-set the `rpcauth` setting in the `bitcoin.conf` configuration file to override
+Running Actiniumd as a daemon does not require any manual configuration. You may
+set the `rpcauth` setting in the `Actinium.conf` configuration file to override
 the default behaviour of using a special cookie for authentication.
 
 This password does not have to be remembered or typed as it is mostly used
@@ -53,11 +53,12 @@ Paths
 
 All three configurations assume several paths that might need to be adjusted.
 
-Binary:              `/usr/bin/Actinumd`
-Configuration file:  `/etc/Actinum/Actinum.conf`
-Data directory:      `/var/lib/Actinumd`
-PID file:            `/var/run/Actinumd/Actinumd.pid` (OpenRC and Upstart) or `/run/Actinumd/Actinumd.pid` (systemd)
-Lock file:           `/var/lock/subsys/Actinumd` (CentOS)
+    Binary:              /usr/bin/Actiniumd
+    Configuration file:  /etc/Actinium/Actinium.conf
+    Data directory:      /var/lib/Actiniumd
+    PID file:            /var/run/Actiniumd/Actiniumd.pid (OpenRC and Upstart) or
+                         /run/Actiniumd/Actiniumd.pid (systemd)
+    Lock file:           /var/lock/subsys/Actiniumd (CentOS)
 
 The PID directory (if applicable) and data directory should both be owned by the
 Actinium user and group. It is advised for security reasons to make the
@@ -83,10 +84,10 @@ OpenRC).
 
 ### macOS
 
-Binary:              `/usr/local/bin/Actinumd`
-Configuration file:  `~/Library/Application Support/Actinum/Actinum.conf`
-Data directory:      `~/Library/Application Support/Actinum`
-Lock file:           `~/Library/Application Support/Actinum/.lock`
+    Binary:              /usr/local/bin/Actiniumd
+    Configuration file:  ~/Library/Application Support/Actinium/Actinium.conf
+    Data directory:      ~/Library/Application Support/Actinium
+    Lock file:           ~/Library/Application Support/Actinium/.lock
 
 Installing Service Configuration
 -----------------------------------
