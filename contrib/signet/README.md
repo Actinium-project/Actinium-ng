@@ -24,9 +24,9 @@ miner
 To mine the first block in your custom chain, you can run:
 
     cd src/
-    CLI="./bitcoin-cli -conf=mysignet.conf"
+    CLI="./Actinium-cli -conf=mysignet.conf"
     MINER="..contrib/signet/miner"
-    GRIND="./bitcoin-util grind"
+    GRIND="./Actinium-util grind"
     ADDR=$($CLI -signet getnewaddress)
     $MINER --cli="$CLI" generate --grind-cmd="$GRIND" --address="$ADDR" --set-block-time=-1
 

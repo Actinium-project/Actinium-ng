@@ -67,10 +67,10 @@ static int AppInitUtil(int argc, char* argv[])
 
     if (argc < 2 || HelpRequested(gArgs) || gArgs.IsArgSet("-version")) {
         // First part of help message is specific to this utility
-        std::string strUsage = PACKAGE_NAME " bitcoin-util utility version " + FormatFullVersion() + "\n";
+        std::string strUsage = PACKAGE_NAME " Actinium-util utility version " + FormatFullVersion() + "\n";
         if (!gArgs.IsArgSet("-version")) {
             strUsage += "\n"
-                "Usage:  bitcoin-util [options] [commands]  Do stuff\n";
+                "Usage:  Actinium-util [options] [commands]  Do stuff\n";
             strUsage += "\n" + gArgs.GetHelpMessage();
         }
 

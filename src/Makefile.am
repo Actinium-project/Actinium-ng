@@ -108,7 +108,7 @@ endif
 endif
 
 if BUILD_BITCOIN_UTIL
-  bin_PROGRAMS += bitcoin-util
+  bin_PROGRAMS += Actinium-util
 endif
 
 .PHONY: FORCE check-symbols check-security
@@ -708,7 +708,7 @@ Actinium_wallet_SOURCES += bitcoin-wallet-res.rc
 endif
 #
 
-# bitcoin-util binary #
+# Actinium-util binary #
 bitcoin_util_SOURCES = bitcoin-util.cpp
 bitcoin_util_CPPFLAGS = $(AM_CPPFLAGS) $(BITCOIN_INCLUDES)
 bitcoin_util_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
