@@ -709,16 +709,16 @@ endif
 #
 
 # Actinium-util binary #
-bitcoin_util_SOURCES = bitcoin-util.cpp
-bitcoin_util_CPPFLAGS = $(AM_CPPFLAGS) $(BITCOIN_INCLUDES)
-bitcoin_util_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
-bitcoin_util_LDFLAGS = $(RELDFLAGS) $(AM_LDFLAGS) $(LIBTOOL_APP_LDFLAGS) $(PTHREAD_FLAGS)
+Actinium_util_SOURCES = bitcoin-util.cpp
+Actinium_util_CPPFLAGS = $(AM_CPPFLAGS) $(BITCOIN_INCLUDES)
+Actinium_util_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
+Actinium_util_LDFLAGS = $(RELDFLAGS) $(AM_LDFLAGS) $(LIBTOOL_APP_LDFLAGS) $(PTHREAD_FLAGS)
 
 if TARGET_WINDOWS
-bitcoin_util_SOURCES += bitcoin-util-res.rc
+Actinium_util_SOURCES += bitcoin-util-res.rc
 endif
 
-bitcoin_util_LDADD = \
+Actinium_util_LDADD = \
   $(LIBBITCOIN_COMMON) \
   $(LIBBITCOIN_UTIL) \
   $(LIBUNIVALUE) \
@@ -726,7 +726,7 @@ bitcoin_util_LDADD = \
   $(LIBBITCOIN_CRYPTO) \
   $(LIBSECP256K1)
 
-bitcoin_util_LDADD += $(BOOST_LIBS)
+Actinium_util_LDADD += $(BOOST_LIBS)
 #
 
 # bitcoinconsensus library #
