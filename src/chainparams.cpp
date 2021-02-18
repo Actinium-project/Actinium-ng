@@ -9,7 +9,6 @@
 #include <consensus/merkle.h>
 #include <hash.h> // for signet block challenge hash
 #include <util/system.h>
-#include <util/strencodings.h>
 #include <versionbitsinfo.h>
 
 #include <assert.h>
@@ -135,7 +134,7 @@ public:
 
         bech32_hrp = "acm";
 
-        vFixedSeeds = std::vector<SeedSpec6>(pnSeed6_main, pnSeed6_main + ARRAYLEN(pnSeed6_main));
+        vFixedSeeds = std::vector<SeedSpec6>(std::begin(pnSeed6_main), std::end(pnSeed6_main));
 
         fDefaultConsistencyChecks = false;
         fRequireStandard = true;
@@ -173,7 +172,8 @@ public:
                 {307797, uint256S("0xb8af5361f689ccbd35f51618d100805bffbfb05abae905350234d0701b91565e")},
                 {316311, uint256S("0x30b94d94329525d49aac88164f983f501947fff2c3ab3e5bcffc3ebb47c7c797")},
                 {392677, uint256S("0x7e712212de28f2adc452be7797b5e9920b43d626da7415adc8f09724cbc7a05d")},
-                {516658, uint256S("0xc4e3e75a2d0a0fbcd70e1b8fe4d02da65ea29a6c2c6c76da80bd2b14906be84a")}
+                {516658, uint256S("0xc4e3e75a2d0a0fbcd70e1b8fe4d02da65ea29a6c2c6c76da80bd2b14906be84a")},
+                {570735, uint256S("0xacd6d42879c280e4371571717f7f26f7bc6e88cf6ad408d155f55f400c0af07d")}
             }
         };
 
@@ -259,7 +259,7 @@ public:
 
         bech32_hrp = "tacm";
 
-        vFixedSeeds = std::vector<SeedSpec6>(pnSeed6_test, pnSeed6_test + ARRAYLEN(pnSeed6_test));
+        vFixedSeeds = std::vector<SeedSpec6>(std::begin(pnSeed6_test), std::end(pnSeed6_test));
 
         fDefaultConsistencyChecks = false;
         fRequireStandard = false;
@@ -432,12 +432,11 @@ public:
         consensus.nMinimumChainWork = uint256{};
         consensus.defaultAssumeValid = uint256{};
 
-        pchMessageStart[0] = 0xfa;
         pchMessageStart[1] = 0xb3;
         pchMessageStart[2] = 0xb7;
         pchMessageStart[3] = 0xd7;
         nDefaultPort = 14444;
-        nPruneAfterHeight = 1000;
+        nPruneAfterHeight = gArgs.GetBoolArg("-fastprune", false) ? 100 : 1000;
         m_assumed_blockchain_size = 0;
         m_assumed_chain_state_size = 0;
 
