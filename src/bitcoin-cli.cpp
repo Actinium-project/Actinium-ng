@@ -618,9 +618,9 @@ static UniValue CallRPC(BaseRequestHandler* rh, const std::string& strMethod, co
     //     1. -rpcport
     //     2. port in -rpcconnect (ie following : in ipv4 or ]: in ipv6)
     //     3. default port for chain
-    int port = BaseParams().RPCPort();
+    uint16_t port{BaseParams().RPCPort()};
     SplitHostPort(gArgs.GetArg("-rpcconnect", DEFAULT_RPCCONNECT), port, host);
-    port = gArgs.GetArg("-rpcport", port);
+    port = static_cast<uint16_t>(gArgs.GetArg("-rpcport", port));
 
     // Obtain event base
     raii_event_base base = obtain_event_base();
@@ -708,6 +708,8 @@ static UniValue CallRPC(BaseRequestHandler* rh, const std::string& strMethod, co
         } else {
             throw std::runtime_error("Authorization failed: Incorrect rpcuser or rpcpassword");
         }
+    } else if (response.status == HTTP_SERVICE_UNAVAILABLE) {
+        throw std::runtime_error(strprintf("Server response: %s", response.body));
     } else if (response.status >= 400 && response.status != HTTP_BAD_REQUEST && response.status != HTTP_NOT_FOUND && response.status != HTTP_INTERNAL_SERVER_ERROR)
         throw std::runtime_error(strprintf("server returned HTTP error %d", response.status));
     else if (response.body.empty())
