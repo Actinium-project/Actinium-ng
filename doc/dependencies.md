@@ -17,7 +17,7 @@ These are the dependencies currently used by Actinium. You can find instructions
 | libnatpmp | git commit [4536032...](https://github.com/miniupnp/libnatpmp/tree/4536032ae32268a45c073a4d5e91bbab4534773a) |  | No |  |  |
 | libpng |  |  |  |  | [Yes](https://github.com/bitcoin/bitcoin/blob/master/depends/packages/qt.mk) |
 | librsvg | |  |  |  |  |
-| MiniUPnPc | [2.0.20180203](https://miniupnp.tuxfamily.org/files) |  | No |  |  |
+| MiniUPnPc | [2.2.2](https://miniupnp.tuxfamily.org/files) |  | No |  |  |
 | PCRE |  |  |  |  | [Yes](https://github.com/bitcoin/bitcoin/blob/master/depends/packages/qt.mk) |
 | OpenSSL | [1.0.1k](https://www.openssl.org/source) |  | Yes |  |  |
 | Python (tests) |  | [3.6](https://www.python.org/downloads) |  |  |  |
