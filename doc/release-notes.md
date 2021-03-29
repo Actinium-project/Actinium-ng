@@ -51,9 +51,7 @@ Core should also work on most other Unix-like systems but is not as
 frequently tested on them.  It is not recommended to use Bitcoin Core on
 unsupported systems.
 
-From Bitcoin Core 0.22.0 onwards, macOS versions earlier than 10.14 are no
-longer supported. Additionally, Bitcoin Core does not yet change appearance
-when macOS "dark mode" is activated.
+From Bitcoin Core 22.0 onwards, macOS versions earlier than 10.14 are no longer supported.
 
 Notable changes
 ===============
@@ -106,6 +104,10 @@ Low-level changes
 
 RPC
 ---
+- The RPC server can process a limited number of simultaneous RPC requests.
+  Previously, if this limit was exceeded, `bitcoind` would respond with
+  [status code 500 (`HTTP_INTERNAL_SERVER_ERROR`)](https://en.wikipedia.org/wiki/List_of_HTTP_status_codes#5xx_server_errors).
+  Now it returns status code 503 (`HTTP_SERVICE_UNAVAILABLE`). (#18335)
 
 Tests
 -----
