@@ -92,9 +92,9 @@ public:
         consensus.vDeployments[Consensus::DEPLOYMENT_TAPROOT].nTimeout = 1230767999; // December 31, 2008
 
         // The best chain should have at least this much work.
-        consensus.nMinimumChainWork = uint256S("0x00000000000000000000000000000000000000000000000071cd9c847e1f7430");
+        consensus.nMinimumChainWork = uint256S("0x0000000000000000000000000000000000000000000000008447fc531e77c813");
         // By default assume that the signatures in ancestors of this block are valid.
-        consensus.defaultAssumeValid = uint256S("0xf133710ecd8dc720fce00f930d0b09ff5db4af5428d2e572765664f609012dd0"); //block 170520
+        consensus.defaultAssumeValid = uint256S("0x71571fe243c9e7c38a1bedd92aa51b4e79eecc07ff0223f9bfc7159935325769"); //block 598826
 
         /**
          * The message start string is designed to be unlikely to occur in normal data.
@@ -173,7 +173,8 @@ public:
                 {316311, uint256S("0x30b94d94329525d49aac88164f983f501947fff2c3ab3e5bcffc3ebb47c7c797")},
                 {392677, uint256S("0x7e712212de28f2adc452be7797b5e9920b43d626da7415adc8f09724cbc7a05d")},
                 {516658, uint256S("0xc4e3e75a2d0a0fbcd70e1b8fe4d02da65ea29a6c2c6c76da80bd2b14906be84a")},
-                {570735, uint256S("0xacd6d42879c280e4371571717f7f26f7bc6e88cf6ad408d155f55f400c0af07d")}
+                {570735, uint256S("0xacd6d42879c280e4371571717f7f26f7bc6e88cf6ad408d155f55f400c0af07d")},
+                {598826, uint256S("0x71571fe243c9e7c38a1bedd92aa51b4e79eecc07ff0223f9bfc7159935325769")}
             }
         };
 
@@ -443,7 +444,7 @@ public:
 
         UpdateActivationParametersFromArgs(args);
         genesis = CreateGenesisBlock(1524650028, 771587, 0x1e0ffff0, 1, 50 * COIN);
-        
+
         consensus.hashGenesisBlock = genesis.GetHash();
         assert(consensus.hashGenesisBlock == uint256S("0xf05cd14f31c18d661efb3dc152ddbdf0da1305c73beac0a9e348013c3b3f8ad2"));
         assert(genesis.hashMerkleRoot == uint256S("0xec55b10e2f22adf88cb40df86df4d912687c13e6a4d6289513883adaef2c9191"));
