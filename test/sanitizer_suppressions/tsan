@@ -28,7 +28,6 @@ race:BerkeleyBatch
 race:BerkeleyDatabase
 race:DatabaseBatch
 race:leveldb::DBImpl::DeleteObsoleteFiles
-race:validation_chainstatemanager_tests
 race:zmq::*
 race:bitcoin-qt
 
@@ -42,14 +41,9 @@ deadlock:TestPotentialDeadLockDetected
 race:src/qt/test/*
 deadlock:src/qt/test/*
 
-# WIP: Unidentified suppressions to run the functional tests
-#race:zmqpublishnotifier.cpp
-#
-#deadlock:CreateWalletFromFile
-#deadlock:importprivkey
-#deadlock:walletdb.h
-#deadlock:walletdb.cpp
-#deadlock:wallet/db.cpp
+# Race in src/test/main.cpp
+# Can be removed once upgraded to boost test 1.74 in depends
+race:validation_chainstatemanager_tests
 
 # External libraries
 deadlock:libdb
