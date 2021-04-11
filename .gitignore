@@ -152,6 +152,6 @@ src/tor.timestamp
 osx_volname
 dist/
 *.background.tiff
+
+/guix-build-*
 .history
-
-
