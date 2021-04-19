@@ -1161,7 +1161,7 @@ CAmount GetBlockSubsidy(int nHeight, const Consensus::Params& consensusParams)
     // Afterwards we will give only 40ACM per block.
     // At block 85,000 we switch back to 50ACM.
     if (nHeight < consensusParams.ACMZawyLWMAHeight) {
-        if (nHeight >= consensusParams.Lyra2zHFHeight + 50) {
+        if (nHeight >= consensusParams.Lyra2zHFHeight + consensusParams.Lyra2zHFOldSubsidyBlockCount) {
             nSubsidy = 40 * COIN;
         }
     }

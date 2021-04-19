@@ -67,6 +67,8 @@ struct Params {
     int BIP66Height;
     /** Block height at which Lyra2z becomes active */
     int Lyra2zHFHeight;
+    /** Amount of blocks with old subsidy of 50ACM after Lyra2z HF **/
+    int Lyra2zHFOldSubsidyBlockCount;
     /** Block height at which we switch to Zawy's LWMA difficulty algorithm */
     int ACMZawyLWMAHeight;
     /** CleanUp Hard Fork height */
