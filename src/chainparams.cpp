@@ -69,7 +69,7 @@ public:
         consensus.BIP34Hash = uint256S("f1d584601e77187e22daa8d551d8307295474a49a54055a0e3feb182223da7ee");
         consensus.BIP65Height = 1000;
         consensus.BIP66Height = 1000;
-        consensus.GPUSupportHeight = 55000;
+        consensus.Lyra2zHFHeight = 55000;
         consensus.ACMZawyLWMAHeight = 85000;
         consensus.powLimit = uint256S("00000fffffffffffffffffffffffffffffffffffffffffffffffffffffffffff");
         consensus.nPowTargetTimespan = 3.5 * 24 * 60 * 60; // 3.5 days
@@ -209,7 +209,7 @@ public:
         consensus.BIP34Hash = uint256S("7c617cc84dc2bff1497836216d6b850cc4e871359ab1afc2d19ef099f9f81f1b");
         consensus.BIP65Height = 0;
         consensus.BIP66Height = 0;
-        consensus.GPUSupportHeight = 2;
+        consensus.Lyra2zHFHeight = 2;
         consensus.ACMZawyLWMAHeight = 55;
         consensus.powLimit = uint256S("00000fffffffffffffffffffffffffffffffffffffffffffffffffffffffffff");
         consensus.nPowTargetTimespan = 3.5 * 24 * 60 * 60; // 3.5 days
@@ -348,7 +348,7 @@ public:
         consensus.BIP34Hash = uint256{};
         consensus.BIP65Height = 0;
         consensus.BIP66Height = 0;
-        consensus.GPUSupportHeight = 2;
+        consensus.Lyra2zHFHeight = 2;
         consensus.ACMZawyLWMAHeight = 55;
         consensus.powLimit = uint256S("00000fffffffffffffffffffffffffffffffffffffffffffffffffffffffffff");
         consensus.nPowTargetTimespan = 3.5 * 24 * 60 * 60; // 3.5 days
@@ -423,7 +423,7 @@ public:
         consensus.SegwitHeight = 0; // SEGWIT is always activated on regtest unless overridden
         consensus.MinBIP9WarningHeight = 0;
         consensus.powLimit = uint256S("7fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff");
-        consensus.GPUSupportHeight = 2;
+        consensus.Lyra2zHFHeight = 2;
         consensus.ACMZawyLWMAHeight = 5;
         consensus.nPowTargetTimespan = 3.5 * 24 * 60 * 60; // 3.5 days
         consensus.nPowTargetSpacing = 2.5 * 60; // 2.5 minutes

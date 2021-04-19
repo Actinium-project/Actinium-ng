@@ -1157,11 +1157,11 @@ CAmount GetBlockSubsidy(int nHeight, const Consensus::Params& consensusParams)
         return 0;
 
     CAmount nSubsidy = 50 * COIN;
-    // After GPUSupport HF at block 55,000 there will be only 50 blocks with 50ACM reward.
+    // After Lyra2z HF at block 55,000 there will be only 50 blocks with 50ACM reward.
     // Afterwards we will give only 40ACM per block.
     // At block 85,000 we switch back to 50ACM.
     if (nHeight < consensusParams.ACMZawyLWMAHeight) {
-        if (nHeight >= consensusParams.GPUSupportHeight + 50) {
+        if (nHeight >= consensusParams.Lyra2zHFHeight + 50) {
             nSubsidy = 40 * COIN;
         }
     }
@@ -1697,7 +1697,7 @@ int32_t ComputeBlockVersion(const CBlockIndex* pindexPrev, const Consensus::Para
     LOCK(cs_main);
     int32_t nVersion = VERSIONBITS_TOP_BITS;
 
-    if (pindexPrev && pindexPrev->nHeight + 1 >= params.GPUSupportHeight)
+    if (pindexPrev && pindexPrev->nHeight + 1 >= params.Lyra2zHFHeight)
     	nVersion |= VERSIONBITS_FORK_GPU_SUPPORT;
 
     for (int i = 0; i < (int)Consensus::MAX_VERSION_BITS_DEPLOYMENTS; i++) {
@@ -3383,7 +3383,7 @@ static bool ContextualCheckBlockHeader(const CBlockHeader& block, BlockValidatio
     if((block.nVersion < 2 && nHeight >= consensusParams.BIP34Height) ||
        (block.nVersion < 3 && nHeight >= consensusParams.BIP66Height) ||
        (block.nVersion < 4 && nHeight >= consensusParams.BIP65Height) ||
-       (!(block.nVersion  & VERSIONBITS_FORK_GPU_SUPPORT) && nHeight >= consensusParams.GPUSupportHeight))
+       (!(block.nVersion  & VERSIONBITS_FORK_GPU_SUPPORT) && nHeight >= consensusParams.Lyra2zHFHeight))
             return state.Invalid(BlockValidationResult::BLOCK_INVALID_HEADER, strprintf("bad-version(0x%08x)", block.nVersion),
                                  strprintf("rejected nVersion=0x%08x block", block.nVersion));
 
@@ -3511,7 +3511,7 @@ bool BlockManager::AcceptBlockHeader(const CBlockHeader& block, BlockValidationS
         }
         pindexPrev = (*mi).second;
 
-        if  (!(block.nVersion & VERSIONBITS_FORK_GPU_SUPPORT) && pindexPrev->nHeight + 1 >= chainparams.GetConsensus().GPUSupportHeight) {
+        if  (!(block.nVersion & VERSIONBITS_FORK_GPU_SUPPORT) && pindexPrev->nHeight + 1 >= chainparams.GetConsensus().Lyra2zHFHeight) {
         	state.Invalid(BlockValidationResult::BLOCK_GPU_FORK, "not-following-gpu-support");
         	return error("%s: Reject Old nVersion After Fork: %s, %s", __func__, hash.ToString(), state.ToString());
         }

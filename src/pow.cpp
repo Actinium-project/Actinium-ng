@@ -111,7 +111,7 @@ unsigned int static DarkGravityWave(const CBlockIndex* pindexLast, const Consens
     int64_t nPastBlocks = 24;
 
     // reset to zero at HF height
-    if (pindexLast->nHeight+1 == params.GPUSupportHeight) {
+    if (pindexLast->nHeight+1 == params.Lyra2zHFHeight) {
         return bnPowLimit.GetCompact();
     }
 
@@ -160,7 +160,7 @@ unsigned int static DarkGravityWave(const CBlockIndex* pindexLast, const Consens
 
 /*
 * More info on LWMA: https://github.com/zawy12/difficulty-algorithms/issues/3
-* Difficulty Watch: http://wordsgalore.com/diff/index.html 
+* Difficulty Watch: http://wordsgalore.com/diff/index.html
 */
 unsigned int LwmaCalculateNextWorkRequired(const CBlockIndex* pindexLast, const Consensus::Params& params)
 {
@@ -221,9 +221,9 @@ unsigned int GetNextWorkRequired(const CBlockIndex* pindexLast, const CBlockHead
  int DiffType = 1;
  int height = pindexLast->nHeight+1;
 
- if (height < params.GPUSupportHeight)    { DiffType = 1; }
+ if (height < params.Lyra2zHFHeight)    { DiffType = 1; }
  if (height < params.ACMZawyLWMAHeight &&
-     height >= params.GPUSupportHeight)   { DiffType = 2; }
+     height >= params.Lyra2zHFHeight)   { DiffType = 2; }
  if (height >= params.ACMZawyLWMAHeight)  { DiffType = 3; }
 
  if (DiffType == 1) { return GetNextWorkRequired_Legacy(pindexLast, pblock, params); }

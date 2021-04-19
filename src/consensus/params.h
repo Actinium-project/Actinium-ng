@@ -65,8 +65,8 @@ struct Params {
     int BIP65Height;
     /** Block height at which BIP66 becomes active */
     int BIP66Height;
-    /** Block height at which GPU support (Lyra2z) becomes active */
-    int GPUSupportHeight;
+    /** Block height at which Lyra2z becomes active */
+    int Lyra2zHFHeight;
     /** Block height at which we switch to Zawy's LWMA difficulty algorithm */
     int ACMZawyLWMAHeight;
     /** Block height at which CSV (BIP68, BIP112 and BIP113) becomes active */
