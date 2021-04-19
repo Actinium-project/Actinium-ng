@@ -1206,7 +1206,7 @@ bool PeerManagerImpl::MaybePunishNodeForBlock(NodeId nodeid, const BlockValidati
         // TODO: Handle this much more gracefully (10 DoS points is super arbitrary)
         Misbehaving(nodeid, 10, message);
         return true;
-    case BlockValidationResult::BLOCK_GPU_FORK:
+    case BlockValidationResult::BLOCK_LYRA2Z_FORK:
         {
             LOCK(cs_main);
             Misbehaving(nodeid, 100, message);
