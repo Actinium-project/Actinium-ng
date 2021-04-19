@@ -69,6 +69,8 @@ struct Params {
     int Lyra2zHFHeight;
     /** Block height at which we switch to Zawy's LWMA difficulty algorithm */
     int ACMZawyLWMAHeight;
+    /** CleanUp Hard Fork height */
+    int CleanUpHFHeight;
     /** Block height at which CSV (BIP68, BIP112 and BIP113) becomes active */
     int CSVHeight;
     /** Block height at which Segwit (BIP141, BIP143 and BIP147) becomes active.

@@ -71,6 +71,7 @@ public:
         consensus.BIP66Height = 1000;
         consensus.Lyra2zHFHeight = 55000;
         consensus.ACMZawyLWMAHeight = 85000;
+        consensus.CleanUpHFHeight = 700000;
         consensus.powLimit = uint256S("00000fffffffffffffffffffffffffffffffffffffffffffffffffffffffffff");
         consensus.nPowTargetTimespan = 3.5 * 24 * 60 * 60; // 3.5 days
         consensus.nPowTargetSpacing = 2.5 * 60;
@@ -211,6 +212,7 @@ public:
         consensus.BIP66Height = 0;
         consensus.Lyra2zHFHeight = 2;
         consensus.ACMZawyLWMAHeight = 55;
+        consensus.CleanUpHFHeight = 80;
         consensus.powLimit = uint256S("00000fffffffffffffffffffffffffffffffffffffffffffffffffffffffffff");
         consensus.nPowTargetTimespan = 3.5 * 24 * 60 * 60; // 3.5 days
         consensus.nPowTargetSpacing = 2.5 * 60;
@@ -425,6 +427,7 @@ public:
         consensus.powLimit = uint256S("7fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff");
         consensus.Lyra2zHFHeight = 2;
         consensus.ACMZawyLWMAHeight = 5;
+        consensus.CleanUpHFHeight = 10;
         consensus.nPowTargetTimespan = 3.5 * 24 * 60 * 60; // 3.5 days
         consensus.nPowTargetSpacing = 2.5 * 60; // 2.5 minutes
         consensus.fPowAllowMinDifficultyBlocks = true;
