@@ -183,17 +183,10 @@ class ToolWalletTest(BitcoinTestFramework):
 
     def test_invalid_tool_commands_and_args(self):
         self.log.info('Testing that various invalid commands raise with specific error messages')
-<<<<<<< HEAD
-        self.assert_raises_tool_error('Invalid command: foo', 'foo')
-        # `Actinium-wallet help` raises an error. Use `Actinium-wallet -help`.
-        self.assert_raises_tool_error('Invalid command: help', 'help')
-        self.assert_raises_tool_error('Error: two methods provided (info and create). Only one method should be provided.', 'info', 'create')
-=======
         self.assert_raises_tool_error("Error parsing command line arguments: Invalid command 'foo'", 'foo')
         # `bitcoin-wallet help` raises an error. Use `bitcoin-wallet -help`.
         self.assert_raises_tool_error("Error parsing command line arguments: Invalid command 'help'", 'help')
         self.assert_raises_tool_error('Error: Additional arguments provided (create). Methods do not take arguments. Please refer to `-help`.', 'info', 'create')
->>>>>>> ea5a50f92a6ff81b1d2dd67cdc3663e0e66733ac
         self.assert_raises_tool_error('Error parsing command line arguments: Invalid parameter -foo', '-foo')
         self.assert_raises_tool_error('No method provided. Run `bitcoin-wallet -help` for valid methods.')
         self.assert_raises_tool_error('Wallet name must be provided when creating a new wallet.', 'create')

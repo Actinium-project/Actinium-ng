@@ -1443,13 +1443,10 @@ class TaprootTest(BitcoinTestFramework):
         self.nodes[1].generate(101)
         self.test_spenders(self.nodes[1], spenders_taproot_active(), input_counts=[1, 2, 2, 2, 2, 3])
 
-<<<<<<< HEAD
-=======
         # Re-connect nodes in case they have been disconnected
         self.disconnect_nodes(0, 1)
         self.connect_nodes(0, 1)
 
->>>>>>> 25bc840e038f5cc3a1d70d6fbaf1dc2eb2c6e460
         # Transfer value of the largest 500 coins to pre-taproot node.
         addr = self.nodes[0].getnewaddress()
 

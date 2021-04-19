@@ -119,19 +119,6 @@ sudo apt-get install qtcreator
  - Under `Compilers`: select `"GCC (x86 64bit in /usr/bin)"`
  - Under `Debuggers`: select `"GDB"` as debugger
 
-<<<<<<< HEAD
-1. Make sure you installed everything through Homebrew mentioned in the [macOS build instructions](/doc/build-osx.md)
-2. Use `./configure` with the `--enable-debug` flag
-3. In Qt Creator do "New Project" -> Import Project -> Import Existing Project
-4. Enter "Actinium-qt" as project name, enter src/qt as location
-5. Leave the file selection as it is
-6. Confirm the "summary page"
-7. In the "Projects" tab select "Manage Kits..."
-8. Select the default "Desktop" kit and select "Clang (x86 64bit in /usr/bin)" as compiler
-9. Select LLDB as debugger (you might need to set the path to your installation)
-10. Start debugging with Qt Creator (you might need to the executable to "Actinium-qt" under "Run", which is where you can also add command line arguments)
-=======
 8. While in the `Projects` tab, ensure that you have the `bitcoin-qt` executable specified under `Run`
  - If the executable is not specified: click `"Choose..."`, navigate to `src/qt`, and select `bitcoin-qt`
 9. You're all set! Start developing, building, and debugging the Bitcoin Core GUI
->>>>>>> 2c0fc856a6b0c82c5dddbbaee417171577514507

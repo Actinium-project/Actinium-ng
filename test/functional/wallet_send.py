@@ -303,13 +303,8 @@ class WalletSendTest(BitcoinTestFramework):
         assert res["complete"]
 
         self.log.info("Test setting explicit fee rate")
-<<<<<<< HEAD
-        res1 = self.test_send(from_wallet=w0, to_wallet=w1, amount=1, arg_fee_rate=1, add_to_wallet=False)
-        res2 = self.test_send(from_wallet=w0, to_wallet=w1, amount=1, fee_rate=1, add_to_wallet=False)
-=======
         res1 = self.test_send(from_wallet=w0, to_wallet=w1, amount=1, arg_fee_rate="1", add_to_wallet=False)
         res2 = self.test_send(from_wallet=w0, to_wallet=w1, amount=1, fee_rate="1", add_to_wallet=False)
->>>>>>> 25bc840e038f5cc3a1d70d6fbaf1dc2eb2c6e460
         assert_equal(self.nodes[1].decodepsbt(res1["psbt"])["fee"], self.nodes[1].decodepsbt(res2["psbt"])["fee"])
 
         res = self.test_send(from_wallet=w0, to_wallet=w1, amount=1, fee_rate=7, add_to_wallet=False)
