@@ -1698,7 +1698,7 @@ int32_t ComputeBlockVersion(const CBlockIndex* pindexPrev, const Consensus::Para
     int32_t nVersion = VERSIONBITS_TOP_BITS;
 
     if (pindexPrev && pindexPrev->nHeight + 1 >= params.Lyra2zHFHeight)
-    	nVersion |= VERSIONBITS_FORK_GPU_SUPPORT;
+    	nVersion |= VERSIONBITS_FORK_LYRA2Z;
 
     for (int i = 0; i < (int)Consensus::MAX_VERSION_BITS_DEPLOYMENTS; i++) {
         ThresholdState state = VersionBitsState(pindexPrev, params, static_cast<Consensus::DeploymentPos>(i), versionbitscache);
@@ -3383,7 +3383,7 @@ static bool ContextualCheckBlockHeader(const CBlockHeader& block, BlockValidatio
     if((block.nVersion < 2 && nHeight >= consensusParams.BIP34Height) ||
        (block.nVersion < 3 && nHeight >= consensusParams.BIP66Height) ||
        (block.nVersion < 4 && nHeight >= consensusParams.BIP65Height) ||
-       (!(block.nVersion  & VERSIONBITS_FORK_GPU_SUPPORT) && nHeight >= consensusParams.Lyra2zHFHeight))
+       (!(block.nVersion  & VERSIONBITS_FORK_LYRA2Z) && nHeight >= consensusParams.Lyra2zHFHeight))
             return state.Invalid(BlockValidationResult::BLOCK_INVALID_HEADER, strprintf("bad-version(0x%08x)", block.nVersion),
                                  strprintf("rejected nVersion=0x%08x block", block.nVersion));
 
@@ -3511,8 +3511,8 @@ bool BlockManager::AcceptBlockHeader(const CBlockHeader& block, BlockValidationS
         }
         pindexPrev = (*mi).second;
 
-        if  (!(block.nVersion & VERSIONBITS_FORK_GPU_SUPPORT) && pindexPrev->nHeight + 1 >= chainparams.GetConsensus().Lyra2zHFHeight) {
-        	state.Invalid(BlockValidationResult::BLOCK_GPU_FORK, "not-following-gpu-support");
+        if  (!(block.nVersion & VERSIONBITS_FORK_LYRA2Z) && pindexPrev->nHeight + 1 >= chainparams.GetConsensus().Lyra2zHFHeight) {
+        	state.Invalid(BlockValidationResult::BLOCK_LYRA2Z_FORK, "not-following-lyra2z-algo-activation");
         	return error("%s: Reject Old nVersion After Fork: %s, %s", __func__, hash.ToString(), state.ToString());
         }
 

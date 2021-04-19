@@ -16,8 +16,8 @@ static const int32_t VERSIONBITS_TOP_BITS = 0x20000000UL;
 static const int32_t VERSIONBITS_TOP_MASK = 0xE0000000UL;
 /** Total bits available for versionbits */
 static const int32_t VERSIONBITS_NUM_BITS = 29;
-/** GPU support fork (Lyra2z activation) **/
-static const int32_t VERSIONBITS_FORK_GPU_SUPPORT = 0x40000000UL;
+/** Lyra2z algo activation **/
+static const int32_t VERSIONBITS_FORK_LYRA2Z = 0x40000000UL;
 
 /** BIP 9 defines a finite-state-machine to deploy a softfork in multiple stages.
  *  State transitions happen during retarget period if conditions are met

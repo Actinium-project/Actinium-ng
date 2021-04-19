@@ -78,7 +78,7 @@ enum class BlockValidationResult {
     BLOCK_INVALID_PREV,      //!< A block this one builds on is invalid
     BLOCK_TIME_FUTURE,       //!< block timestamp was > 2 hours in the future (or our clock is bad)
     BLOCK_CHECKPOINT,        //!< the block failed to meet one of our checkpoints
-    BLOCK_GPU_FORK,          //!< the block failed to follow GPU fork at height 55.000
+    BLOCK_LYRA2Z_FORK,          //!< the block failed to follow Lyra2z fork at height 55.000
 };
 
 
