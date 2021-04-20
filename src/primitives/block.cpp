@@ -34,7 +34,7 @@ uint256 CBlockHeader::GetPoWLyra2ZHash() const
 
 uint256 CBlockHeader::GetPoWHash() const
 {
-	if (nVersion & VERSIONBITS_FORK_GPU_SUPPORT)
+	if (nVersion & VERSIONBITS_FORK_LYRA2Z)
 		return GetPoWLyra2ZHash();
 	else
 		return GetPoWScryptHash();
