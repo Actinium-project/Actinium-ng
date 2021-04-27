@@ -74,6 +74,7 @@ EXTRA_LIBRARIES += \
   $(LIBBITCOIN_CONSENSUS) \
   $(LIBBITCOIN_SERVER) \
   $(LIBBITCOIN_CLI) \
+  $(LIBBITCOIN_IPC) \
   $(LIBBITCOIN_WALLET) \
   $(LIBBITCOIN_WALLET_TOOL) \
   $(LIBBITCOIN_ZMQ)
@@ -90,7 +91,7 @@ if BUILD_BITCOIND
 endif
 
 if BUILD_BITCOIN_NODE
-  bin_PROGRAMS += bitcoin-node
+  bin_PROGRAMS += Actinium-node
 endif
 
 if BUILD_BITCOIN_CLI
@@ -112,7 +113,7 @@ if BUILD_BITCOIN_UTIL
 endif
 
 .PHONY: FORCE check-symbols check-security
-# Actinium core #
+# Actinium #
 BITCOIN_CORE_H = \
   addrdb.h \
   addrman.h \
@@ -158,7 +159,10 @@ BITCOIN_CORE_H = \
   init.h \
   init/common.h \
   interfaces/chain.h \
+  interfaces/echo.h \
   interfaces/handler.h \
+  interfaces/init.h \
+  interfaces/ipc.h \
   interfaces/node.h \
   interfaces/wallet.h \
   key.h \
@@ -299,6 +303,8 @@ obj/build.h: FORCE
 	  "$(abs_top_srcdir)"
 libbitcoin_util_a-clientversion.$(OBJEXT): obj/build.h
 
+ipc/capnp/libbitcoin_ipc_a-ipc.$(OBJEXT): $(libbitcoin_ipc_mpgen_input:=.h)
+
 # server: shared between Actiniumd and Actinium-qt
 # Contains code accessing mempool and chain state that is meant to be separated
 # from wallet and gui code (see node/README.md). Shared code should go in
@@ -417,8 +423,8 @@ libbitcoin_wallet_tool_a_SOURCES = \
   $(BITCOIN_CORE_H)
 
 # crypto primitives library
-crypto_libbitcoin_crypto_base_a_CPPFLAGS = $(AM_CPPFLAGS) $(SSL_CFLAGS) -fPIC
-crypto_libbitcoin_crypto_base_a_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS) -fPIC
+crypto_libbitcoin_crypto_base_a_CPPFLAGS = $(AM_CPPFLAGS)
+crypto_libbitcoin_crypto_base_a_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
 crypto_libbitcoin_crypto_base_a_SOURCES = \
   crypto/aes.cpp \
   crypto/aes.h \
@@ -433,7 +439,7 @@ crypto_libbitcoin_crypto_base_a_SOURCES = \
   crypto/hmac_sha256.h \
   crypto/hmac_sha512.cpp \
   crypto/hmac_sha512.h \
-  crypto/Lyra2Z/Lyra2.h \
+	crypto/Lyra2Z/Lyra2.h \
   crypto/Lyra2Z/Lyra2.c \
   crypto/Lyra2Z/Lyra2Z.h \
   crypto/Lyra2Z/Lyra2Z.c \
@@ -448,7 +454,7 @@ crypto_libbitcoin_crypto_base_a_SOURCES = \
   crypto/muhash.cpp \
   crypto/ripemd160.cpp \
   crypto/ripemd160.h \
-  crypto/scrypt.cpp \
+	crypto/scrypt.cpp \
   crypto/scrypt-sse2.cpp \
   crypto/scrypt.h \
   crypto/sha1.cpp \
@@ -570,7 +576,9 @@ libbitcoin_util_a_SOURCES = \
   compat/glibcxx_sanity.cpp \
   compat/strnlen.cpp \
   fs.cpp \
+  interfaces/echo.cpp \
   interfaces/handler.cpp \
+  interfaces/init.cpp \
   logging.cpp \
   random.cpp \
   randomenv.cpp \
@@ -621,7 +629,7 @@ libbitcoin_cli_a_SOURCES = \
 nodist_libbitcoin_util_a_SOURCES = $(srcdir)/obj/build.h
 #
 
-# bitcoind & bitcoin-node binaries #
+# Actiniumd & Actinium-node binaries #
 Actinium_daemon_sources = bitcoind.cpp
 Actinium_bin_cppflags = $(AM_CPPFLAGS) $(BITCOIN_INCLUDES)
 Actinium_bin_cxxflags = $(AM_CXXFLAGS) $(PIE_FLAGS)
@@ -642,36 +650,23 @@ Actinium_bin_ldadd = \
   $(LIBLEVELDB) \
   $(LIBLEVELDB_SSE42) \
   $(LIBMEMENV) \
-  $(LIBSECP256K1) \
-  $(CRYPTO_LIBS)
+  $(LIBSECP256K1)
 
-Actinium_bin_ldadd += $(BOOST_LIBS) $(BDB_LIBS) $(MINIUPNPC_LIBS) $(NATPMP_LIBS) $(EVENT_PTHREADS_LIBS) $(EVENT_LIBS) $(ZMQ_LIBS) $(SQLITE_LIBS) $(ZLIB_LIBS) $(CRYPTO_LIBS)
+Actinium_bin_ldadd += $(BOOST_LIBS) $(BDB_LIBS) $(MINIUPNPC_LIBS) $(NATPMP_LIBS) $(EVENT_PTHREADS_LIBS) $(EVENT_LIBS) $(ZMQ_LIBS) $(SQLITE_LIBS) $(CRYPTO_LIBS)
 
-Actiniumd_SOURCES = $(Actinium_daemon_sources)
+Actiniumd_SOURCES = $(Actinium_daemon_sources) init/bitcoind.cpp
 Actiniumd_CPPFLAGS = $(Actinium_bin_cppflags)
 Actiniumd_CXXFLAGS = $(Actinium_bin_cxxflags)
 Actiniumd_LDFLAGS = $(Actinium_bin_ldflags)
-Actiniumd_LDADD = $(LIBBITCOIN_SERVER) $(Actinium_bin_ldadd)
+Actiniumd_LDADD = $(LIBBITCOIN_SERVER) $(Actinium_bin_ldadd) -lz
 
-if TARGET_WINDOWS
-Actiniumd_LDADD += \
-   -lz
-endif
-
-if TARGET_DARWIN
-Actiniumd_LDADD += \
-   -lz
-endif
-
-if TARGET_LINUX
-Actiniumd_LDADD += \
-   -lz
-endif
-
+Actinium_node_SOURCES = $(Actinium_daemon_sources) init/bitcoin-node.cpp
 Actinium_node_CPPFLAGS = $(Actinium_bin_cppflags)
 Actinium_node_CXXFLAGS = $(Actinium_bin_cxxflags)
+Actinium_node_LDFLAGS = $(Actinium_bin_ldflags)
+Actinium_node_LDADD = $(LIBBITCOIN_SERVER) $(Actinium_bin_ldadd) $(LIBBITCOIN_IPC) $(LIBMULTIPROCESS_LIBS)
 
-# bitcoin-cli binary #
+# Actinium-cli binary #
 Actinium_cli_SOURCES = bitcoin-cli.cpp
 Actinium_cli_CPPFLAGS = $(AM_CPPFLAGS) $(BITCOIN_INCLUDES) $(EVENT_CFLAGS)
 Actinium_cli_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
@@ -690,7 +685,7 @@ Actinium_cli_LDADD = \
 Actinium_cli_LDADD += $(BOOST_LIBS) $(EVENT_LIBS) $(CRYPTO_LIBS)
 #
 
-# bitcoin-tx binary #
+# Actinium-tx binary #
 Actinium_tx_SOURCES = bitcoin-tx.cpp
 Actinium_tx_CPPFLAGS = $(AM_CPPFLAGS) $(BITCOIN_INCLUDES)
 Actinium_tx_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
@@ -711,7 +706,7 @@ Actinium_tx_LDADD = \
 Actinium_tx_LDADD += $(BOOST_LIBS) $(CRYPTO_LIBS)
 #
 
-# bitcoin-wallet binary #
+# Actinium-wallet binary #
 Actinium_wallet_SOURCES = bitcoin-wallet.cpp
 Actinium_wallet_CPPFLAGS = $(Actinium_bin_cppflags)
 Actinium_wallet_CXXFLAGS = $(Actinium_bin_cxxflags)
@@ -755,7 +750,7 @@ endif
 
 libbitcoinconsensus_la_LDFLAGS = $(AM_LDFLAGS) -no-undefined $(RELDFLAGS)
 libbitcoinconsensus_la_LIBADD = $(LIBSECP256K1) $(CRYPTO_LIBS)
-libbitcoinconsensus_la_CPPFLAGS = $(AM_CPPFLAGS) -I$(builddir)/obj -I$(srcdir)/secp256k1/include -DBUILD_BITCOIN_INTERNAL $(SSL_CFLAGS)
+libbitcoinconsensus_la_CPPFLAGS = $(AM_CPPFLAGS) -I$(builddir)/obj -I$(srcdir)/secp256k1/include -DBUILD_BITCOIN_INTERNAL
 libbitcoinconsensus_la_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
 
 endif
@@ -833,6 +828,39 @@ if HARDEN
 	$(AM_V_at) OBJDUMP=$(OBJDUMP) OTOOL=$(OTOOL) $(PYTHON) $(top_srcdir)/contrib/devtools/security-check.py $(bin_PROGRAMS)
 endif
 
+libbitcoin_ipc_mpgen_input = \
+  ipc/capnp/echo.capnp \
+  ipc/capnp/init.capnp
+EXTRA_DIST += $(libbitcoin_ipc_mpgen_input)
+%.capnp:
+
+if BUILD_MULTIPROCESS
+LIBBITCOIN_IPC=libbitcoin_ipc.a
+libbitcoin_ipc_a_SOURCES = \
+  ipc/capnp/init-types.h \
+  ipc/capnp/protocol.cpp \
+  ipc/capnp/protocol.h \
+  ipc/exception.h \
+  ipc/interfaces.cpp \
+  ipc/process.cpp \
+  ipc/process.h \
+  ipc/protocol.h
+libbitcoin_ipc_a_CPPFLAGS = $(AM_CPPFLAGS) $(BITCOIN_INCLUDES)
+libbitcoin_ipc_a_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS) $(LIBMULTIPROCESS_CFLAGS)
+
+include $(MPGEN_PREFIX)/include/mpgen.mk
+libbitcoin_ipc_mpgen_output = \
+  $(libbitcoin_ipc_mpgen_input:=.c++) \
+  $(libbitcoin_ipc_mpgen_input:=.h) \
+  $(libbitcoin_ipc_mpgen_input:=.proxy-client.c++) \
+  $(libbitcoin_ipc_mpgen_input:=.proxy-server.c++) \
+  $(libbitcoin_ipc_mpgen_input:=.proxy-types.c++) \
+  $(libbitcoin_ipc_mpgen_input:=.proxy-types.h) \
+  $(libbitcoin_ipc_mpgen_input:=.proxy.h)
+nodist_libbitcoin_ipc_a_SOURCES = $(libbitcoin_ipc_mpgen_output)
+CLEANFILES += $(libbitcoin_ipc_mpgen_output)
+endif
+
 if EMBEDDED_LEVELDB
 include Makefile.crc32c.include
 include Makefile.leveldb.include
@@ -846,10 +874,7 @@ include Makefile.test.include
 endif
 
 if ENABLE_BENCH
-if TARGET_WINDOWS
-else
 include Makefile.bench.include
-endif
 endif
 
 if ENABLE_QT
