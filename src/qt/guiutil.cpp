@@ -6,6 +6,7 @@
 
 #include <qt/bitcoinaddressvalidator.h>
 #include <qt/bitcoinunits.h>
+#include <qt/platformstyle.h>
 #include <qt/qvalidatedlineedit.h>
 #include <qt/sendcoinsrecipient.h>
 
@@ -56,12 +57,12 @@
 #include <QShortcut>
 #include <QSize>
 #include <QString>
-#include <QStringBuilder>
 #include <QTextDocument> // for Qt::mightBeRichText
 #include <QThread>
 #include <QUrlQuery>
 #include <QtGlobal>
 
+#include <cassert>
 #include <chrono>
 
 #if defined(Q_OS_MAC)
@@ -792,6 +793,40 @@ qreal calculateIdealFontSize(int width, const QString& text, QFont font, qreal m
     return font_size;
 }
 
+ThemedLabel::ThemedLabel(const PlatformStyle* platform_style, QWidget* parent)
+    : QLabel{parent}, m_platform_style{platform_style}
+{
+    assert(m_platform_style);
+}
+
+void ThemedLabel::setThemedPixmap(const QString& image_filename, int width, int height)
+{
+    m_image_filename = image_filename;
+    m_pixmap_width = width;
+    m_pixmap_height = height;
+    updateThemedPixmap();
+}
+
+void ThemedLabel::changeEvent(QEvent* e)
+{
+#ifdef Q_OS_MACOS
+    if (e->type() == QEvent::PaletteChange) {
+        updateThemedPixmap();
+    }
+#endif
+    QLabel::changeEvent(e);
+}
+
+void ThemedLabel::updateThemedPixmap()
+{
+    setPixmap(m_platform_style->SingleColorIcon(m_image_filename).pixmap(m_pixmap_width, m_pixmap_height));
+}
+
+ClickableLabel::ClickableLabel(const PlatformStyle* platform_style, QWidget* parent)
+    : ThemedLabel{platform_style, parent}
+{
+}
+
 void ClickableLabel::mouseReleaseEvent(QMouseEvent *event)
 {
     Q_EMIT clicked(event->pos());
@@ -908,7 +943,7 @@ QString MakeHtmlLink(const QString& source, const QString& link)
 {
     return QString(source).replace(
         link,
-        QLatin1String("<a href=\"") % link % QLatin1String("\">") % link % QLatin1String("</a>"));
+        QLatin1String("<a href=\"") + link + QLatin1String("\">") + link + QLatin1String("</a>"));
 }
 
 void PrintSlotException(
