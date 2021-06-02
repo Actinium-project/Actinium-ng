@@ -1,8 +1,8 @@
 Format: http://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
 Upstream-Name: Actinium
 Upstream-Contact: Satoshi Nakamoto <satoshin@gmx.com>
- irc://#bitcoin@freenode.net
-Source: https://github.com/Actinium-project/Actinium-ng
+ irc://#bitcoin-core-dev@libera.chat
+Source: https://github.com/bitcoin/bitcoin
 
 Files: *
 Copyright: 2009-2021, Bitcoin Core Developers
