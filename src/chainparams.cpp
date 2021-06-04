@@ -94,7 +94,7 @@ public:
         consensus.vDeployments[Consensus::DEPLOYMENT_TAPROOT].bit = 2;
         consensus.vDeployments[Consensus::DEPLOYMENT_TAPROOT].nStartTime = Consensus::BIP9Deployment::ALWAYS_ACTIVE;
         consensus.vDeployments[Consensus::DEPLOYMENT_TAPROOT].nTimeout = Consensus::BIP9Deployment::NO_TIMEOUT;
-        consensus.vDeployments[Consensus::DEPLOYMENT_TAPROOT].min_activation_height = 700000;
+        consensus.vDeployments[Consensus::DEPLOYMENT_TAPROOT].min_activation_height = 800000;
 
         // The best chain should have at least this much work.
         consensus.nMinimumChainWork = uint256S("0x0000000000000000000000000000000000000000000000008447fc531e77c813");
