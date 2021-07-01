@@ -2982,7 +2982,6 @@ ScriptPubKeyMan* CWallet::GetScriptPubKeyMan(const OutputType& type, bool intern
     const std::map<OutputType, ScriptPubKeyMan*>& spk_managers = internal ? m_internal_spk_managers : m_external_spk_managers;
     std::map<OutputType, ScriptPubKeyMan*>::const_iterator it = spk_managers.find(type);
     if (it == spk_managers.end()) {
-        WalletLogPrintf("%s scriptPubKey Manager for output type %d does not exist\n", internal ? "Internal" : "External", static_cast<int>(type));
         return nullptr;
     }
     return it->second;
@@ -3184,7 +3183,7 @@ void CWallet::LoadActiveScriptPubKeyMan(uint256 id, OutputType type, bool intern
     spk_mans[type] = spk_man;
 
     if (spk_mans_other[type] == spk_man) {
-        spk_mans_other[type] = nullptr;
+        spk_mans_other.erase(type);
     }
 
     NotifyCanGetAddressesChanged();
@@ -3201,7 +3200,7 @@ void CWallet::DeactivateScriptPubKeyMan(uint256 id, OutputType type, bool intern
         }
 
         auto& spk_mans = internal ? m_internal_spk_managers : m_external_spk_managers;
-        spk_mans[type] = nullptr;
+        spk_mans.erase(type);
     }
 
     NotifyCanGetAddressesChanged();
