@@ -98,10 +98,11 @@ double CAddrInfo::GetChance(int64_t nNow) const
     return fChance;
 }
 
-CAddrMan::CAddrMan(bool deterministic, int32_t consistency_check_ratio)
+CAddrMan::CAddrMan(std::vector<bool> asmap, bool deterministic, int32_t consistency_check_ratio)
     : insecure_rand{deterministic}
     , nKey{deterministic ? uint256{1} : insecure_rand.rand256()}
     , m_consistency_check_ratio{consistency_check_ratio}
+    , m_asmap{std::move(asmap)}
 {
     for (auto& bucket : vvNew) {
         for (auto& entry : bucket) {
@@ -242,9 +243,9 @@ void CAddrMan::Unserialize(Stream& s_)
     const uint8_t lowest_compatible = compat - INCOMPATIBILITY_BASE;
     if (lowest_compatible > FILE_FORMAT) {
         throw std::ios_base::failure(strprintf(
-                    "Unsupported format of addrman database: %u. It is compatible with formats >=%u, "
-                    "but the maximum supported by this version of %s is %u.",
-                    format, lowest_compatible, PACKAGE_NAME, static_cast<uint8_t>(FILE_FORMAT)));
+            "Unsupported format of addrman database: %u. It is compatible with formats >=%u, "
+            "but the maximum supported by this version of %s is %u.",
+            uint8_t{format}, uint8_t{lowest_compatible}, PACKAGE_NAME, uint8_t{FILE_FORMAT}));
     }
 
     s >> nKey;
