@@ -1,1 +1,1 @@
-Building Actinium
+See [doc/build-\*.md](/doc)
