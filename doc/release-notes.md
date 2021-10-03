@@ -62,6 +62,13 @@ P2P and network changes
   They will become eligible for address gossip after sending an ADDR, ADDRV2,
   or GETADDR message. (#21528)
 
+Rescan startup parameter removed
+--------------------------------
+
+The `-rescan` startup parameter has been removed. Wallets which require
+rescanning due to corruption will still be rescanned on startup.
+Otherwise, please use the `rescanblockchain` RPC to trigger a rescan. (#23123)
+
 Updated RPCs
 ------------
 
@@ -70,6 +77,14 @@ Updated RPCs
   `gettransaction verbose=true` and REST endpoints `/rest/tx`, `/rest/getutxos`,
   `/rest/block` no longer return the `addresses` and `reqSigs` fields, which
   were previously deprecated in 22.0. (#22650)
+
+- `listunspent` now includes `ancestorcount`, `ancestorsize`, and
+  `ancestorfees` for each transaction output that is still in the mempool.
+  (#12677)
+
+- `lockunspent` now optionally takes a third parameter, `persistent`, which
+  causes the lock to be written persistently to the wallet database. This
+  allows UTXOs to remain locked even after node restarts or crashes. (#23065)
 
 New RPCs
 --------
@@ -113,6 +128,9 @@ Wallet
 
 GUI changes
 -----------
+
+- UTXOs which are locked via the GUI are now stored persistently in the
+  wallet database, so are not lost on node shutdown or crash. (#23065)
 
 Low-level changes
 =================
