@@ -108,7 +108,7 @@ AC_PATH_TOOL(GCOV, gcov)
 AC_PATH_TOOL(LLVM_COV, llvm-cov)
 AC_PATH_PROG(LCOV, lcov)
 dnl Python 3.6 is specified in .python-version and should be used if available, see doc/dependencies.md
-AC_PATH_PROGS([PYTHON], [python3.6 python3.7 python3.8 python3.9, python3.10, python3 python])
+AC_PATH_PROGS([PYTHON], [python3.6 python3.7 python3.8 python3.9 python3.10 python3.11 python3 python])
 AC_PATH_PROG(GENHTML, genhtml)
 AC_PATH_PROG([GIT], [git])
 AC_PATH_PROG(CCACHE,ccache)
@@ -1226,14 +1226,6 @@ if test "x$have_any_system" != "xno"; then
   AC_DEFINE(HAVE_SYSTEM, 1, Define to 1 if std::system or ::wsystem is available.)
 fi
 
-LEVELDB_CPPFLAGS=
-LIBLEVELDB=
-LIBMEMENV=
-AM_CONDITIONAL([EMBEDDED_LEVELDB],[true])
-AC_SUBST(LEVELDB_CPPFLAGS)
-AC_SUBST(LIBLEVELDB)
-AC_SUBST(LIBMEMENV)
-
 dnl SUPPRESSED_CPPFLAGS=SUPPRESS_WARNINGS([$SOME_CPPFLAGS])
 dnl Replace -I with -isystem in $SOME_CPPFLAGS to suppress warnings from
 dnl headers from its include directories and return the result.
@@ -1893,7 +1885,7 @@ PKGCONFIG_LIBDIR_TEMP="$PKG_CONFIG_LIBDIR"
 unset PKG_CONFIG_LIBDIR
 PKG_CONFIG_LIBDIR="$PKGCONFIG_LIBDIR_TEMP"
 
-ac_configure_args="${ac_configure_args} --disable-shared --with-pic --enable-benchmark=no --enable-module-recovery --enable-module-schnorrsig --enable-experimental"
+ac_configure_args="${ac_configure_args} --disable-shared --with-pic --enable-benchmark=no --enable-module-recovery --enable-module-schnorrsig --enable-experimental --disable-openssl-tests"
 AC_CONFIG_SUBDIRS([src/secp256k1])
 
 AC_OUTPUT

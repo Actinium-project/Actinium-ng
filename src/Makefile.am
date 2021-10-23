@@ -114,7 +114,6 @@ BITCOIN_CORE_H = \
   bech32.h \
   blockencodings.h \
   blockfilter.h \
-  bloom.h \
   chain.h \
   chainparams.h \
   chainparamsbase.h \
@@ -122,6 +121,7 @@ BITCOIN_CORE_H = \
   checkqueue.h \
   clientversion.h \
   coins.h \
+  common/bloom.h \
   compat.h \
   compat/assumptions.h \
   compat/byteswap.h \
@@ -541,9 +541,9 @@ libbitcoin_common_a_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
 libbitcoin_common_a_SOURCES = \
   base58.cpp \
   bech32.cpp \
-  bloom.cpp \
   chainparams.cpp \
   coins.cpp \
+  common/bloom.cpp \
   compressor.cpp \
   core_read.cpp \
   core_write.cpp \
@@ -853,11 +853,8 @@ nodist_libbitcoin_ipc_a_SOURCES = $(libbitcoin_ipc_mpgen_output)
 CLEANFILES += $(libbitcoin_ipc_mpgen_output)
 endif
 
-if EMBEDDED_LEVELDB
 include Makefile.crc32c.include
 include Makefile.leveldb.include
-endif
-
 include Makefile.test_util.include
 include Makefile.test_fuzz.include
 
