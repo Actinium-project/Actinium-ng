@@ -715,6 +715,7 @@ Actinium_tx_LDADD += $(BOOST_LIBS) $(CRYPTO_LIBS)
 
 # Actinium-wallet binary #
 Actinium_wallet_SOURCES = bitcoin-wallet.cpp
+Actinium_wallet_SOURCES += init/bitcoin-wallet.cpp
 Actinium_wallet_CPPFLAGS = $(Actinium_bin_cppflags)
 Actinium_wallet_CXXFLAGS = $(Actinium_bin_cxxflags)
 Actinium_wallet_LDFLAGS = $(Actinium_bin_ldflags)

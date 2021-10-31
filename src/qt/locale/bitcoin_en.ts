@@ -749,8 +749,8 @@ Signing is only possible with addresses of the type &apos;legacy&apos;.</source>
         <source>%n active connection(s) to Actinium network.</source>
         <extracomment>A substring of the tooltip.</extracomment>
         <translation type="unfinished">
-            <numerusform>%n active connection to Bitcoin network.</numerusform>
-            <numerusform>%n active connections to Bitcoin network.</numerusform>
+            <numerusform>%n active connection to Actinium network.</numerusform>
+            <numerusform>%n active connections to Actinium network.</numerusform>
         </translation>
     </message>
     <message>

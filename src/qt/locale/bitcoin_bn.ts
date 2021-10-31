@@ -434,8 +434,8 @@
         <translation>&amp;Command-line options</translation>
     </message>
     <message numerus="yes">
-        <source>%n active connection(s) to Bitcoin network</source>
-        <translation><numerusform>%n active connection to Bitcoin network</numerusform><numerusform>%n active connections to Bitcoin network</numerusform></translation>
+        <source>%n active connection(s) to Actinium network</source>
+        <translation><numerusform>%n active connection to Actinium network</numerusform><numerusform>%n active connections to Actinium network</numerusform></translation>
     </message>
     <message>
         <source>Indexing blocks on disk...</source>

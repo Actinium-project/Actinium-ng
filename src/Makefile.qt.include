@@ -338,15 +338,15 @@ Actinium_qt_libtoolflags = $(AM_LIBTOOLFLAGS) --tag CXX
 
 qt_Actinium_qt_CPPFLAGS = $(Actinium_qt_cppflags)
 qt_Actinium_qt_CXXFLAGS = $(Actinium_qt_cxxflags)
-qt_Actinium_qt_SOURCES = $(Actinium_qt_sources) init/bitcoind.cpp
+qt_Actinium_qt_SOURCES = $(Actinium_qt_sources) init/bitcoin-qt.cpp
 qt_Actinium_qt_LDADD = $(Actinium_qt_ldadd)
 qt_Actinium_qt_LDFLAGS = $(Actinium_qt_ldflags)
 qt_Actinium_qt_LIBTOOLFLAGS = $(Actinium_qt_libtoolflags)
 
 Actinium_gui_CPPFLAGS = $(Actinium_qt_cppflags)
 Actinium_gui_CXXFLAGS = $(Actinium_qt_cxxflags)
-Actinium_gui_SOURCES = $(Actinium_qt_sources) init/bitcoind.cpp
-Actinium_gui_LDADD = $(Actinium_qt_ldadd)
+Actinium_gui_SOURCES = $(Actinium_qt_sources) init/bitcoin-gui.cpp
+Actinium_gui_LDADD = $(Actinium_qt_ldadd) $(LIBBITCOIN_IPC) $(LIBBITCOIN_UTIL) $(LIBMULTIPROCESS_LIBS)
 Actinium_gui_LDFLAGS = $(Actinium_qt_ldflags)
 Actinium_gui_LIBTOOLFLAGS = $(Actinium_qt_libtoolflags)
 
