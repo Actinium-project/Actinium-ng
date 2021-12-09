@@ -193,33 +193,6 @@ RPCHelpMan importprivkey()
     };
 }
 
-RPCHelpMan abortrescan()
-{
-    return RPCHelpMan{"abortrescan",
-                "\nStops current wallet rescan triggered by an RPC call, e.g. by an importprivkey call.\n"
-                "Note: Use \"getwalletinfo\" to query the scanning progress.\n",
-                {},
-                RPCResult{RPCResult::Type::BOOL, "", "Whether the abort was successful"},
-                RPCExamples{
-            "\nImport a private key\n"
-            + HelpExampleCli("importprivkey", "\"mykey\"") +
-            "\nAbort the running wallet rescan\n"
-            + HelpExampleCli("abortrescan", "") +
-            "\nAs a JSON-RPC call\n"
-            + HelpExampleRpc("abortrescan", "")
-                },
-        [&](const RPCHelpMan& self, const JSONRPCRequest& request) -> UniValue
-{
-    std::shared_ptr<CWallet> const pwallet = GetWalletForJSONRPCRequest(request);
-    if (!pwallet) return NullUniValue;
-
-    if (!pwallet->IsScanning() || pwallet->IsAbortingRescan()) return false;
-    pwallet->AbortRescan();
-    return true;
-},
-    };
-}
-
 RPCHelpMan importaddress()
 {
     return RPCHelpMan{"importaddress",
@@ -1326,11 +1299,11 @@ RPCHelpMan importmulti()
                         {RPCResult::Type::OBJ, "", "",
                         {
                             {RPCResult::Type::BOOL, "success", ""},
-                            {RPCResult::Type::ARR, "warnings", /* optional */ true, "",
+                            {RPCResult::Type::ARR, "warnings", /*optional=*/true, "",
                             {
                                 {RPCResult::Type::STR, "", ""},
                             }},
-                            {RPCResult::Type::OBJ, "error", /* optional */ true, "",
+                            {RPCResult::Type::OBJ, "error", /*optional=*/true, "",
                             {
                                 {RPCResult::Type::ELISION, "", "JSONRPC error"},
                             }},
@@ -1634,11 +1607,11 @@ RPCHelpMan importdescriptors()
                         {RPCResult::Type::OBJ, "", "",
                         {
                             {RPCResult::Type::BOOL, "success", ""},
-                            {RPCResult::Type::ARR, "warnings", /* optional */ true, "",
+                            {RPCResult::Type::ARR, "warnings", /*optional=*/true, "",
                             {
                                 {RPCResult::Type::STR, "", ""},
                             }},
-                            {RPCResult::Type::OBJ, "error", /* optional */ true, "",
+                            {RPCResult::Type::OBJ, "error", /*optional=*/true, "",
                             {
                                 {RPCResult::Type::ELISION, "", "JSONRPC error"},
                             }},
