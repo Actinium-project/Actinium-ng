@@ -55,6 +55,7 @@
 #include <validationinterface.h>
 #include <warnings.h>
 
+#include <algorithm>
 #include <numeric>
 #include <optional>
 #include <string>
@@ -3710,7 +3711,7 @@ CBlockIndex * BlockManager::InsertBlockIndex(const uint256& hash)
 
 bool BlockManager::LoadBlockIndex(
     const Consensus::Params& consensus_params,
-    std::set<CBlockIndex*, CBlockIndexWorkComparator>& block_index_candidates)
+    ChainstateManager& chainman)
 {
     if (!m_block_tree_db->LoadBlockIndexGuts(consensus_params, [this](const uint256& hash) EXCLUSIVE_LOCKS_REQUIRED(cs_main) { return this->InsertBlockIndex(hash); })) {
         return false;
@@ -3725,17 +3726,41 @@ bool BlockManager::LoadBlockIndex(
         vSortedByHeight.push_back(std::make_pair(pindex->nHeight, pindex));
     }
     sort(vSortedByHeight.begin(), vSortedByHeight.end());
+
+    // Find start of assumed-valid region.
+    int first_assumed_valid_height = std::numeric_limits<int>::max();
+
+    for (const auto& [height, block] : vSortedByHeight) {
+        if (block->IsAssumedValid()) {
+            auto chainstates = chainman.GetAll();
+
+            // If we encounter an assumed-valid block index entry, ensure that we have
+            // one chainstate that tolerates assumed-valid entries and another that does
+            // not (i.e. the background validation chainstate), since assumed-valid
+            // entries should always be pending validation by a fully-validated chainstate.
+            auto any_chain = [&](auto fnc) { return std::any_of(chainstates.cbegin(), chainstates.cend(), fnc); };
+            assert(any_chain([](auto chainstate) { return chainstate->reliesOnAssumedValid(); }));
+            assert(any_chain([](auto chainstate) { return !chainstate->reliesOnAssumedValid(); }));
+
+            first_assumed_valid_height = height;
+            break;
+        }
+    }
+
     for (const std::pair<int, CBlockIndex*>& item : vSortedByHeight)
     {
         if (ShutdownRequested()) return false;
         CBlockIndex* pindex = item.second;
         pindex->nChainWork = (pindex->pprev ? pindex->pprev->nChainWork : 0) + GetBlockProof(*pindex);
         pindex->nTimeMax = (pindex->pprev ? std::max(pindex->pprev->nTimeMax, pindex->nTime) : pindex->nTime);
-        // We can link the chain of blocks for which we've received transactions at some point.
+
+        // We can link the chain of blocks for which we've received transactions at some point, or
+        // blocks that are assumed-valid on the basis of snapshot load (see
+        // PopulateAndValidateSnapshot()).
         // Pruned nodes may have deleted the block.
         if (pindex->nTx > 0) {
             if (pindex->pprev) {
-                if (pindex->pprev->HaveTxsDownloaded()) {
+                if (pindex->pprev->nChainTx > 0) {
                     pindex->nChainTx = pindex->pprev->nChainTx + pindex->nTx;
                 } else {
                     pindex->nChainTx = 0;
@@ -3752,7 +3777,36 @@ bool BlockManager::LoadBlockIndex(
         if (pindex->IsAssumedValid() ||
                 (pindex->IsValid(BLOCK_VALID_TRANSACTIONS) &&
                  (pindex->HaveTxsDownloaded() || pindex->pprev == nullptr))) {
-            block_index_candidates.insert(pindex);
+
+            // Fill each chainstate's block candidate set. Only add assumed-valid
+            // blocks to the tip candidate set if the chainstate is allowed to rely on
+            // assumed-valid blocks.
+            //
+            // If all setBlockIndexCandidates contained the assumed-valid blocks, the
+            // background chainstate's ActivateBestChain() call would add assumed-valid
+            // blocks to the chain (based on how FindMostWorkChain() works). Obviously
+            // we don't want this since the purpose of the background validation chain
+            // is to validate assued-valid blocks.
+            //
+            // Note: This is considering all blocks whose height is greater or equal to
+            // the first assumed-valid block to be assumed-valid blocks, and excluding
+            // them from the background chainstate's setBlockIndexCandidates set. This
+            // does mean that some blocks which are not technically assumed-valid
+            // (later blocks on a fork beginning before the first assumed-valid block)
+            // might not get added to the the background chainstate, but this is ok,
+            // because they will still be attached to the active chainstate if they
+            // actually contain more work.
+            //
+            // Instad of this height-based approach, an earlier attempt was made at
+            // detecting "holistically" whether the block index under consideration
+            // relied on an assumed-valid ancestor, but this proved to be too slow to
+            // be practical.
+            for (CChainState* chainstate : chainman.GetAll()) {
+                if (chainstate->reliesOnAssumedValid() ||
+                        pindex->nHeight < first_assumed_valid_height) {
+                    chainstate->setBlockIndexCandidates.insert(pindex);
+                }
+            }
         }
         if (pindex->nStatus & BLOCK_FAILED_MASK && (!pindexBestInvalid || pindex->nChainWork > pindexBestInvalid->nChainWork))
             pindexBestInvalid = pindex;
@@ -3776,11 +3830,9 @@ void BlockManager::Unload() {
     m_block_index.clear();
 }
 
-bool BlockManager::LoadBlockIndexDB(std::set<CBlockIndex*, CBlockIndexWorkComparator>& setBlockIndexCandidates)
+bool BlockManager::LoadBlockIndexDB(ChainstateManager& chainman)
 {
-    if (!LoadBlockIndex(
-            ::Params().GetConsensus(),
-            setBlockIndexCandidates)) {
+    if (!LoadBlockIndex(::Params().GetConsensus(), chainman)) {
         return false;
     }
 
@@ -4126,7 +4178,7 @@ bool ChainstateManager::LoadBlockIndex()
     // Load block index from databases
     bool needs_init = fReindex;
     if (!fReindex) {
-        bool ret = m_blockman.LoadBlockIndexDB(ActiveChainstate().setBlockIndexCandidates);
+        bool ret = m_blockman.LoadBlockIndexDB(*this);
         if (!ret) return false;
         needs_init = m_blockman.m_block_index.empty();
     }
@@ -4856,6 +4908,17 @@ bool ChainstateManager::ActivateSnapshot(
     return true;
 }
 
+static void FlushSnapshotToDisk(CCoinsViewCache& coins_cache, bool snapshot_loaded)
+{
+    LOG_TIME_MILLIS_WITH_CATEGORY_MSG_ONCE(
+        strprintf("%s (%.2f MB)",
+                  snapshot_loaded ? "saving snapshot chainstate" : "flushing coins cache",
+                  coins_cache.DynamicMemoryUsage() / (1000 * 1000)),
+        BCLog::LogFlags::ALL);
+
+    coins_cache.Flush();
+}
+
 bool ChainstateManager::PopulateAndValidateSnapshot(
     CChainState& snapshot_chainstate,
     CAutoFile& coins_file,
@@ -4893,7 +4956,6 @@ bool ChainstateManager::PopulateAndValidateSnapshot(
     uint64_t coins_left = metadata.m_coins_count;
 
     LogPrintf("[snapshot] loading coins from snapshot %s\n", base_blockhash.ToString());
-    int64_t flush_now{0};
     int64_t coins_processed{0};
 
     while (coins_left > 0) {
@@ -4937,19 +4999,14 @@ bool ChainstateManager::PopulateAndValidateSnapshot(
             const auto snapshot_cache_state = WITH_LOCK(::cs_main,
                 return snapshot_chainstate.GetCoinsCacheSizeState());
 
-            if (snapshot_cache_state >=
-                    CoinsCacheSizeState::CRITICAL) {
-                LogPrintf("[snapshot] flushing coins cache (%.2f MB)... ", /* Continued */
-                    coins_cache.DynamicMemoryUsage() / (1000 * 1000));
-                flush_now = GetTimeMillis();
-
+            if (snapshot_cache_state >= CoinsCacheSizeState::CRITICAL) {
                 // This is a hack - we don't know what the actual best block is, but that
                 // doesn't matter for the purposes of flushing the cache here. We'll set this
                 // to its correct value (`base_blockhash`) below after the coins are loaded.
                 coins_cache.SetBestBlock(GetRandHash());
 
-                coins_cache.Flush();
-                LogPrintf("done (%.2fms)\n", GetTimeMillis() - flush_now);
+                // No need to acquire cs_main since this chainstate isn't being used yet.
+                FlushSnapshotToDisk(coins_cache, /*snapshot_loaded=*/false);
             }
         }
     }
@@ -4979,9 +5036,8 @@ bool ChainstateManager::PopulateAndValidateSnapshot(
         coins_cache.DynamicMemoryUsage() / (1000 * 1000),
         base_blockhash.ToString());
 
-    LogPrintf("[snapshot] flushing snapshot chainstate to disk\n");
     // No need to acquire cs_main since this chainstate isn't being used yet.
-    coins_cache.Flush(); // TODO: if #17487 is merged, add erase=false here for better performance.
+    FlushSnapshotToDisk(coins_cache, /*snapshot_loaded=*/true);
 
     assert(coins_cache.GetBestBlock() == base_blockhash);
 
@@ -5011,7 +5067,14 @@ bool ChainstateManager::PopulateAndValidateSnapshot(
 
     // Fake various pieces of CBlockIndex state:
     CBlockIndex* index = nullptr;
-    for (int i = 0; i <= snapshot_chainstate.m_chain.Height(); ++i) {
+
+    // Don't make any modifications to the genesis block.
+    // This is especially important because we don't want to erroneously
+    // apply BLOCK_ASSUMED_VALID to genesis, which would happen if we didn't skip
+    // it here (since it apparently isn't BLOCK_VALID_SCRIPTS).
+    constexpr int AFTER_GENESIS_START{1};
+
+    for (int i = AFTER_GENESIS_START; i <= snapshot_chainstate.m_chain.Height(); ++i) {
         index = snapshot_chainstate.m_chain[i];
 
         // Fake nTx so that LoadBlockIndex() loads assumed-valid CBlockIndex
@@ -5020,7 +5083,7 @@ bool ChainstateManager::PopulateAndValidateSnapshot(
             index->nTx = 1;
         }
         // Fake nChainTx so that GuessVerificationProgress reports accurately
-        index->nChainTx = index->pprev ? index->pprev->nChainTx + index->nTx : 1;
+        index->nChainTx = index->pprev->nChainTx + index->nTx;
 
         // Mark unvalidated block index entries beneath the snapshot base block as assumed-valid.
         if (!index->IsValid(BLOCK_VALID_SCRIPTS)) {
@@ -5031,7 +5094,7 @@ bool ChainstateManager::PopulateAndValidateSnapshot(
 
         // Fake BLOCK_OPT_WITNESS so that CChainState::NeedsRedownload()
         // won't ask to rewind the entire assumed-valid chain on startup.
-        if (index->pprev && DeploymentActiveAt(*index, ::Params().GetConsensus(), Consensus::DEPLOYMENT_SEGWIT)) {
+        if (DeploymentActiveAt(*index, ::Params().GetConsensus(), Consensus::DEPLOYMENT_SEGWIT)) {
             index->nStatus |= BLOCK_OPT_WITNESS;
         }
 
