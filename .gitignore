@@ -95,9 +95,14 @@ src/qt/Actinium-qt.includes
 *.qm
 Makefile
 !depends/Makefile
+<<<<<<< HEAD
 src/qt/Actinium-qt
 Actinium-Qt.app
 background.tiff*
+=======
+src/qt/bitcoin-qt
+Bitcoin-Qt.app
+>>>>>>> 6182e5086fc82b49a5f0d2abdab4bc7e2a4686ef
 
 # Qt Creator
 Makefile.am.user
@@ -152,7 +157,6 @@ src/tor.timestamp
 
 osx_volname
 dist/
-*.background.tiff
 
 /guix-build-*
 .history
