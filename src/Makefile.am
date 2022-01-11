@@ -679,17 +679,17 @@ Actinium_bin_ldadd = \
 
 Actinium_bin_ldadd += $(BOOST_LIBS) $(BDB_LIBS) $(MINIUPNPC_LIBS) $(NATPMP_LIBS) $(EVENT_PTHREADS_LIBS) $(EVENT_LIBS) $(ZMQ_LIBS) $(SQLITE_LIBS) $(CRYPTO_LIBS)
 
-Actiniumd_SOURCES = $(bitcoin_daemon_sources) init/bitcoind.cpp
-Actiniumd_CPPFLAGS = $(bitcoin_bin_cppflags)
-Actiniumd_CXXFLAGS = $(bitcoin_bin_cxxflags)
-Actiniumd_LDFLAGS = $(bitcoin_bin_ldflags)
-Actiniumd_LDADD = $(LIBBITCOIN_NODE) $(bitcoin_bin_ldadd)
+Actiniumd_SOURCES = $(Actinium_daemon_sources) init/bitcoind.cpp
+Actiniumd_CPPFLAGS = $(Actinium_bin_cppflags)
+Actiniumd_CXXFLAGS = $(Actinium_bin_cxxflags)
+Actiniumd_LDFLAGS = $(Actinium_bin_ldflags)
+Actiniumd_LDADD = $(LIBBITCOIN_NODE) $(Actinium_bin_ldadd)
 
-Actinium_node_SOURCES = $(bitcoin_daemon_sources) init/bitcoin-node.cpp
-Actinium_node_CPPFLAGS = $(bitcoin_bin_cppflags)
-Actinium_node_CXXFLAGS = $(bitcoin_bin_cxxflags)
-Actinium_node_LDFLAGS = $(bitcoin_bin_ldflags)
-Actinium_node_LDADD = $(LIBBITCOIN_NODE) $(bitcoin_bin_ldadd) $(LIBBITCOIN_IPC) $(LIBMULTIPROCESS_LIBS)
+Actinium_node_SOURCES = $(Actinium_daemon_sources) init/bitcoin-node.cpp
+Actinium_node_CPPFLAGS = $(Actinium_bin_cppflags)
+Actinium_node_CXXFLAGS = $(Actinium_bin_cxxflags)
+Actinium_node_LDFLAGS = $(Actinium_bin_ldflags)
+Actinium_node_LDADD = $(LIBBITCOIN_NODE) $(Actinium_bin_ldadd) $(LIBBITCOIN_IPC) $(LIBMULTIPROCESS_LIBS)
 
 # Actinium-cli binary #
 Actinium_cli_SOURCES = bitcoin-cli.cpp
@@ -734,9 +734,9 @@ Actinium_tx_LDADD += $(BOOST_LIBS) $(CRYPTO_LIBS)
 # bitcoin-wallet binary #
 Actinium_wallet_SOURCES = bitcoin-wallet.cpp
 Actinium_wallet_SOURCES += init/bitcoin-wallet.cpp
-Actinium_wallet_CPPFLAGS = $(bitcoin_bin_cppflags)
-Actinium_wallet_CXXFLAGS = $(bitcoin_bin_cxxflags)
-Actinium_wallet_LDFLAGS = $(bitcoin_bin_ldflags)
+Actinium_wallet_CPPFLAGS = $(Actinium_bin_cppflags)
+Actinium_wallet_CXXFLAGS = $(Actinium_bin_cxxflags)
+Actinium_wallet_LDFLAGS = $(Actinium_bin_ldflags)
 Actinium_wallet_LDADD = \
   $(LIBBITCOIN_WALLET_TOOL) \
   $(LIBBITCOIN_WALLET) \
