@@ -108,6 +108,22 @@
 #include "crypto/scrypt.h"
 #endif
 
+using node::CacheSizes;
+using node::CalculateCacheSizes;
+using node::ChainstateLoadVerifyError;
+using node::ChainstateLoadingError;
+using node::CleanupBlockRevFiles;
+using node::DEFAULT_PRINTPRIORITY;
+using node::DEFAULT_STOPAFTERBLOCKIMPORT;
+using node::LoadChainstate;
+using node::NodeContext;
+using node::ThreadImport;
+using node::VerifyLoadedChainstate;
+using node::fHavePruned;
+using node::fPruneMode;
+using node::fReindex;
+using node::nPruneTarget;
+
 static const bool DEFAULT_PROXYRANDOMIZE = true;
 static const bool DEFAULT_REST_ENABLE = false;
 
