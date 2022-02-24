@@ -70,9 +70,6 @@ bool AppInitMain(node::NodeContext& node, interfaces::BlockAndHeaderTipInfo* tip
  */
 void SetupServerArgs(ArgsManager& argsman);
 
-/** Returns licensing information (for -version) */
-std::string LicenseInfo();
-
 bool IsEmbeddedTorActive();
 
 #endif // BITCOIN_INIT_H
