@@ -6,7 +6,7 @@ template to create the initial release notes draft.*
 for the process.*
 
 *Create the draft, named* "*version* Release Notes Draft"
-*(e.g. "22.0 Release Notes Draft"), as a collaborative wiki in:*
+*(e.g. "23.0 Release Notes Draft"), as a collaborative wiki in:*
 
 https://github.com/bitcoin-core/bitcoin-devwiki/wiki/
 
@@ -54,7 +54,6 @@ unsupported systems.
 Notable changes
 ===============
 
-=======
 P2P and network changes
 -----------------------
 
@@ -126,96 +125,9 @@ New RPCs
   block. (#23508)
 
 Build System
+=======
+Example item
 ------------
-
-Files
------
-
-* On startup, the list of banned hosts and networks (via `setban` RPC) in
-  `banlist.dat` is ignored and only `banlist.json` is considered. Bitcoin Core
-  version 22.x is the only version that can read `banlist.dat` and also write
-  it to `banlist.json`. If `banlist.json` already exists, version 22.x will not
-  try to translate the `banlist.dat` into json. After an upgrade, `listbanned`
-  can be used to double check the parsed entries. (#22570)
-
-New settings
-------------
-
-Updated settings
-----------------
-
-- In previous releases, the meaning of the command line option
-  `-persistmempool` (without a value provided) incorrectly disabled mempool
-  persistence.  `-persistmempool` is now treated like other boolean options to
-  mean `-persistmempool=1`. Passing `-persistmempool=0`, `-persistmempool=1`
-  and `-nopersistmempool` is unaffected. (#23061)
-
-- `-maxuploadtarget` now allows human readable byte units [k|K|m|M|g|G|t|T].
-  E.g. `-maxuploadtarget=500g`. No whitespace, +- or fractions allowed.
-  Default is `M` if no suffix provided. (#23249)
-
-Tools and Utilities
--------------------
-
-- Update `-getinfo` to return data in a user-friendly format that also reduces vertical space. (#21832)
-
-- CLI `-addrinfo` now returns a single field for the number of `onion` addresses
-  known to the node instead of separate `torv2` and `torv3` fields, as support
-  for Tor V2 addresses was removed from Bitcoin Core in 22.0. (#22544)
-
-Wallet
-------
-
-- `upgradewallet` will now automatically flush the keypool if upgrading
-  from a non-HD wallet to an HD wallet, to immediately start using the
-  newly-generated HD keys. (#23093)
-
-- a new RPC `newkeypool` has been added, which will flush (entirely
-  clear and refill) the keypool. (#23093)
-
-- `listunspent` now includes `ancestorcount`, `ancestorsize`, and
-  `ancestorfees` for each transaction output that is still in the mempool.
-  (#12677)
-
-- `lockunspent` now optionally takes a third parameter, `persistent`, which
-  causes the lock to be written persistently to the wallet database. This
-  allows UTXOs to remain locked even after node restarts or crashes. (#23065)
-
-- `receivedby` RPCs now include coinbase transactions. Previously, the
-  following wallet RPCs excluded coinbase transactions: `getreceivedbyaddress`,
-  `getreceivedbylabel`, `listreceivedbyaddress`, `listreceivedbylabel`. This
-  release changes this behaviour and returns results accounting for received
-  coins from coinbase outputs. The previous behaviour can be restored using the
-  configuration `-deprecatedrpc=exclude_coinbase`, but may be removed in a
-  future release. (#14707)
-
-- A new option in the same `receivedby` RPCs, `include_immature_coinbase`
-  (default=`false`), determines whether to account for immature coinbase
-  transactions. Immature coinbase transactions are coinbase transactions that
-  have 100 or fewer confirmations, and are not spendable. (#14707)
-
-GUI changes
------------
-
-- UTXOs which are locked via the GUI are now stored persistently in the
-  wallet database, so are not lost on node shutdown or crash. (#23065)
-
-- The Bech32 checkbox has been replaced with a dropdown for all address types, including the new Bech32m (BIP-350) standard for Taproot enabled wallets.
-
-Low-level changes
-=================
-
-RPC
----
-
-- `getblockchaininfo` now returns a new `time` field, that provides the chain tip time. (#22407)
-
-Tests
------
-
-- For the `regtest` network the activation heights of several softforks were
-  set to block height 1. They can be changed by the runtime setting
-  `-testactivationheight=name@height`. (#22818)
 
 Credits
 =======

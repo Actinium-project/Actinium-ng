@@ -9,6 +9,7 @@ src/Actinium-gui
 src/Actinium-node
 src/Actinium-tx
 src/Actinium-util
+src/Actinium-chainstate
 src/Actinium-wallet
 src/test/fuzz/fuzz
 src/test/test_bitcoin
