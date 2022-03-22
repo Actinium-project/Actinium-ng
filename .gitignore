@@ -156,3 +156,4 @@ dist/
 
 /guix-build-*
 .history
+/ci/scratch/
