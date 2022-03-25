@@ -60,6 +60,7 @@ The Actinium repo's [root README](/README.md) contains relevant information on t
 - [Assets Attribution](assets-attribution.md)
 - [Assumeutxo design](assumeutxo.md)
 - [Actinium.conf Configuration File](bitcoin-conf.md)
+- [CJDNS Support](cjdns.md)
 - [Files](files.md)
 - [Fuzz-testing](fuzzing.md)
 - [I2P Support](i2p.md)
