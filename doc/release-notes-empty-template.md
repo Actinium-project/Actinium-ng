@@ -56,6 +56,16 @@ Changes to wallet related RPCs can be found in the Wallet section below.
 New RPCs
 --------
 
+Build System
+------------
+
+Updated settings
+----------------
+
+
+Changes to GUI or wallet related settings can be found in the GUI or Wallet section below.
+
+New settings
 ------------
 
 Tools and Utilities
@@ -87,4 +97,3 @@ Thanks to everyone who directly contributed to this release:
 
 As well as to everyone that helped with translations on
 [Transifex](https://www.transifex.com/bitcoin/bitcoin/).
-=======
