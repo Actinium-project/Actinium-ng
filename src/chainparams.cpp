@@ -346,7 +346,6 @@ public:
         consensus.signet_blocks = true;
         consensus.signet_challenge.assign(bin.begin(), bin.end());
         consensus.nSubsidyHalvingInterval = 840000;
-        consensus.BIP16Exception = uint256{};
         consensus.BIP34Height = 0;
         consensus.BIP34Hash = uint256{};
         consensus.BIP65Height = 0;
