@@ -2167,7 +2167,7 @@ Usa el boton "Crear nueva direccion de recibimiento" en la pestaña de recibir p
     </message>
     <message>
         <source>The Bitcoin address to send the payment to</source>
-        <translation type="unfinished">Dirección Bitcoin a enviar el pago</translation>
+        <translation type="unfinished">Dirección Actinium a enviar el pago</translation>
     </message>
     <message>
         <source>Paste address from clipboard</source>

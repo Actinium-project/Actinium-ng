@@ -2092,7 +2092,7 @@ Nota: Dado que la tasa se calcula por cada byte, una tasa de "100 satoshis por k
     </message>
     <message>
         <source>The Bitcoin address to send the payment to</source>
-        <translation type="unfinished">La dirección de Bitcoin para enviar el pago a</translation>
+        <translation type="unfinished">La dirección de Actinium para enviar el pago a</translation>
     </message>
     <message>
         <source>Paste address from clipboard</source>

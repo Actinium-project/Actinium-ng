@@ -2348,7 +2348,7 @@ Nota: Dado que la tasa se calcula por cada byte, una tasa de "100 satoshis por k
     </message>
     <message>
         <source>The fee will be deducted from the amount being sent. The recipient will receive less bitcoins than you enter in the amount field. If multiple recipients are selected, the fee is split equally.</source>
-        <translation type="unfinished">La comisión será deducida de la cantidad enviada. El destinatario recibirá menos bitcoins que la cantidad introducida en el campo Cantidad. Si hay varios destinatarios seleccionados, la comisión será distribuida a partes iguales.</translation>
+        <translation type="unfinished">La comisión será deducida de la cantidad enviada. El destinatario recibirá menos actiniums que la cantidad introducida en el campo Cantidad. Si hay varios destinatarios seleccionados, la comisión será distribuida a partes iguales.</translation>
     </message>
     <message>
         <source>Use available balance</source>
@@ -2372,7 +2372,7 @@ Nota: Dado que la tasa se calcula por cada byte, una tasa de "100 satoshis por k
     </message>
     <message>
         <source>A message that was attached to the bitcoin: URI which will be stored with the transaction for your reference. Note: This message will not be sent over the Bitcoin network.</source>
-        <translation type="unfinished">Mensaje que se agrgará al URI de Bitcoin, el cuál será almacenado con la transacción para su referencia. Nota: Este mensaje no será mandado a través de la red de Bitcoin.</translation>
+        <translation type="unfinished">Mensaje que se agrgará al URI de Bitcoin, el cuál será almacenado con la transacción para su referencia. Nota: Este mensaje no será mandado a través de la red de Actinium.</translation>
     </message>
     <message>
         <source>Pay To:</source>
