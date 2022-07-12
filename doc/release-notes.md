@@ -76,6 +76,10 @@ New RPCs
 
 ------------
 
+- A new `mempoolfullrbf` option has been added, which enables the mempool to
+  accept transaction replacement without enforcing BIP125 replaceability
+  signaling. (#25353)
+
 Tools and Utilities
 -------------------
 
