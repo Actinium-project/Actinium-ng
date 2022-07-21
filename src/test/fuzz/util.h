@@ -8,7 +8,7 @@
 #include <arith_uint256.h>
 #include <chainparamsbase.h>
 #include <coins.h>
-#include <compat.h>
+#include <compat/compat.h>
 #include <consensus/amount.h>
 #include <consensus/consensus.h>
 #include <merkleblock.h>
@@ -358,17 +358,16 @@ public:
 
 class FuzzedAutoFileProvider
 {
-    FuzzedDataProvider& m_fuzzed_data_provider;
     FuzzedFileProvider m_fuzzed_file_provider;
 
 public:
-    FuzzedAutoFileProvider(FuzzedDataProvider& fuzzed_data_provider) : m_fuzzed_data_provider{fuzzed_data_provider}, m_fuzzed_file_provider{fuzzed_data_provider}
+    FuzzedAutoFileProvider(FuzzedDataProvider& fuzzed_data_provider) : m_fuzzed_file_provider{fuzzed_data_provider}
     {
     }
 
-    CAutoFile open()
+    AutoFile open()
     {
-        return {m_fuzzed_file_provider.open(), m_fuzzed_data_provider.ConsumeIntegral<int>(), m_fuzzed_data_provider.ConsumeIntegral<int>()};
+        return AutoFile{m_fuzzed_file_provider.open()};
     }
 };
 
