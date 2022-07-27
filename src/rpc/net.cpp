@@ -84,7 +84,7 @@ static RPCHelpMan ping()
 
     // Request that each node send a ping during next message processing pass
     peerman.SendPings();
-    return NullUniValue;
+    return UniValue::VNULL;
 },
     };
 }
@@ -304,7 +304,7 @@ static RPCHelpMan addnode()
     {
         CAddress addr;
         connman.OpenNetworkConnection(addr, false, nullptr, strNode.c_str(), ConnectionType::MANUAL);
-        return NullUniValue;
+        return UniValue::VNULL;
     }
 
     if (strCommand == "add")
@@ -320,7 +320,7 @@ static RPCHelpMan addnode()
         }
     }
 
-    return NullUniValue;
+    return UniValue::VNULL;
 },
     };
 }
@@ -423,7 +423,7 @@ static RPCHelpMan disconnectnode()
         throw JSONRPCError(RPC_CLIENT_NODE_NOT_CONNECTED, "Node not found in connected nodes");
     }
 
-    return NullUniValue;
+    return UniValue::VNULL;
 },
     };
 }
@@ -745,7 +745,7 @@ static RPCHelpMan setban()
             throw JSONRPCError(RPC_CLIENT_INVALID_IP_OR_SUBNET, "Error: Unban failed. Requested address/subnet was not previously manually banned.");
         }
     }
-    return NullUniValue;
+    return UniValue::VNULL;
 },
     };
 }
@@ -819,7 +819,7 @@ static RPCHelpMan clearbanned()
 
     node.banman->ClearBanned();
 
-    return NullUniValue;
+    return UniValue::VNULL;
 },
     };
 }
@@ -894,7 +894,7 @@ static RPCHelpMan getnodeaddresses()
 
     for (const CAddress& addr : vAddr) {
         UniValue obj(UniValue::VOBJ);
-        obj.pushKV("time", (int)addr.nTime);
+        obj.pushKV("time", int64_t{TicksSinceEpoch<std::chrono::seconds>(addr.nTime)});
         obj.pushKV("services", (uint64_t)addr.nServices);
         obj.pushKV("address", addr.ToStringIP());
         obj.pushKV("port", addr.GetPort());
@@ -942,7 +942,7 @@ static RPCHelpMan addpeeraddress()
 
     if (LookupHost(addr_string, net_addr, false)) {
         CAddress address{{net_addr, port}, ServiceFlags{NODE_NETWORK | NODE_WITNESS}};
-        address.nTime = GetAdjustedTime();
+        address.nTime = AdjustedTime();
         // The source address is set equal to the address. This is equivalent to the peer
         // announcing itself.
         if (node.addrman->Add({address}, address)) {
