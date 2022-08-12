@@ -177,6 +177,7 @@ BITCOIN_CORE_H = \
   kernel/mempool_limits.h \
   kernel/mempool_options.h \
   kernel/mempool_persist.h \
+  kernel/validation_cache_sizes.h \
   key.h \
   key_io.h \
   logging.h \
@@ -207,6 +208,7 @@ BITCOIN_CORE_H = \
   node/psbt.h \
   node/transaction.h \
   node/utxo_snapshot.h \
+  node/validation_cache_args.h \
   noui.h \
   outputtype.h \
   policy/feerate.h \
@@ -390,6 +392,7 @@ libbitcoin_node_a_SOURCES = \
   node/minisketchwrapper.cpp \
   node/psbt.cpp \
   node/transaction.cpp \
+  node/validation_cache_args.cpp \
   noui.cpp \
   policy/fees.cpp \
   policy/fees_args.cpp \
@@ -1074,6 +1077,15 @@ libbitcoin_ipc_mpgen_output = \
 nodist_libbitcoin_ipc_a_SOURCES = $(libbitcoin_ipc_mpgen_output)
 CLEANFILES += $(libbitcoin_ipc_mpgen_output)
 endif
+
+%.raw.h: %.raw
+	@$(MKDIR_P) $(@D)
+	@{ \
+	 echo "static unsigned const char $(*F)_raw[] = {" && \
+	 $(HEXDUMP) -v -e '8/1 "0x%02x, "' -e '"\n"' $< | $(SED) -e 's/0x  ,//g' && \
+	 echo "};"; \
+	} > "$@.new" && mv -f "$@.new" "$@"
+	@echo "Generated $@"
 
 include Makefile.minisketch.include
 

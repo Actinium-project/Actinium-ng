@@ -157,10 +157,9 @@ bool CheckInputScripts(const CTransaction& tx, TxValidationState& state,
                        std::vector<CScriptCheck>* pvChecks = nullptr)
                        EXCLUSIVE_LOCKS_REQUIRED(cs_main);
 
-bool CheckFinalTxAtTip(const CBlockIndex* active_chain_tip, const CTransaction& tx)
+bool CheckFinalTxAtTip(const CBlockIndex& active_chain_tip, const CTransaction& tx)
 {
     AssertLockHeld(cs_main);
-    assert(active_chain_tip); // TODO: Make active_chain_tip a reference
 
     // CheckFinalTxAtTip() uses active_chain_tip.Height()+1 to evaluate
     // nLockTime because when IsFinalTx() is called within
@@ -168,14 +167,14 @@ bool CheckFinalTxAtTip(const CBlockIndex* active_chain_tip, const CTransaction& 
     // evaluated is what is used. Thus if we want to know if a
     // transaction can be part of the *next* block, we need to call
     // IsFinalTx() with one more than active_chain_tip.Height().
-    const int nBlockHeight = active_chain_tip->nHeight + 1;
+    const int nBlockHeight = active_chain_tip.nHeight + 1;
 
     // BIP113 requires that time-locked transactions have nLockTime set to
     // less than the median time of the previous block they're contained in.
     // When the next block is created its previous block will be the current
     // chain tip, so we use that to calculate the median time passed to
     // IsFinalTx().
-    const int64_t nBlockTime{active_chain_tip->GetMedianTimePast()};
+    const int64_t nBlockTime{active_chain_tip.GetMedianTimePast()};
 
     return IsFinalTx(tx, nBlockHeight, nBlockTime);
 }
@@ -337,7 +336,7 @@ void CChainState::MaybeUpdateMempoolForReorg(
         const CTransaction& tx = it->GetTx();
 
         // The transaction must be final.
-        if (!CheckFinalTxAtTip(m_chain.Tip(), tx)) return true;
+        if (!CheckFinalTxAtTip(*Assert(m_chain.Tip()), tx)) return true;
         LockPoints lp = it->GetLockPoints();
         const bool validLP{TestLockPointValidity(m_chain, lp)};
         CCoinsViewMemPool view_mempool(&CoinsTip(), *m_mempool);
@@ -714,7 +713,7 @@ bool MemPoolAccept::PreChecks(ATMPArgs& args, Workspace& ws)
     // Only accept nLockTime-using transactions that can be mined in the next
     // block; we don't want our mempool filled up with transactions that can't
     // be mined yet.
-    if (!CheckFinalTxAtTip(m_active_chainstate.m_chain.Tip(), tx)) {
+    if (!CheckFinalTxAtTip(*Assert(m_active_chainstate.m_chain.Tip()), tx)) {
         return state.Invalid(TxValidationResult::TX_PREMATURE_SPEND, "non-final");
     }
 
@@ -1665,7 +1664,8 @@ bool CScriptCheck::operator()() {
 static CuckooCache::cache<uint256, SignatureCacheHasher> g_scriptExecutionCache;
 static CSHA256 g_scriptExecutionCacheHasher;
 
-void InitScriptExecutionCache() {
+bool InitScriptExecutionCache(size_t max_size_bytes)
+{
     // Setup the salted hasher
     uint256 nonce = GetRandHash();
     // We want the nonce to be 64 bytes long to force the hasher to process
@@ -1673,12 +1673,14 @@ void InitScriptExecutionCache() {
     // just write our 32-byte entropy twice to fill the 64 bytes.
     g_scriptExecutionCacheHasher.Write(nonce.begin(), 32);
     g_scriptExecutionCacheHasher.Write(nonce.begin(), 32);
-    // nMaxCacheSize is unsigned. If -maxsigcachesize is set to zero,
-    // setup_bytes creates the minimum possible cache (2 elements).
-    size_t nMaxCacheSize = std::min(std::max((int64_t)0, gArgs.GetIntArg("-maxsigcachesize", DEFAULT_MAX_SIG_CACHE_SIZE) / 2), MAX_MAX_SIG_CACHE_SIZE) * ((size_t) 1 << 20);
-    size_t nElems = g_scriptExecutionCache.setup_bytes(nMaxCacheSize);
-    LogPrintf("Using %zu MiB out of %zu/2 requested for script execution cache, able to store %zu elements\n",
-            (nElems*sizeof(uint256)) >>20, (nMaxCacheSize*2)>>20, nElems);
+
+    auto setup_results = g_scriptExecutionCache.setup_bytes(max_size_bytes);
+    if (!setup_results) return false;
+
+    const auto [num_elems, approx_size_bytes] = *setup_results;
+    LogPrintf("Using %zu MiB out of %zu MiB requested for script execution cache, able to store %zu elements\n",
+              approx_size_bytes >> 20, max_size_bytes >> 20, num_elems);
+    return true;
 }
 
 /**
@@ -2589,6 +2591,7 @@ bool CChainState::DisconnectTip(BlockValidationState& state, DisconnectedBlockTr
 
     CBlockIndex *pindexDelete = m_chain.Tip();
     assert(pindexDelete);
+    assert(pindexDelete->pprev);
     // Read block from disk.
     std::shared_ptr<CBlock> pblock = std::make_shared<CBlock>();
     CBlock& block = *pblock;
@@ -2636,7 +2639,7 @@ bool CChainState::DisconnectTip(BlockValidationState& state, DisconnectedBlockTr
         }
     }
 
-    m_chain.SetTip(pindexDelete->pprev);
+    m_chain.SetTip(*pindexDelete->pprev);
 
     UpdateTip(pindexDelete->pprev);
     // Let wallets know transactions went from 1-confirmed to
@@ -2750,7 +2753,7 @@ bool CChainState::ConnectTip(BlockValidationState& state, CBlockIndex* pindexNew
         disconnectpool.removeForBlock(blockConnecting.vtx);
     }
     // Update m_chain & related variables.
-    m_chain.SetTip(pindexNew);
+    m_chain.SetTip(*pindexNew);
     UpdateTip(pindexNew);
 
     int64_t nTime6 = GetTimeMicros(); nTimePostConnect += nTime6 - nTime5; nTimeTotal += nTime6 - nTime1;
@@ -3905,7 +3908,7 @@ bool CChainState::LoadChainTip()
     if (!pindex) {
         return false;
     }
-    m_chain.SetTip(pindex);
+    m_chain.SetTip(*pindex);
     PruneBlockIndexCandidates();
 
     tip = m_chain.Tip();
@@ -4982,7 +4985,7 @@ bool ChainstateManager::PopulateAndValidateSnapshot(
         return false;
     }
 
-    snapshot_chainstate.m_chain.SetTip(snapshot_start_block);
+    snapshot_chainstate.m_chain.SetTip(*snapshot_start_block);
 
     // The remainder of this function requires modifying data protected by cs_main.
     LOCK(::cs_main);
