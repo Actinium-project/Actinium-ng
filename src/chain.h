@@ -12,6 +12,7 @@
 #include <primitives/block.h>
 #include <sync.h>
 #include <uint256.h>
+#include <util/time.h>
 
 #include <vector>
 
@@ -278,6 +279,11 @@ public:
     uint256 GetBlockPoWHash() const
     {
         return GetBlockHeader().GetPoWHash();
+    }
+
+    NodeSeconds Time() const
+    {
+        return NodeSeconds{std::chrono::seconds{nTime}};
     }
 
     int64_t GetBlockTime() const
