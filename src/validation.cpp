@@ -3615,7 +3615,7 @@ bool ChainstateManager::AcceptBlockHeader(const CBlockHeader& block, BlockValida
         }
         pindexPrev = &((*mi).second);
 
-        if  (!(block.nVersion & VERSIONBITS_FORK_LYRA2Z) && pindexPrev->nHeight + 1 >= chainparams.GetConsensus().Lyra2zHFHeight) {
+        if  (!(block.nVersion & VERSIONBITS_FORK_LYRA2Z) && pindexPrev->nHeight + 1 >= GetConsensus().Lyra2zHFHeight) {
         	state.Invalid(BlockValidationResult::BLOCK_LYRA2Z_FORK, "not-following-lyra2z-algo-activation");
         	return error("%s: Reject Old nVersion After Fork: %s, %s", __func__, hash.ToString(), state.ToString());
         }

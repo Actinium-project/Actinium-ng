@@ -1581,7 +1581,7 @@ bool PeerManagerImpl::MaybePunishNodeForBlock(NodeId nodeid, const BlockValidati
     case BlockValidationResult::BLOCK_LYRA2Z_FORK:
         {
             LOCK(cs_main);
-            Misbehaving(nodeid, 100, message);
+            Misbehaving(*peer, 100, message);
         }
         return true;
     case BlockValidationResult::BLOCK_RECENT_CONSENSUS_CHANGE:
