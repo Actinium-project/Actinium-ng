@@ -281,7 +281,7 @@ void Shutdown(NodeContext& node)
     // FlushStateToDisk generates a ChainStateFlushed callback, which we should avoid missing
     if (node.chainman) {
         LOCK(cs_main);
-        for (CChainState* chainstate : node.chainman->GetAll()) {
+        for (Chainstate* chainstate : node.chainman->GetAll()) {
             if (chainstate->CanFlushToDisk()) {
                 chainstate->ForceFlushStateToDisk();
             }
@@ -312,7 +312,7 @@ void Shutdown(NodeContext& node)
 
     if (node.chainman) {
         LOCK(cs_main);
-        for (CChainState* chainstate : node.chainman->GetAll()) {
+        for (Chainstate* chainstate : node.chainman->GetAll()) {
             if (chainstate->CanFlushToDisk()) {
                 chainstate->ForceFlushStateToDisk();
                 chainstate->ResetCoinsViews();
@@ -1342,6 +1342,8 @@ bool AppInitMain(NodeContext& node, interfaces::BlockAndHeaderTipInfo* tip_info)
         onion_proxy = addrProxy;
     }
 
+    const bool onlynet_used_with_onion{args.IsArgSet("-onlynet") && IsReachable(NET_ONION)};
+
     // -onion can be used to set only a proxy for .onion, or override normal proxy for .onion addresses
     // -noonion (or -onion=0) disables connecting to .onion entirely
     // An empty string is used to not override the onion proxy (in which case it defaults to -proxy set above, or none)
@@ -1349,6 +1351,11 @@ bool AppInitMain(NodeContext& node, interfaces::BlockAndHeaderTipInfo* tip_info)
     if (onionArg != "") {
         if (onionArg == "0") { // Handle -noonion/-onion=0
             onion_proxy = Proxy{};
+            if (onlynet_used_with_onion) {
+                return InitError(
+                    _("Outbound connections restricted to Tor (-onlynet=onion) but the proxy for "
+                      "reaching the Tor network is explicitly forbidden: -onion=0"));
+            }
         } else {
             CService addr;
             if (!Lookup(onionArg, addr, 9050, fNameLookup) || !addr.IsValid()) {
@@ -1361,11 +1368,14 @@ bool AppInitMain(NodeContext& node, interfaces::BlockAndHeaderTipInfo* tip_info)
     if (onion_proxy.IsValid()) {
         SetProxy(NET_ONION, onion_proxy);
     } else {
-        if (args.IsArgSet("-onlynet") && IsReachable(NET_ONION)) {
+        // If -listenonion is set, then we will (try to) connect to the Tor control port
+        // later from the torcontrol thread and may retrieve the onion proxy from there.
+        const bool listenonion_disabled{!args.GetBoolArg("-listenonion", DEFAULT_LISTEN_ONION)};
+        if (onlynet_used_with_onion && listenonion_disabled) {
             return InitError(
                 _("Outbound connections restricted to Tor (-onlynet=onion) but the proxy for "
-                  "reaching the Tor network is not provided (no -proxy= and no -onion= given) or "
-                  "it is explicitly forbidden (-onion=0)"));
+                  "reaching the Tor network is not provided: none of -proxy, -onion or "
+                  "-listenonion is given"));
         }
         SetReachable(NET_ONION, false);
     }
@@ -1550,7 +1560,7 @@ bool AppInitMain(NodeContext& node, interfaces::BlockAndHeaderTipInfo* tip_info)
     if (fPruneMode) {
         if (!fReindex) {
             LOCK(cs_main);
-            for (CChainState* chainstate : chainman.GetAll()) {
+            for (Chainstate* chainstate : chainman.GetAll()) {
                 uiInterface.InitMessage(_("Pruning blockstore…").translated);
                 chainstate->PruneAndFlush();
             }
