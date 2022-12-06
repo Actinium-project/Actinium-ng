@@ -102,15 +102,19 @@ void CoinsResult::Clear() {
     coins.clear();
 }
 
-void CoinsResult::Erase(std::set<COutPoint>& preset_coins)
+void CoinsResult::Erase(const std::unordered_set<COutPoint, SaltedOutpointHasher>& coins_to_remove)
 {
-    for (auto& it : coins) {
-        auto& vec = it.second;
-        auto i = std::find_if(vec.begin(), vec.end(), [&](const COutput &c) { return preset_coins.count(c.outpoint);});
-        if (i != vec.end()) {
-            vec.erase(i);
-            break;
-        }
+    for (auto& [type, vec] : coins) {
+        auto remove_it = std::remove_if(vec.begin(), vec.end(), [&](const COutput& coin) {
+            // remove it if it's on the set
+            if (coins_to_remove.count(coin.outpoint) == 0) return false;
+
+            // update cached amounts
+            total_amount -= coin.txout.nValue;
+            if (coin.HasEffectiveValue()) total_effective_amount = *total_effective_amount - coin.GetEffectiveValue();
+            return true;
+        });
+        vec.erase(remove_it, vec.end());
     }
 }
 
@@ -124,6 +128,11 @@ void CoinsResult::Shuffle(FastRandomContext& rng_fast)
 void CoinsResult::Add(OutputType type, const COutput& out)
 {
     coins[type].emplace_back(out);
+    total_amount += out.txout.nValue;
+    if (out.HasEffectiveValue()) {
+        total_effective_amount = total_effective_amount.has_value() ?
+                *total_effective_amount + out.GetEffectiveValue() : out.GetEffectiveValue();
+    }
 }
 
 static OutputType GetOutputType(TxoutType type, bool is_from_p2sh)
@@ -321,11 +330,9 @@ CoinsResult AvailableCoins(const CWallet& wallet,
             result.Add(GetOutputType(type, is_from_p2sh),
                        COutput(outpoint, output, nDepth, input_bytes, spendable, solvable, safeTx, wtx.GetTxTime(), tx_from_me, feerate));
 
-            // Cache total amount as we go
-            result.total_amount += output.nValue;
             // Checks the sum amount of all UTXO's.
             if (params.min_sum_amount != MAX_MONEY) {
-                if (result.total_amount >= params.min_sum_amount) {
+                if (result.GetTotalAmount() >= params.min_sum_amount) {
                     return result;
                 }
             }
@@ -349,7 +356,7 @@ CoinsResult AvailableCoinsListUnspent(const CWallet& wallet, const CCoinControl*
 CAmount GetAvailableBalance(const CWallet& wallet, const CCoinControl* coinControl)
 {
     LOCK(wallet.cs_wallet);
-    return AvailableCoins(wallet, coinControl).total_amount;
+    return AvailableCoins(wallet, coinControl).GetTotalAmount();
 }
 
 const CTxOut& FindNonChangeParentOutput(const CWallet& wallet, const CTransaction& tx, int output)
@@ -577,6 +584,14 @@ std::optional<SelectionResult> SelectCoins(const CWallet& wallet, CoinsResult& a
         return result;
     }
 
+    // Return early if we cannot cover the target with the wallet's UTXO.
+    // We use the total effective value if we are not subtracting fee from outputs and 'available_coins' contains the data.
+    CAmount available_coins_total_amount = coin_selection_params.m_subtract_fee_outputs ? available_coins.GetTotalAmount() :
+            (available_coins.GetEffectiveTotalAmount().has_value() ? *available_coins.GetEffectiveTotalAmount() : 0);
+    if (selection_target > available_coins_total_amount) {
+        return std::nullopt; // Insufficient funds
+    }
+
     // Start wallet Coin Selection procedure
     auto op_selection_result = AutomaticCoinSelection(wallet, available_coins, selection_target, coin_control, coin_selection_params);
     if (!op_selection_result) return op_selection_result;
@@ -636,7 +651,7 @@ std::optional<SelectionResult> AutomaticCoinSelection(const CWallet& wallet, Coi
             // If partial groups are allowed, relax the requirement of spending OutputGroups (groups
             // of UTXOs sent to the same address, which are obviously controlled by a single wallet)
             // in their entirety.
-            if (auto r6{AttemptSelection(wallet, value_to_select, CoinEligibilityFilter(0, 1, max_ancestors-1, max_descendants-1, true /* include_partial_groups */),
+            if (auto r6{AttemptSelection(wallet, value_to_select, CoinEligibilityFilter(0, 1, max_ancestors-1, max_descendants-1, /*include_partial=*/true),
                                    available_coins, coin_selection_params, /*allow_mixed_output_types=*/true)}) {
                 return r6;
             }
@@ -644,7 +659,7 @@ std::optional<SelectionResult> AutomaticCoinSelection(const CWallet& wallet, Coi
             // received from other wallets.
             if (coin_control.m_include_unsafe_inputs) {
                 if (auto r7{AttemptSelection(wallet, value_to_select,
-                    CoinEligibilityFilter(0 /* conf_mine */, 0 /* conf_theirs */, max_ancestors-1, max_descendants-1, true /* include_partial_groups */),
+                    CoinEligibilityFilter(/*conf_mine=*/0, /*conf_theirs=*/0, max_ancestors-1, max_descendants-1, /*include_partial=*/true),
                     available_coins, coin_selection_params, /*allow_mixed_output_types=*/true)}) {
                     return r7;
                 }
@@ -654,7 +669,7 @@ std::optional<SelectionResult> AutomaticCoinSelection(const CWallet& wallet, Coi
             // OutputGroups use heuristics that may overestimate ancestor/descendant counts.
             if (!fRejectLongChains) {
                 if (auto r8{AttemptSelection(wallet, value_to_select,
-                                      CoinEligibilityFilter(0, 1, std::numeric_limits<uint64_t>::max(), std::numeric_limits<uint64_t>::max(), true /* include_partial_groups */),
+                                      CoinEligibilityFilter(0, 1, std::numeric_limits<uint64_t>::max(), std::numeric_limits<uint64_t>::max(), /*include_partial=*/true),
                                       available_coins, coin_selection_params, /*allow_mixed_output_types=*/true)}) {
                     return r8;
                 }
@@ -940,7 +955,9 @@ static util::Result<CreatedTransactionResult> CreateTransactionInternal(
 
     // The only time that fee_needed should be less than the amount available for fees is when
     // we are subtracting the fee from the outputs. If this occurs at any other time, it is a bug.
-    assert(coin_selection_params.m_subtract_fee_outputs || fee_needed <= nFeeRet);
+    if (!coin_selection_params.m_subtract_fee_outputs && fee_needed > nFeeRet) {
+        return util::Error{Untranslated(STR_INTERNAL_BUG("Fee needed > fee paid"))};
+    }
 
     // If there is a change output and we overpay the fees then increase the change to match the fee needed
     if (nChangePosInOut != -1 && fee_needed < nFeeRet) {

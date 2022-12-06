@@ -7,7 +7,9 @@ Visual Studio 2022 is minimum required to build Bitcoin Core.
 
 Solution and project files to build with `msbuild` or Visual Studio can be found in the `build_msvc` directory.
 
-To build Actinium from the command-line, it is sufficient to only install the Visual Studio Build Tools component.
+To build Actinium from the command-line, it is sufficient to only install the [Visual Studio Build Tools](https://visualstudio.microsoft.com/downloads/) component.
+
+The "Desktop development with C++" workload must be installed as well.
 
 Building with Visual Studio is an alternative to the Linux based [cross-compiler build](../doc/build-windows.md).
 
@@ -28,7 +30,7 @@ Add-Content -Path "vcpkg\triplets\x64-windows-static.cmake" -Value "set(VCPKG_BU
 
 Qt
 ---------------------
-To build Bitcoin Core with the GUI, a static build of Qt is required.
+To build Actinium with the GUI, a static build of Qt is required.
 
 1. Download a single ZIP archive of Qt source code from https://download.qt.io/official_releases/qt/ (e.g., [`qt-everywhere-opensource-src-5.15.5.zip`](https://download.qt.io/official_releases/qt/5.15/5.15.5/single/qt-everywhere-opensource-src-5.15.5.zip)), and expand it into a dedicated folder. The following instructions assume that this folder is `C:\dev\qt-source`.
 
@@ -67,9 +69,9 @@ Alternatively, open the `build_msvc/bitcoin.sln` file in Visual Studio.
 
 Security
 ---------------------
-[Base address randomization](https://docs.microsoft.com/en-us/cpp/build/reference/dynamicbase-use-address-space-layout-randomization?view=msvc-160) is used to make Bitcoin Core more secure. When building Bitcoin using the `build_msvc` process base address randomization can be disabled by editing `common.init.vcproj` to change `RandomizedBaseAddress` from `true` to `false` and then rebuilding the project.
+[Base address randomization](https://docs.microsoft.com/en-us/cpp/build/reference/dynamicbase-use-address-space-layout-randomization?view=msvc-160) is used to make Bitcoin Core more secure. When building Actinium using the `build_msvc` process base address randomization can be disabled by editing `common.init.vcproj` to change `RandomizedBaseAddress` from `true` to `false` and then rebuilding the project.
 
-To check if `bitcoind` has `RandomizedBaseAddress` enabled or disabled run
+To check if `Actiniumd` has `RandomizedBaseAddress` enabled or disabled run
 
 ```
 .\dumpbin.exe /headers src/bitcoind.exe
