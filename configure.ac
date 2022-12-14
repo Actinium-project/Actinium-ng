@@ -32,7 +32,7 @@ fi
 
 BITCOIN_DAEMON_NAME=Actiniumd
 BITCOIN_GUI_NAME=Actinium-qt
-BITCOIN_TEST_NAME=test_bitcoin
+BITCOIN_TEST_NAME=test_Actinium
 BITCOIN_CLI_NAME=Actinium-cli
 BITCOIN_TX_NAME=Actinium-tx
 BITCOIN_UTIL_NAME=Actinium-util
