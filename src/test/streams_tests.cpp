@@ -144,10 +144,10 @@ BOOST_AUTO_TEST_CASE(bitstream_reader_writer)
     CDataStream data_copy(data);
     uint32_t serialized_int1;
     data >> serialized_int1;
-    BOOST_CHECK_EQUAL(serialized_int1, (uint32_t)0x7700C35A); // NOTE: Serialized as LE
+    BOOST_CHECK_EQUAL(serialized_int1, uint32_t{0x7700C35A}); // NOTE: Serialized as LE
     uint16_t serialized_int2;
     data >> serialized_int2;
-    BOOST_CHECK_EQUAL(serialized_int2, (uint16_t)0x1072); // NOTE: Serialized as LE
+    BOOST_CHECK_EQUAL(serialized_int2, uint16_t{0x1072}); // NOTE: Serialized as LE
 
     BitStreamReader<CDataStream> bit_reader(data_copy);
     BOOST_CHECK_EQUAL(bit_reader.Read(1), 0U);
@@ -498,6 +498,20 @@ BOOST_AUTO_TEST_CASE(streams_buffered_file_rand)
         }
     }
     fs::remove(streams_test_filename);
+}
+
+BOOST_AUTO_TEST_CASE(streams_hashed)
+{
+    CDataStream stream(SER_NETWORK, INIT_PROTO_VERSION);
+    HashedSourceWriter hash_writer{stream};
+    const std::string data{"bitcoin"};
+    hash_writer << data;
+
+    CHashVerifier hash_verifier{&stream};
+    std::string result;
+    hash_verifier >> result;
+    BOOST_CHECK_EQUAL(data, result);
+    BOOST_CHECK_EQUAL(hash_writer.GetHash(), hash_verifier.GetHash());
 }
 
 BOOST_AUTO_TEST_SUITE_END()
